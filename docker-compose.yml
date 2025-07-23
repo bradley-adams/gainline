@@ -1,0 +1,49 @@
+services:
+
+  gainline-db:
+    image: postgres:16
+    container_name: gainline-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: gainline
+      POSTGRES_USER: gainline
+      POSTGRES_PASSWORD: gainline
+    volumes:
+      - gainline-data:/var/lib/postgresql/data
+
+
+  gainline-migrate:
+    image: migrate/migrate
+    volumes:
+      - ./database/migrations:/migrations
+    depends_on:
+      - gainline-db
+    restart: "no"
+    entrypoint: [
+      "sh", "-c",
+      "sleep 5 && migrate -path=/migrations -database=postgres://gainline:gainline@gainline-db:5432/gainline?sslmode=disable up"
+    ]
+
+  gainline-api:
+    container_name: gainline-api
+    build:
+      context: ./api
+    depends_on:
+      - gainline-db
+    environment:
+      DATABASE_URL: "postgres://gainline:gainline@gainline-db:5432/gainline"
+    ports:
+      - "8080:8080"
+
+  # gainline-ui:
+  #   container_name: gainline-ui
+  #   ports:
+  #     - "4200:4200"
+  #   depends_on:
+  #     - gainline-api
+
+volumes:
+  gainline-data:
+    name: gainline-data
+
