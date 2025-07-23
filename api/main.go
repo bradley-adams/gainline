@@ -1,17 +1,29 @@
 package main
 
 import (
-	"net/http"
+	"os"
+	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/bradley-adams/gainline/http/handlers"
+	"github.com/rs/zerolog"
 )
 
+const serviceName = "gainline-api"
+
 func main() {
-	router := gin.Default()
 
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Hello from Gin!"})
-	})
+	writer := zerolog.ConsoleWriter{
+		Out:        os.Stderr,
+		TimeFormat: time.DateTime,
+	}
 
-	router.Run(":8080") // default port 8080
+	logger := zerolog.New(writer).With().Timestamp().Logger()
+
+	logger.Info().Msgf("%s starting", serviceName)
+
+	logger.Debug().Msg("setting up router...")
+	r := handlers.SetupRouter(logger)
+
+	logger.Info().Msg(serviceName + " started")
+	logger.Fatal().Err(r.Run(":8080")).Msg("failed to start server")
 }
