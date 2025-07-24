@@ -3,7 +3,6 @@ module github.com/bradley-adams/gainline
 go 1.24.1
 
 require (
-	github.com/aws/smithy-go v1.22.3
 	github.com/gin-gonic/gin v1.10.0
 	github.com/rs/zerolog v1.34.0
 )
