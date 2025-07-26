@@ -1,13 +1,21 @@
+CREATE TABLE competitions (
+    id UUID PRIMARY KEY,
+    name TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    deleted_at TIMESTAMP WITH TIME ZONE
+);
+
 CREATE TABLE seasons (
     id UUID PRIMARY KEY,
-    year INTEGER NOT NULL,
-    name TEXT NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE NOT NULL,
+    competition_id UUID NOT NULL,
+    start_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    end_date TIMESTAMP WITH TIME ZONE NOT NULL,
     rounds INTEGER NOT NULL,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    deleted_at timestamp with time zone
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    CONSTRAINT fk_seasons_competitions FOREIGN KEY (competition_id) REFERENCES competitions(id) ON DELETE CASCADE
 );
 
 CREATE TABLE teams (
@@ -15,22 +23,27 @@ CREATE TABLE teams (
     name TEXT NOT NULL,
     abbreviation TEXT NOT NULL,
     location TEXT NOT NULL,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    deleted_at timestamp with time zone
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    deleted_at TIMESTAMP WITH TIME ZONE
 );
+
+CREATE TYPE game_status AS ENUM ('scheduled', 'playing', 'finished');
 
 CREATE TABLE games (
     id UUID PRIMARY KEY,
-    season_id UUID NOT NULL REFERENCES seasons(id),
+    season_id UUID NOT NULL,
     round INTEGER NOT NULL,
-    date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    home_team_id UUID NOT NULL REFERENCES teams(id),
-    away_team_id UUID NOT NULL REFERENCES teams(id),
+    date TIMESTAMP WITH TIME ZONE NOT NULL,
+    home_team_id UUID NOT NULL,
+    away_team_id UUID NOT NULL,
     home_score INTEGER,
     away_score INTEGER,
-    status TEXT NOT NULL DEFAULT 'scheduled',
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    deleted_at timestamp with time zone
+    status game_status NOT NULL DEFAULT 'scheduled',
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    CONSTRAINT fk_games_seasons FOREIGN KEY (season_id) REFERENCES seasons(id) ON DELETE CASCADE,
+    CONSTRAINT fk_games_home_team FOREIGN KEY (home_team_id) REFERENCES teams(id) ON DELETE CASCADE,
+    CONSTRAINT fk_games_away_team FOREIGN KEY (away_team_id) REFERENCES teams(id) ON DELETE CASCADE
 );
