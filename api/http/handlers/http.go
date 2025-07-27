@@ -1,20 +1,26 @@
 package handlers
 
 import (
+	"github.com/bradley-adams/gainline/db/db_handler"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 )
 
-func SetupRouter(logger zerolog.Logger) *gin.Engine {
+func SetupRouter(db db_handler.DB, logger zerolog.Logger) *gin.Engine {
 	logger.Debug().Msg("setting up http router...")
 
 	gin.SetMode(gin.ReleaseMode)
-	r := gin.New()
-	r.Use(gin.Recovery())
+	router := gin.New()
 
-	r.GET("/health", healthCheck(logger))
+	router.GET("/health", healthCheck(logger))
 
-	return r
+	v1public := router.Group("/v1").Use(cors.Default())
+	{
+		v1public.POST("/competitions", handleCreateCompetition(logger, db))
+	}
+
+	return router
 }
 
 func healthCheck(logger zerolog.Logger) gin.HandlerFunc {
