@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/bradley-adams/gainline/db/db"
+	"github.com/google/uuid"
 )
 
 func CreateCompetition(
@@ -11,9 +12,36 @@ func CreateCompetition(
 	q Queries,
 	params db.CreateCompetitionParams,
 ) error {
-	err := q.CreateCompetition(ctx, params)
-	if err != nil {
-		return err
-	}
-	return nil
+	return q.CreateCompetition(ctx, params)
+}
+
+func GetCompetition(
+	ctx context.Context,
+	q Queries,
+	id uuid.UUID,
+) (db.Competition, error) {
+	return q.GetCompetition(ctx, id)
+}
+
+func GetCompetitions(
+	ctx context.Context,
+	q Queries,
+) ([]db.Competition, error) {
+	return q.GetCompetitions(ctx)
+}
+
+func UpdateCompetition(
+	ctx context.Context,
+	q Queries,
+	params db.UpdateCompetitionParams,
+) error {
+	return q.UpdateCompetition(ctx, params)
+}
+
+func DeleteCompetition(
+	ctx context.Context,
+	q Queries,
+	params db.DeleteCompetitionParams,
+) error {
+	return q.DeleteCompetition(ctx, params)
 }

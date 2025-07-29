@@ -50,6 +50,27 @@ func (q *Queries) CreateCompetition(ctx context.Context, arg CreateCompetitionPa
 	return err
 }
 
+const deleteCompetition = `-- name: DeleteCompetition :exec
+UPDATE competitions
+SET
+	deleted_at = $1
+WHERE
+	id = $2
+AND
+	deleted_at IS NULL
+`
+
+type DeleteCompetitionParams struct {
+	DeletedAt sql.NullTime
+	ID        uuid.UUID
+}
+
+// Soft delete a competition
+func (q *Queries) DeleteCompetition(ctx context.Context, arg DeleteCompetitionParams) error {
+	_, err := q.db.ExecContext(ctx, deleteCompetition, arg.DeletedAt, arg.ID)
+	return err
+}
+
 const getCompetition = `-- name: GetCompetition :one
 SELECT 
 	id,
@@ -77,4 +98,68 @@ func (q *Queries) GetCompetition(ctx context.Context, id uuid.UUID) (Competition
 		&i.DeletedAt,
 	)
 	return i, err
+}
+
+const getCompetitions = `-- name: GetCompetitions :many
+SELECT
+	id,
+	name,
+	created_at,
+	updated_at,
+	deleted_at 
+FROM
+	competitions
+WHERE
+	deleted_at IS NULL
+`
+
+// Fetch all competitions, excluding soft-deleted competitions
+func (q *Queries) GetCompetitions(ctx context.Context) ([]Competition, error) {
+	rows, err := q.db.QueryContext(ctx, getCompetitions)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Competition
+	for rows.Next() {
+		var i Competition
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateCompetition = `-- name: UpdateCompetition :exec
+UPDATE competitions
+SET
+	name = $1
+WHERE
+	id = $2
+AND
+	deleted_at IS NULL
+`
+
+type UpdateCompetitionParams struct {
+	Name string
+	ID   uuid.UUID
+}
+
+// Update an existing competition by id
+func (q *Queries) UpdateCompetition(ctx context.Context, arg UpdateCompetitionParams) error {
+	_, err := q.db.ExecContext(ctx, updateCompetition, arg.Name, arg.ID)
+	return err
 }
