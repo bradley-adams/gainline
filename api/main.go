@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	_ "github.com/bradley-adams/gainline/docs"
 	_ "github.com/lib/pq"
 
 	"github.com/bradley-adams/gainline/db/db_handler"

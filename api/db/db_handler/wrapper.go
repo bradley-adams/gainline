@@ -22,8 +22,12 @@ type DB interface {
 }
 
 type Queries interface {
+	//Competition
 	CreateCompetition(ctx context.Context, arg db.CreateCompetitionParams) error
 	GetCompetition(ctx context.Context, id uuid.UUID) (db.Competition, error)
+	GetCompetitions(ctx context.Context) ([]db.Competition, error)
+	UpdateCompetition(ctx context.Context, arg db.UpdateCompetitionParams) error
+	DeleteCompetition(ctx context.Context, arg db.DeleteCompetitionParams) error
 }
 
 type DBWrapper struct {

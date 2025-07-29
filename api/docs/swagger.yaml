@@ -1,0 +1,170 @@
+definitions:
+  api.CompetitionRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  api.CompetitionResponse:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  response.ErrorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: A set of endpoints for managing gainline tasks
+  title: Gainline Api
+  version: "1.0"
+paths:
+  /competitions:
+    get:
+      operationId: get-competitions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of competitions
+          schema:
+            items:
+              $ref: '#/definitions/api.CompetitionResponse'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Retrieve all competitions
+      tags:
+      - Competitions
+    post:
+      consumes:
+      - application/json
+      operationId: create-competition
+      parameters:
+      - description: Competition details to create
+        in: body
+        name: competition
+        required: true
+        schema:
+          $ref: '#/definitions/api.CompetitionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/api.CompetitionResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Create a new competition
+      tags:
+      - Competitions
+  /competitions/{competitionID}:
+    delete:
+      operationId: delete-competition
+      parameters:
+      - description: UUID of the competition
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Successfully deleted
+          schema:
+            type: string
+        "400":
+          description: Invalid competition ID
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Delete a competition
+      tags:
+      - Competitions
+    get:
+      operationId: get-competition
+      parameters:
+      - description: UUID of the competition
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Competition found
+          schema:
+            $ref: '#/definitions/api.CompetitionResponse'
+        "400":
+          description: Invalid competition ID
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get a single competition by ID
+      tags:
+      - Competitions
+    put:
+      consumes:
+      - application/json
+      operationId: update-competition
+      parameters:
+      - description: UUID of the competition
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - description: Competition details to update
+        in: body
+        name: competition
+        required: true
+        schema:
+          $ref: '#/definitions/api.CompetitionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Competition updated
+          schema:
+            $ref: '#/definitions/api.CompetitionResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Update an existing competition
+      tags:
+      - Competitions
+swagger: "2.0"

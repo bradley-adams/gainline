@@ -42,3 +42,23 @@ FROM
 	competitions
 WHERE
 	deleted_at IS NULL;
+
+-- name: UpdateCompetition :exec
+-- Update an existing competition by id
+UPDATE competitions
+SET
+	name = @name
+WHERE
+	id = @id
+AND
+	deleted_at IS NULL;
+
+-- name: DeleteCompetition :exec
+-- Soft delete a competition
+UPDATE competitions
+SET
+	deleted_at = @deleted_at
+WHERE
+	id = @id
+AND
+	deleted_at IS NULL;	

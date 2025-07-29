@@ -1,0 +1,259 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "A set of endpoints for managing gainline tasks",
+        "title": "Gainline Api",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/competitions": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Competitions"
+                ],
+                "summary": "Retrieve all competitions",
+                "operationId": "get-competitions",
+                "responses": {
+                    "200": {
+                        "description": "List of competitions",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/api.CompetitionResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Competitions"
+                ],
+                "summary": "Create a new competition",
+                "operationId": "create-competition",
+                "parameters": [
+                    {
+                        "description": "Competition details to create",
+                        "name": "competition",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.CompetitionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/api.CompetitionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/competitions/{competitionID}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Competitions"
+                ],
+                "summary": "Get a single competition by ID",
+                "operationId": "get-competition",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UUID of the competition",
+                        "name": "competitionID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Competition found",
+                        "schema": {
+                            "$ref": "#/definitions/api.CompetitionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid competition ID",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Competitions"
+                ],
+                "summary": "Update an existing competition",
+                "operationId": "update-competition",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UUID of the competition",
+                        "name": "competitionID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Competition details to update",
+                        "name": "competition",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.CompetitionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Competition updated",
+                        "schema": {
+                            "$ref": "#/definitions/api.CompetitionResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Competitions"
+                ],
+                "summary": "Delete a competition",
+                "operationId": "delete-competition",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UUID of the competition",
+                        "name": "competitionID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successfully deleted",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid competition ID",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.CompetitionRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.CompetitionResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

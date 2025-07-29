@@ -5,11 +5,15 @@ import (
 	"github.com/rs/zerolog"
 )
 
+type ErrorResponse struct {
+	Message string `json:"message"`
+}
+
 func RespondError(ctx *gin.Context, logger zerolog.Logger, err error, statusCode int, errMessage string) {
 	logger.Error().Msg(err.Error())
 
-	ctx.JSON(statusCode, gin.H{
-		"message": errMessage,
+	ctx.JSON(statusCode, ErrorResponse{
+		Message: errMessage,
 	})
 }
 

@@ -3,6 +3,7 @@ package api
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/guregu/null/zero"
 )
 
@@ -11,7 +12,7 @@ type CompetitionRequest struct {
 }
 
 type CompetitionResponse struct {
-	ID        string    `json:"id"`
+	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
