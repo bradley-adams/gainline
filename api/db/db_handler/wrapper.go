@@ -28,6 +28,13 @@ type Queries interface {
 	GetCompetitions(ctx context.Context) ([]db.Competition, error)
 	UpdateCompetition(ctx context.Context, arg db.UpdateCompetitionParams) error
 	DeleteCompetition(ctx context.Context, arg db.DeleteCompetitionParams) error
+
+	//Season
+	CreateSeason(ctx context.Context, arg db.CreateSeasonParams) error
+	GetSeason(ctx context.Context, id uuid.UUID) (db.Season, error)
+	GetSeasons(ctx context.Context, competitionID uuid.UUID) ([]db.Season, error)
+	UpdateSeason(ctx context.Context, arg db.UpdateSeasonParams) error
+	DeleteSeason(ctx context.Context, arg db.DeleteSeasonParams) error
 }
 
 type DBWrapper struct {
@@ -71,6 +78,14 @@ func RunInTransaction(
 	}
 
 	return nil
+}
+
+func Run(
+	ctx context.Context,
+	db DB,
+	f func(q Queries) error,
+) error {
+	return f(db.New(db))
 }
 
 func handleTxError(err error, db DB, tx *sql.Tx) error {

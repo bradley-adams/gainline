@@ -9,7 +9,6 @@ import (
 	"github.com/bradley-adams/gainline/service"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/guregu/null/zero"
 	"github.com/rs/zerolog"
 )
 
@@ -34,23 +33,17 @@ func handleCreateCompetition(
 		req := &api.CompetitionRequest{}
 		err := ctx.BindJSON(req)
 		if err != nil {
-			response.RespondError(ctx, logger, err, 400, "bad request")
+			response.RespondError(ctx, logger, err, http.StatusBadRequest, "bad request")
 			return
 		}
 
 		competition, err := service.CreateCompetition(ctx, db, req)
 		if err != nil {
-			response.RespondError(ctx, logger, err, 500, "Unable to add competition")
+			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to add competition")
 			return
 		}
 
-		response.RespondSuccess(ctx, logger, http.StatusCreated, api.CompetitionResponse{
-			ID:        competition.ID,
-			Name:      competition.Name,
-			CreatedAt: competition.CreatedAt,
-			UpdatedAt: competition.UpdatedAt,
-			DeletedAt: zero.TimeFrom(competition.DeletedAt.Time),
-		})
+		response.RespondSuccess(ctx, logger, http.StatusCreated, api.ToCompetitionResponse(competition))
 	}
 }
 
@@ -67,23 +60,16 @@ func handleGetCompetitions(logger zerolog.Logger, db db_handler.DB) gin.HandlerF
 	return func(ctx *gin.Context) {
 		competitions, err := service.GetCompetitions(ctx, db)
 		if err != nil {
-			response.RespondError(ctx, logger, err, 500, "Unable to get competitions")
+			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get competitions")
 			return
 		}
 
-		competitionsResponseList := []api.CompetitionResponse{}
+		competitionResponse := make([]api.CompetitionResponse, 0, len(competitions))
 		for _, competition := range competitions {
-			response := api.CompetitionResponse{
-				ID:        competition.ID,
-				Name:      competition.Name,
-				CreatedAt: competition.CreatedAt,
-				UpdatedAt: competition.UpdatedAt,
-				DeletedAt: zero.TimeFrom(competition.DeletedAt.Time),
-			}
-			competitionsResponseList = append(competitionsResponseList, response)
+			competitionResponse = append(competitionResponse, api.ToCompetitionResponse(competition))
 		}
 
-		response.RespondSuccess(ctx, logger, http.StatusOK, competitionsResponseList)
+		response.RespondSuccess(ctx, logger, http.StatusOK, competitionResponse)
 	}
 }
 
@@ -100,9 +86,7 @@ func handleGetCompetitions(logger zerolog.Logger, db db_handler.DB) gin.HandlerF
 //	@Router		/competitions/{competitionID} [get]
 func handleGetCompetition(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		competitionIDParam := ctx.Param("competitionID")
-
-		competitionID, err := uuid.Parse(competitionIDParam)
+		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid competition ID format")
 			return
@@ -110,17 +94,11 @@ func handleGetCompetition(logger zerolog.Logger, db db_handler.DB) gin.HandlerFu
 
 		competition, err := service.GetCompetition(ctx, db, competitionID)
 		if err != nil {
-			response.RespondError(ctx, logger, err, 500, "Unable to get competition")
+			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get competition")
 			return
 		}
 
-		response.RespondSuccess(ctx, logger, http.StatusOK, api.CompetitionResponse{
-			ID:        competition.ID,
-			Name:      competition.Name,
-			CreatedAt: competition.CreatedAt,
-			UpdatedAt: competition.UpdatedAt,
-			DeletedAt: zero.TimeFrom(competition.DeletedAt.Time),
-		})
+		response.RespondSuccess(ctx, logger, http.StatusOK, api.ToCompetitionResponse(competition))
 	}
 }
 
@@ -142,13 +120,11 @@ func handleUpdateCompetition(logger zerolog.Logger, db db_handler.DB) gin.Handle
 		req := &api.CompetitionRequest{}
 		err := ctx.BindJSON(req)
 		if err != nil {
-			response.RespondError(ctx, logger, err, 400, "bad request")
+			response.RespondError(ctx, logger, err, http.StatusBadRequest, "bad request")
 			return
 		}
 
-		competitionIDParam := ctx.Param("competitionID")
-
-		competitionID, err := uuid.Parse(competitionIDParam)
+		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid competition ID format")
 			return
@@ -156,17 +132,11 @@ func handleUpdateCompetition(logger zerolog.Logger, db db_handler.DB) gin.Handle
 
 		competition, err := service.UpdateCompetition(ctx, db, competitionID, req)
 		if err != nil {
-			response.RespondError(ctx, logger, err, 500, "Unable to update competition")
+			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to update competition")
 			return
 		}
 
-		response.RespondSuccess(ctx, logger, http.StatusOK, api.CompetitionResponse{
-			ID:        competition.ID,
-			Name:      competition.Name,
-			CreatedAt: competition.CreatedAt,
-			UpdatedAt: competition.UpdatedAt,
-			DeletedAt: zero.TimeFrom(competition.DeletedAt.Time),
-		})
+		response.RespondSuccess(ctx, logger, http.StatusOK, api.ToCompetitionResponse(competition))
 	}
 }
 
@@ -183,9 +153,7 @@ func handleUpdateCompetition(logger zerolog.Logger, db db_handler.DB) gin.Handle
 //	@Router		/competitions/{competitionID} [delete]
 func handleDeleteCompetition(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		competitionIDParam := ctx.Param("competitionID")
-
-		competitionID, err := uuid.Parse(competitionIDParam)
+		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid competition ID format")
 			return
@@ -193,7 +161,7 @@ func handleDeleteCompetition(logger zerolog.Logger, db db_handler.DB) gin.Handle
 
 		err = service.DeleteCompetition(ctx, db, competitionID)
 		if err != nil {
-			response.RespondError(ctx, logger, err, 500, "Unable to delete competition")
+			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to delete competition")
 			return
 		}
 

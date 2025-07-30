@@ -62,3 +62,86 @@ WHERE
 	id = @id
 AND
 	deleted_at IS NULL;	
+
+-- name: CreateSeason :exec
+-- Insert a new season into the database
+INSERT INTO seasons (
+	id,
+	competition_id,
+	start_date,
+	end_date,
+	rounds,
+	created_at,
+	updated_at,
+	deleted_at
+)
+VALUES (
+	@id,
+	@competition_id,
+	@start_date,
+	@end_date,
+	@rounds,
+	@created_at,
+	@updated_at,
+	@deleted_at
+);
+
+-- name: GetSeason :one
+-- Fetch a season by id, excluding soft-deleted seasons
+SELECT
+	id,
+	competition_id,
+	start_date,
+	end_date,
+	rounds,
+	created_at,
+	updated_at,
+	deleted_at
+FROM
+	seasons
+WHERE
+	id = @id
+AND
+	deleted_at IS NULL;
+
+-- name: GetSeasons :many
+-- Fetch all seasons for a competition, excluding soft-deleted seasons
+SELECT
+	id,
+	competition_id,
+	start_date,
+	end_date,
+	rounds,
+	created_at,
+	updated_at,
+	deleted_at
+FROM
+	seasons
+WHERE
+	competition_id = @competition_id
+AND
+	deleted_at IS NULL;
+
+-- name: UpdateSeason :exec
+-- Update an existing season by id
+UPDATE seasons
+SET
+	competition_id = @competition_id,
+	start_date = @start_date,
+	end_date = @end_date,
+	rounds = @rounds,
+	updated_at = @updated_at
+WHERE
+	id = @id
+AND	
+	deleted_at IS NULL;
+
+-- name: DeleteSeason :exec
+-- Soft delete a season
+UPDATE seasons
+SET
+	deleted_at = @deleted_at
+WHERE
+	id = @id
+AND
+	deleted_at IS NULL;

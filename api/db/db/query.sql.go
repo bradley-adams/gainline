@@ -50,6 +50,55 @@ func (q *Queries) CreateCompetition(ctx context.Context, arg CreateCompetitionPa
 	return err
 }
 
+const createSeason = `-- name: CreateSeason :exec
+INSERT INTO seasons (
+	id,
+	competition_id,
+	start_date,
+	end_date,
+	rounds,
+	created_at,
+	updated_at,
+	deleted_at
+)
+VALUES (
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7,
+	$8
+)
+`
+
+type CreateSeasonParams struct {
+	ID            uuid.UUID
+	CompetitionID uuid.UUID
+	StartDate     time.Time
+	EndDate       time.Time
+	Rounds        int32
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     sql.NullTime
+}
+
+// Insert a new season into the database
+func (q *Queries) CreateSeason(ctx context.Context, arg CreateSeasonParams) error {
+	_, err := q.db.ExecContext(ctx, createSeason,
+		arg.ID,
+		arg.CompetitionID,
+		arg.StartDate,
+		arg.EndDate,
+		arg.Rounds,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+		arg.DeletedAt,
+	)
+	return err
+}
+
 const deleteCompetition = `-- name: DeleteCompetition :exec
 UPDATE competitions
 SET
@@ -68,6 +117,27 @@ type DeleteCompetitionParams struct {
 // Soft delete a competition
 func (q *Queries) DeleteCompetition(ctx context.Context, arg DeleteCompetitionParams) error {
 	_, err := q.db.ExecContext(ctx, deleteCompetition, arg.DeletedAt, arg.ID)
+	return err
+}
+
+const deleteSeason = `-- name: DeleteSeason :exec
+UPDATE seasons
+SET
+	deleted_at = $1
+WHERE
+	id = $2
+AND
+	deleted_at IS NULL
+`
+
+type DeleteSeasonParams struct {
+	DeletedAt sql.NullTime
+	ID        uuid.UUID
+}
+
+// Soft delete a season
+func (q *Queries) DeleteSeason(ctx context.Context, arg DeleteSeasonParams) error {
+	_, err := q.db.ExecContext(ctx, deleteSeason, arg.DeletedAt, arg.ID)
 	return err
 }
 
@@ -143,6 +213,92 @@ func (q *Queries) GetCompetitions(ctx context.Context) ([]Competition, error) {
 	return items, nil
 }
 
+const getSeason = `-- name: GetSeason :one
+SELECT
+	id,
+	competition_id,
+	start_date,
+	end_date,
+	rounds,
+	created_at,
+	updated_at,
+	deleted_at
+FROM
+	seasons
+WHERE
+	id = $1
+AND
+	deleted_at IS NULL
+`
+
+// Fetch a season by id, excluding soft-deleted seasons
+func (q *Queries) GetSeason(ctx context.Context, id uuid.UUID) (Season, error) {
+	row := q.db.QueryRowContext(ctx, getSeason, id)
+	var i Season
+	err := row.Scan(
+		&i.ID,
+		&i.CompetitionID,
+		&i.StartDate,
+		&i.EndDate,
+		&i.Rounds,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const getSeasons = `-- name: GetSeasons :many
+SELECT
+	id,
+	competition_id,
+	start_date,
+	end_date,
+	rounds,
+	created_at,
+	updated_at,
+	deleted_at
+FROM
+	seasons
+WHERE
+	competition_id = $1
+AND
+	deleted_at IS NULL
+`
+
+// Fetch all seasons for a competition, excluding soft-deleted seasons
+func (q *Queries) GetSeasons(ctx context.Context, competitionID uuid.UUID) ([]Season, error) {
+	rows, err := q.db.QueryContext(ctx, getSeasons, competitionID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Season
+	for rows.Next() {
+		var i Season
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompetitionID,
+			&i.StartDate,
+			&i.EndDate,
+			&i.Rounds,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateCompetition = `-- name: UpdateCompetition :exec
 UPDATE competitions
 SET
@@ -161,5 +317,41 @@ type UpdateCompetitionParams struct {
 // Update an existing competition by id
 func (q *Queries) UpdateCompetition(ctx context.Context, arg UpdateCompetitionParams) error {
 	_, err := q.db.ExecContext(ctx, updateCompetition, arg.Name, arg.ID)
+	return err
+}
+
+const updateSeason = `-- name: UpdateSeason :exec
+UPDATE seasons
+SET
+	competition_id = $1,
+	start_date = $2,
+	end_date = $3,
+	rounds = $4,
+	updated_at = $5
+WHERE
+	id = $6
+AND	
+	deleted_at IS NULL
+`
+
+type UpdateSeasonParams struct {
+	CompetitionID uuid.UUID
+	StartDate     time.Time
+	EndDate       time.Time
+	Rounds        int32
+	UpdatedAt     time.Time
+	ID            uuid.UUID
+}
+
+// Update an existing season by id
+func (q *Queries) UpdateSeason(ctx context.Context, arg UpdateSeasonParams) error {
+	_, err := q.db.ExecContext(ctx, updateSeason,
+		arg.CompetitionID,
+		arg.StartDate,
+		arg.EndDate,
+		arg.Rounds,
+		arg.UpdatedAt,
+		arg.ID,
+	)
 	return err
 }
