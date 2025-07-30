@@ -24,3 +24,7 @@ swag init -g http/handlers/http.go
 ```
 swag fmt
 ```
+
+```
+mockgen -destination=/home/bradley/Personal/gainline/api/db/db_handler/mock/db.go -package=mock_db github.com/bradley-adams/gainline/db/db_handler DB,Queries
+```

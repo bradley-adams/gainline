@@ -94,7 +94,8 @@ func GetSeason(
 	var season db.Season
 
 	err := db_handler.Run(ctx, dbHandler, func(queries db_handler.Queries) error {
-		season, err := queries.GetSeason(ctx, seasonID)
+		var err error
+		season, err = queries.GetSeason(ctx, seasonID)
 		if err != nil {
 			return errors.Wrap(err, "unable to get season")
 		}
