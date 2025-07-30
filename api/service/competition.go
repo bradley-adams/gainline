@@ -20,9 +20,9 @@ func CreateCompetition(
 	var competition db.Competition
 
 	err := db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
-		var txErr error
-		competition, txErr = createCompetition(ctx, queries, req)
-		return txErr
+		var err error
+		competition, err = createCompetition(ctx, queries, req)
+		return err
 	})
 	if err != nil {
 		return db.Competition{}, err
@@ -36,8 +36,6 @@ func createCompetition(
 	queries db_handler.Queries,
 	req *api.CompetitionRequest,
 ) (db.Competition, error) {
-	var competition db.Competition
-
 	now := time.Now()
 	createCompetitionParams := db.CreateCompetitionParams{
 		ID:        uuid.New(),
@@ -52,7 +50,7 @@ func createCompetition(
 		return db.Competition{}, errors.Wrap(err, "unable to create new competition")
 	}
 
-	competition, err = queries.GetCompetition(ctx, createCompetitionParams.ID)
+	competition, err := queries.GetCompetition(ctx, createCompetitionParams.ID)
 	if err != nil {
 		return db.Competition{}, errors.Wrap(err, "unable to get new competition")
 	}
@@ -66,25 +64,16 @@ func GetCompetitions(
 ) ([]db.Competition, error) {
 	var competitions []db.Competition
 
-	err := db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
-		var txErr error
-		competitions, txErr = getCompetitions(ctx, queries)
-		return txErr
+	err := db_handler.Run(ctx, dbHandler, func(queries db_handler.Queries) error {
+		var err error
+		competitions, err = queries.GetCompetitions(ctx)
+		if err != nil {
+			return errors.Wrap(err, "unable to get competitions")
+		}
+		return nil
 	})
 	if err != nil {
-		return []db.Competition{}, err
-	}
-
-	return competitions, nil
-}
-
-func getCompetitions(
-	ctx context.Context,
-	queries db_handler.Queries,
-) ([]db.Competition, error) {
-	competitions, err := queries.GetCompetitions(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to get competitions")
+		return nil, err
 	}
 
 	return competitions, nil
@@ -97,29 +86,19 @@ func GetCompetition(
 ) (db.Competition, error) {
 	var competition db.Competition
 
-	err := db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
-		var txErr error
-		competition, txErr = getCompetition(ctx, queries, competitionID)
-		return txErr
+	err := db_handler.Run(ctx, dbHandler, func(queries db_handler.Queries) error {
+		var err error
+		competition, err = queries.GetCompetition(ctx, competitionID)
+		if err != nil {
+			return errors.Wrap(err, "unable to get competition")
+		}
+		return nil
 	})
 	if err != nil {
 		return db.Competition{}, err
 	}
 
 	return competition, nil
-}
-
-func getCompetition(
-	ctx context.Context,
-	queries db_handler.Queries,
-	competitionID uuid.UUID,
-) (db.Competition, error) {
-	competitions, err := queries.GetCompetition(ctx, competitionID)
-	if err != nil {
-		return db.Competition{}, errors.Wrap(err, "unable to get competition")
-	}
-
-	return competitions, nil
 }
 
 func UpdateCompetition(
@@ -148,8 +127,6 @@ func updateCompetition(
 	competitionID uuid.UUID,
 	req *api.CompetitionRequest,
 ) (db.Competition, error) {
-	var competition db.Competition
-
 	updateCompetitionParams := db.UpdateCompetitionParams{
 		Name: req.Name,
 		ID:   competitionID,
@@ -160,7 +137,7 @@ func updateCompetition(
 		return db.Competition{}, errors.Wrap(err, "unable to update competition")
 	}
 
-	competition, err = queries.GetCompetition(ctx, competitionID)
+	competition, err := queries.GetCompetition(ctx, competitionID)
 	if err != nil {
 		return db.Competition{}, errors.Wrap(err, "unable to get updated competition")
 	}
@@ -173,15 +150,9 @@ func DeleteCompetition(
 	dbHandler db_handler.DB,
 	competitionID uuid.UUID,
 ) error {
-	err := db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
-		txErr := deleteCompetition(ctx, queries, competitionID)
-		return txErr
+	return db_handler.RunInTransaction(ctx, dbHandler, func(q db_handler.Queries) error {
+		return deleteCompetition(ctx, q, competitionID)
 	})
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func deleteCompetition(

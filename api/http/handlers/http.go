@@ -28,11 +28,19 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger) *gin.Engine {
 
 	v1public := router.Group("/v1").Use(cors.Default())
 	{
+		//competitions
 		v1public.POST("/competitions", handleCreateCompetition(logger, db))
 		v1public.GET("/competitions", handleGetCompetitions(logger, db))
 		v1public.GET("/competitions/:competitionID", handleGetCompetition(logger, db))
 		v1public.PUT("/competitions/:competitionID", handleUpdateCompetition(logger, db))
 		v1public.DELETE("/competitions/:competitionID", handleDeleteCompetition(logger, db))
+
+		//seasons
+		v1public.POST("/competitions/:competitionID/seasons", handleCreateSeason(logger, db))
+		v1public.GET("/competitions/:competitionID/seasons", handleGetSeasons(logger, db))
+		v1public.GET("/competitions/:competitionID/seasons/:seasonID", handleGetSeason(logger, db))
+		v1public.PUT("/competitions/:competitionID/seasons/:seasonID", handleUpdateSeason(logger, db))
+		v1public.DELETE("/competitions/:competitionID/seasons/:seasonID", handleDeleteSeason(logger, db))
 	}
 
 	return router

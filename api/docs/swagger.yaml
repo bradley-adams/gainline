@@ -17,6 +17,34 @@ definitions:
       updated_at:
         type: string
     type: object
+  api.SeasonRequest:
+    properties:
+      end_date:
+        type: string
+      rounds:
+        type: integer
+      start_date:
+        type: string
+    type: object
+  api.SeasonResponse:
+    properties:
+      competition_id:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      end_date:
+        type: string
+      id:
+        type: string
+      rounds:
+        type: integer
+      start_date:
+        type: string
+      updated_at:
+        type: string
+    type: object
   response.ErrorResponse:
     properties:
       message:
@@ -167,4 +195,163 @@ paths:
       summary: Update an existing competition
       tags:
       - Competitions
+  /competitions/{competitionID}/seasons:
+    get:
+      operationId: get-seasons
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of seasons
+          schema:
+            items:
+              $ref: '#/definitions/api.SeasonResponse'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Retrieve all seasons for a competition
+      tags:
+      - Seasons
+    post:
+      consumes:
+      - application/json
+      operationId: create-season
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - description: Season details to create
+        in: body
+        name: season
+        required: true
+        schema:
+          $ref: '#/definitions/api.SeasonRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/api.SeasonResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Create a new season
+      tags:
+      - Seasons
+  /competitions/{competitionID}/seasons/{seasonID}:
+    delete:
+      operationId: delete-season
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - description: Season ID
+        in: path
+        name: seasonID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: "No Content\"\t\"Season deleted successfully"
+        "400":
+          description: Invalid season ID
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Delete a season by ID
+      tags:
+      - Seasons
+    get:
+      operationId: get-season
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - description: Season ID
+        in: path
+        name: seasonID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Season found
+          schema:
+            $ref: '#/definitions/api.SeasonResponse'
+        "400":
+          description: Invalid season ID
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get a single season by ID
+      tags:
+      - Seasons
+    put:
+      consumes:
+      - application/json
+      operationId: update-season
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - description: Season ID
+        in: path
+        name: seasonID
+        required: true
+        type: string
+      - description: Season details to update
+        in: body
+        name: season
+        required: true
+        schema:
+          $ref: '#/definitions/api.SeasonRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Season updated
+          schema:
+            $ref: '#/definitions/api.SeasonResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Update an existing season
+      tags:
+      - Seasons
 swagger: "2.0"
