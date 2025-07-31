@@ -99,6 +99,55 @@ func (q *Queries) CreateSeason(ctx context.Context, arg CreateSeasonParams) erro
 	return err
 }
 
+const createTeam = `-- name: CreateTeam :exec
+INSERT INTO teams (
+	id,
+	competition_id,
+	name,
+	abbreviation,
+	location,
+	created_at,
+	updated_at,
+	deleted_at
+)
+VALUES (
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7,
+	$8
+)
+`
+
+type CreateTeamParams struct {
+	ID            uuid.UUID
+	CompetitionID uuid.UUID
+	Name          string
+	Abbreviation  string
+	Location      string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     sql.NullTime
+}
+
+// Insert a new team into the database
+func (q *Queries) CreateTeam(ctx context.Context, arg CreateTeamParams) error {
+	_, err := q.db.ExecContext(ctx, createTeam,
+		arg.ID,
+		arg.CompetitionID,
+		arg.Name,
+		arg.Abbreviation,
+		arg.Location,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+		arg.DeletedAt,
+	)
+	return err
+}
+
 const deleteCompetition = `-- name: DeleteCompetition :exec
 UPDATE competitions
 SET
@@ -138,6 +187,27 @@ type DeleteSeasonParams struct {
 // Soft delete a season
 func (q *Queries) DeleteSeason(ctx context.Context, arg DeleteSeasonParams) error {
 	_, err := q.db.ExecContext(ctx, deleteSeason, arg.DeletedAt, arg.ID)
+	return err
+}
+
+const deleteTeam = `-- name: DeleteTeam :exec
+UPDATE teams
+SET
+	deleted_at = $1
+WHERE
+	id = $2
+AND
+	deleted_at IS NULL
+`
+
+type DeleteTeamParams struct {
+	DeletedAt sql.NullTime
+	ID        uuid.UUID
+}
+
+// Soft delete a team
+func (q *Queries) DeleteTeam(ctx context.Context, arg DeleteTeamParams) error {
+	_, err := q.db.ExecContext(ctx, deleteTeam, arg.DeletedAt, arg.ID)
 	return err
 }
 
@@ -299,6 +369,92 @@ func (q *Queries) GetSeasons(ctx context.Context, competitionID uuid.UUID) ([]Se
 	return items, nil
 }
 
+const getTeam = `-- name: GetTeam :one
+SELECT
+	id,
+	competition_id,
+	name,
+	abbreviation,
+	location,
+	created_at,
+	updated_at,
+	deleted_at
+FROM
+	teams
+WHERE
+	id = $1
+AND
+	deleted_at IS NULL
+`
+
+// Fetch a team by id, excluding soft-deleted teams
+func (q *Queries) GetTeam(ctx context.Context, id uuid.UUID) (Team, error) {
+	row := q.db.QueryRowContext(ctx, getTeam, id)
+	var i Team
+	err := row.Scan(
+		&i.ID,
+		&i.CompetitionID,
+		&i.Name,
+		&i.Abbreviation,
+		&i.Location,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const getTeams = `-- name: GetTeams :many
+SELECT
+	id,
+	competition_id,
+	name,
+	abbreviation,
+	location,
+	created_at,
+	updated_at,
+	deleted_at
+FROM
+	teams
+WHERE
+	competition_id = $1
+AND
+	deleted_at IS NULL
+`
+
+// Fetch all teams for a competition, excluding soft-deleted teams
+func (q *Queries) GetTeams(ctx context.Context, competitionID uuid.UUID) ([]Team, error) {
+	rows, err := q.db.QueryContext(ctx, getTeams, competitionID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Team
+	for rows.Next() {
+		var i Team
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompetitionID,
+			&i.Name,
+			&i.Abbreviation,
+			&i.Location,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateCompetition = `-- name: UpdateCompetition :exec
 UPDATE competitions
 SET
@@ -350,6 +506,42 @@ func (q *Queries) UpdateSeason(ctx context.Context, arg UpdateSeasonParams) erro
 		arg.StartDate,
 		arg.EndDate,
 		arg.Rounds,
+		arg.UpdatedAt,
+		arg.ID,
+	)
+	return err
+}
+
+const updateTeam = `-- name: UpdateTeam :exec
+UPDATE teams
+SET
+	competition_id = $1,
+	name = $2,
+	abbreviation = $3,
+	location = $4,
+	updated_at = $5
+WHERE
+	id = $6
+AND
+	deleted_at IS NULL
+`
+
+type UpdateTeamParams struct {
+	CompetitionID uuid.UUID
+	Name          string
+	Abbreviation  string
+	Location      string
+	UpdatedAt     time.Time
+	ID            uuid.UUID
+}
+
+// Update an existing team by id
+func (q *Queries) UpdateTeam(ctx context.Context, arg UpdateTeamParams) error {
+	_, err := q.db.ExecContext(ctx, updateTeam,
+		arg.CompetitionID,
+		arg.Name,
+		arg.Abbreviation,
+		arg.Location,
 		arg.UpdatedAt,
 		arg.ID,
 	)
