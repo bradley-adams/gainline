@@ -20,12 +20,14 @@ CREATE TABLE seasons (
 
 CREATE TABLE teams (
     id UUID PRIMARY KEY,
+    competition_id UUID NOT NULL,
     name TEXT NOT NULL,
     abbreviation TEXT NOT NULL,
     location TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    deleted_at TIMESTAMP WITH TIME ZONE
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    CONSTRAINT fk_seasons_competitions FOREIGN KEY (competition_id) REFERENCES competitions(id) ON DELETE CASCADE
 );
 
 CREATE TYPE game_status AS ENUM ('scheduled', 'playing', 'finished');

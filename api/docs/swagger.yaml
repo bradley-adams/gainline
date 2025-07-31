@@ -45,6 +45,32 @@ definitions:
       updated_at:
         type: string
     type: object
+  api.TeamRequest:
+    properties:
+      abbreviation:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+    type: object
+  api.TeamResponse:
+    properties:
+      abbreviation:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
   response.ErrorResponse:
     properties:
       message:
@@ -354,4 +380,163 @@ paths:
       summary: Update an existing season
       tags:
       - Seasons
+  /competitions/{competitionID}/teams:
+    get:
+      operationId: get-teams
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of teams
+          schema:
+            items:
+              $ref: '#/definitions/api.TeamResponse'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Retrieve all teams for a competition
+      tags:
+      - Teams
+    post:
+      consumes:
+      - application/json
+      operationId: create-team
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - description: Team details to create
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/api.TeamRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/api.TeamResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Create a new team
+      tags:
+      - Teams
+  /competitions/{competitionID}/teams/{teamID}:
+    delete:
+      operationId: delete-team
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - description: Team ID
+        in: path
+        name: teamID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: "No Content\"\t\"Team deleted successfully"
+        "400":
+          description: Invalid team ID
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Delete a team by ID
+      tags:
+      - Teams
+    get:
+      operationId: get-team
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - description: Team ID
+        in: path
+        name: teamID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Team found
+          schema:
+            $ref: '#/definitions/api.TeamResponse'
+        "400":
+          description: Invalid team ID
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get a single team by ID
+      tags:
+      - Teams
+    put:
+      consumes:
+      - application/json
+      operationId: update-team
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - description: Team ID
+        in: path
+        name: teamID
+        required: true
+        type: string
+      - description: Team details to update
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/api.TeamRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Team updated
+          schema:
+            $ref: '#/definitions/api.TeamResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Update an existing team
+      tags:
+      - Teams
 swagger: "2.0"
