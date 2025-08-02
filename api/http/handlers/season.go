@@ -49,7 +49,7 @@ func handleCreateSeason(
 			return
 		}
 
-		response.RespondSuccess(ctx, logger, http.StatusCreated, api.ToSeasonResponse(season))
+		response.RespondSuccess(ctx, logger, http.StatusCreated, service.ToSeasonResponse(season))
 	}
 }
 
@@ -79,7 +79,7 @@ func handleGetSeasons(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 
 		seasonsResponse := make([]api.SeasonResponse, 0, len(seasons))
 		for _, season := range seasons {
-			seasonsResponse = append(seasonsResponse, api.ToSeasonResponse(season))
+			seasonsResponse = append(seasonsResponse, service.ToSeasonResponse(season))
 		}
 
 		response.RespondSuccess(ctx, logger, http.StatusOK, seasonsResponse)
@@ -118,7 +118,7 @@ func handleGetSeason(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 			return
 		}
 
-		response.RespondSuccess(ctx, logger, http.StatusOK, api.ToSeasonResponse(season))
+		response.RespondSuccess(ctx, logger, http.StatusOK, service.ToSeasonResponse(season))
 	}
 }
 
@@ -163,7 +163,7 @@ func handleUpdateSeason(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc
 			return
 		}
 
-		response.RespondSuccess(ctx, logger, http.StatusOK, api.ToSeasonResponse(season))
+		response.RespondSuccess(ctx, logger, http.StatusOK, service.ToSeasonResponse(season))
 	}
 }
 

@@ -697,6 +697,12 @@ const docTemplate = `{
         "api.SeasonRequest": {
             "type": "object",
             "properties": {
+                "TeamIDs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "end_date": {
                     "type": "string"
                 },
@@ -731,6 +737,12 @@ const docTemplate = `{
                 },
                 "start_date": {
                     "type": "string"
+                },
+                "teams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.TeamResponse"
+                    }
                 },
                 "updated_at": {
                     "type": "string"

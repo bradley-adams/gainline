@@ -90,6 +90,15 @@ type Season struct {
 	DeletedAt     sql.NullTime
 }
 
+type SeasonTeam struct {
+	ID        uuid.UUID
+	SeasonID  uuid.UUID
+	TeamID    uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt sql.NullTime
+}
+
 type Team struct {
 	ID           uuid.UUID
 	Name         string

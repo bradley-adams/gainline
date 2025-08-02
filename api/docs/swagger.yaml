@@ -19,6 +19,10 @@ definitions:
     type: object
   api.SeasonRequest:
     properties:
+      TeamIDs:
+        items:
+          type: string
+        type: array
       end_date:
         type: string
       rounds:
@@ -42,6 +46,10 @@ definitions:
         type: integer
       start_date:
         type: string
+      teams:
+        items:
+          $ref: '#/definitions/api.TeamResponse'
+        type: array
       updated_at:
         type: string
     type: object

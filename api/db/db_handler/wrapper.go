@@ -42,6 +42,11 @@ type Queries interface {
 	GetTeams(ctx context.Context) ([]db.Team, error)
 	UpdateTeam(ctx context.Context, arg db.UpdateTeamParams) error
 	DeleteTeam(ctx context.Context, arg db.DeleteTeamParams) error
+
+	//SeasonTeams
+	CreateSeasonTeams(ctx context.Context, arg db.CreateSeasonTeamsParams) error
+	GetSeasonTeams(ctx context.Context, seasonID uuid.UUID) ([]db.GetSeasonTeamsRow, error)
+	DeleteSeasonTeam(ctx context.Context, arg db.DeleteSeasonTeamParams) error
 }
 
 type DBWrapper struct {

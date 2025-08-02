@@ -124,3 +124,27 @@ func DeleteTeam(
 ) error {
 	return q.DeleteTeam(ctx, params)
 }
+
+func CreateSeasonTeams(
+	ctx context.Context,
+	q Queries,
+	params db.CreateSeasonTeamsParams,
+) error {
+	return q.CreateSeasonTeams(ctx, params)
+}
+
+func GetSeasonTeams(
+	ctx context.Context,
+	q Queries,
+	seasonID uuid.UUID,
+) ([]db.GetSeasonTeamsRow, error) {
+	return q.GetSeasonTeams(ctx, seasonID)
+}
+
+func DeleteSeasonTeam(
+	ctx context.Context,
+	q Queries,
+	params db.DeleteSeasonTeamParams,
+) error {
+	return q.DeleteSeasonTeam(ctx, params)
+}
