@@ -380,15 +380,9 @@ paths:
       summary: Update an existing season
       tags:
       - Seasons
-  /competitions/{competitionID}/teams:
+  /teams:
     get:
       operationId: get-teams
-      parameters:
-      - description: Competition ID
-        in: path
-        name: competitionID
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -402,7 +396,7 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/response.ErrorResponse'
-      summary: Retrieve all teams for a competition
+      summary: Retrieve all teams
       tags:
       - Teams
     post:
@@ -410,11 +404,6 @@ paths:
       - application/json
       operationId: create-team
       parameters:
-      - description: Competition ID
-        in: path
-        name: competitionID
-        required: true
-        type: string
       - description: Team details to create
         in: body
         name: team
@@ -439,15 +428,10 @@ paths:
       summary: Create a new team
       tags:
       - Teams
-  /competitions/{competitionID}/teams/{teamID}:
+  /teams/{teamID}:
     delete:
       operationId: delete-team
       parameters:
-      - description: Competition ID
-        in: path
-        name: competitionID
-        required: true
-        type: string
       - description: Team ID
         in: path
         name: teamID
@@ -472,11 +456,6 @@ paths:
     get:
       operationId: get-team
       parameters:
-      - description: Competition ID
-        in: path
-        name: competitionID
-        required: true
-        type: string
       - description: Team ID
         in: path
         name: teamID
@@ -505,11 +484,6 @@ paths:
       - application/json
       operationId: update-team
       parameters:
-      - description: Competition ID
-        in: path
-        name: competitionID
-        required: true
-        type: string
       - description: Team ID
         in: path
         name: teamID

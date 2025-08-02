@@ -39,7 +39,7 @@ type Queries interface {
 	//Team
 	CreateTeam(ctx context.Context, arg db.CreateTeamParams) error
 	GetTeam(ctx context.Context, id uuid.UUID) (db.Team, error)
-	GetTeams(ctx context.Context, competitionID uuid.UUID) ([]db.Team, error)
+	GetTeams(ctx context.Context) ([]db.Team, error)
 	UpdateTeam(ctx context.Context, arg db.UpdateTeamParams) error
 	DeleteTeam(ctx context.Context, arg db.DeleteTeamParams) error
 }

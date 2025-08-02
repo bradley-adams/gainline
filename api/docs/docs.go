@@ -463,7 +463,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/competitions/{competitionID}/teams": {
+        "/teams": {
             "get": {
                 "produces": [
                     "application/json"
@@ -471,17 +471,8 @@ const docTemplate = `{
                 "tags": [
                     "Teams"
                 ],
-                "summary": "Retrieve all teams for a competition",
+                "summary": "Retrieve all teams",
                 "operationId": "get-teams",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Competition ID",
-                        "name": "competitionID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "List of teams",
@@ -514,13 +505,6 @@ const docTemplate = `{
                 "operationId": "create-team",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Competition ID",
-                        "name": "competitionID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
                         "description": "Team details to create",
                         "name": "team",
                         "in": "body",
@@ -552,7 +536,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/competitions/{competitionID}/teams/{teamID}": {
+        "/teams/{teamID}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -563,13 +547,6 @@ const docTemplate = `{
                 "summary": "Get a single team by ID",
                 "operationId": "get-team",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Competition ID",
-                        "name": "competitionID",
-                        "in": "path",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "Team ID",
@@ -612,13 +589,6 @@ const docTemplate = `{
                 "summary": "Update an existing team",
                 "operationId": "update-team",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Competition ID",
-                        "name": "competitionID",
-                        "in": "path",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "Team ID",
@@ -667,13 +637,6 @@ const docTemplate = `{
                 "summary": "Delete a team by ID",
                 "operationId": "delete-team",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Competition ID",
-                        "name": "competitionID",
-                        "in": "path",
-                        "required": true
-                    },
                     {
                         "type": "string",
                         "description": "Team ID",

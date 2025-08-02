@@ -105,9 +105,8 @@ func GetTeam(
 func GetTeams(
 	ctx context.Context,
 	q Queries,
-	competitionID uuid.UUID,
 ) ([]db.Team, error) {
-	return q.GetTeams(ctx, competitionID)
+	return q.GetTeams(ctx)
 }
 
 func UpdateTeam(
