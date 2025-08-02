@@ -28,6 +28,19 @@ CREATE TABLE teams (
     deleted_at TIMESTAMP WITH TIME ZONE
 );
 
+CREATE TABLE season_teams (
+    id UUID PRIMARY KEY,
+    season_id UUID NOT NULL,
+    team_id UUID NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    CONSTRAINT fk_season_teams_season FOREIGN KEY (season_id) REFERENCES seasons(id) ON DELETE CASCADE,
+    CONSTRAINT fk_season_teams_team FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE CASCADE,
+    UNIQUE (season_id, team_id)
+);
+
+
 CREATE TYPE game_status AS ENUM ('scheduled', 'playing', 'finished');
 
 CREATE TABLE games (

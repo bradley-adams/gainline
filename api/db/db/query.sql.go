@@ -99,6 +99,47 @@ func (q *Queries) CreateSeason(ctx context.Context, arg CreateSeasonParams) erro
 	return err
 }
 
+const createSeasonTeams = `-- name: CreateSeasonTeams :exec
+INSERT INTO season_teams (
+  id,
+  team_id,
+  season_id,
+  created_at,
+  updated_at,
+  deleted_at
+)
+VALUES (
+  $1,
+  $2,
+  $3,
+  $4,
+  $5,
+  $6
+)
+`
+
+type CreateSeasonTeamsParams struct {
+	ID        uuid.UUID
+	TeamID    uuid.UUID
+	SeasonID  uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt sql.NullTime
+}
+
+// Insert a new season_teams relationship
+func (q *Queries) CreateSeasonTeams(ctx context.Context, arg CreateSeasonTeamsParams) error {
+	_, err := q.db.ExecContext(ctx, createSeasonTeams,
+		arg.ID,
+		arg.TeamID,
+		arg.SeasonID,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+		arg.DeletedAt,
+	)
+	return err
+}
+
 const createTeam = `-- name: CreateTeam :exec
 INSERT INTO teams (
 	id,
@@ -183,6 +224,27 @@ type DeleteSeasonParams struct {
 // Soft delete a season
 func (q *Queries) DeleteSeason(ctx context.Context, arg DeleteSeasonParams) error {
 	_, err := q.db.ExecContext(ctx, deleteSeason, arg.DeletedAt, arg.ID)
+	return err
+}
+
+const deleteSeasonTeam = `-- name: DeleteSeasonTeam :exec
+UPDATE season_teams
+SET
+  deleted_at = $1
+WHERE
+  id = $2
+AND
+  deleted_at IS NULL
+`
+
+type DeleteSeasonTeamParams struct {
+	DeletedAt sql.NullTime
+	ID        uuid.UUID
+}
+
+// Soft delete a team_season record
+func (q *Queries) DeleteSeasonTeam(ctx context.Context, arg DeleteSeasonTeamParams) error {
+	_, err := q.db.ExecContext(ctx, deleteSeasonTeam, arg.DeletedAt, arg.ID)
 	return err
 }
 
@@ -312,6 +374,62 @@ func (q *Queries) GetSeason(ctx context.Context, id uuid.UUID) (Season, error) {
 		&i.DeletedAt,
 	)
 	return i, err
+}
+
+const getSeasonTeams = `-- name: GetSeasonTeams :many
+SELECT
+  id,
+  team_id,
+  season_id,
+  created_at,
+  updated_at,
+  deleted_at
+FROM
+  season_teams
+WHERE
+  season_id = $1
+AND
+  deleted_at IS NULL
+`
+
+type GetSeasonTeamsRow struct {
+	ID        uuid.UUID
+	TeamID    uuid.UUID
+	SeasonID  uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt sql.NullTime
+}
+
+// Fetch all season_teams
+func (q *Queries) GetSeasonTeams(ctx context.Context, seasonID uuid.UUID) ([]GetSeasonTeamsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getSeasonTeams, seasonID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetSeasonTeamsRow
+	for rows.Next() {
+		var i GetSeasonTeamsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.TeamID,
+			&i.SeasonID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getSeasons = `-- name: GetSeasons :many

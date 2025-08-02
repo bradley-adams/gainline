@@ -221,3 +221,48 @@ WHERE
 	id = @id
 AND
 	deleted_at IS NULL;
+
+-- name: CreateSeasonTeams :exec
+-- Insert a new season_teams relationship
+INSERT INTO season_teams (
+  id,
+  team_id,
+  season_id,
+  created_at,
+  updated_at,
+  deleted_at
+)
+VALUES (
+  @id,
+  @team_id,
+  @season_id,
+  @created_at,
+  @updated_at,
+  @deleted_at
+);
+
+-- name: GetSeasonTeams :many
+-- Fetch all season_teams
+SELECT
+  id,
+  team_id,
+  season_id,
+  created_at,
+  updated_at,
+  deleted_at
+FROM
+  season_teams
+WHERE
+  season_id = @season_id
+AND
+  deleted_at IS NULL;
+
+-- name: DeleteSeasonTeam :exec
+-- Soft delete a team_season record
+UPDATE season_teams
+SET
+  deleted_at = @deleted_at
+WHERE
+  id = @id
+AND
+  deleted_at IS NULL;

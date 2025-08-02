@@ -34,6 +34,23 @@ VALUES
 ('dedb2044-1d2f-4dc7-84c6-509ec69c82e1', 'Hawke''s Bay', 'HKB', 'Napier', now(), now()),
 ('6b5c3642-c026-4e89-81f7-024c40638f9a', 'Counties Manukau', 'CMK', 'Pukekohe', now(), now());
 
+INSERT INTO season_teams (id, season_id, team_id, created_at, updated_at, deleted_at)
+VALUES
+('8fc1cc1b-7de1-464a-b3c5-7db1806f3661', '9300778f-cce0-4efe-af6c-e399d8170315', '013952a5-87e1-4d26-a312-09b2aff54241', now(), now(), NULL),
+('f414e700-8b43-4870-812d-783a5b9ddb2d', '9300778f-cce0-4efe-af6c-e399d8170315', '7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97', now(), now(), NULL),
+('84d4696e-67ae-4836-a3a9-336c7bb4c4fe', '9300778f-cce0-4efe-af6c-e399d8170315', '636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', now(), now(), NULL),
+('ad73b809-eb3b-48af-9d50-e26951f52702', '9300778f-cce0-4efe-af6c-e399d8170315', 'e2d6c2bb-eac6-42d6-8727-4d4cbeb3e3d7', now(), now(), NULL),
+('869a0f34-f15d-45ef-b13f-eb551050a849', '9300778f-cce0-4efe-af6c-e399d8170315', 'ab4c78b1-5dc6-4a14-8f15-d1f144b81d96', now(), now(), NULL),
+('e587e373-986d-4be6-a894-70bf62367455', '9300778f-cce0-4efe-af6c-e399d8170315', 'f192a9ce-dce2-4389-8491-1a193ac7699e', now(), now(), NULL),
+('a3d1dd91-2bfc-4819-9e52-7e5cb7ea2fdd', '9300778f-cce0-4efe-af6c-e399d8170315', '15c76909-f78a-4d89-bc19-7c80265e1e08', now(), now(), NULL),
+('cbcf4c8a-4172-4a38-8ea0-19dd2282df1f', '9300778f-cce0-4efe-af6c-e399d8170315', 'a5d930c3-13aa-4a85-b5c9-8f40c2c61c8a', now(), now(), NULL),
+('3071577c-0130-4b75-b778-0f843981aff0', '9300778f-cce0-4efe-af6c-e399d8170315', 'bfe6ec41-e3f0-4f8f-90d2-d7bca66e1a1f', now(), now(), NULL),
+('575c1e41-04f4-47cc-9179-19cd0e0227a9', '9300778f-cce0-4efe-af6c-e399d8170315', '7e5abf68-8358-4c20-b6a4-f64ef264c13c', now(), now(), NULL),
+('6e45c89b-ef37-4593-b6c1-1fe4a054deb7', '9300778f-cce0-4efe-af6c-e399d8170315', 'b5c6e9d7-8f11-4ef2-acc6-2e5a97839532', now(), now(), NULL),
+('fdc63492-8ff1-4610-92f1-82f629524404', '9300778f-cce0-4efe-af6c-e399d8170315', '19b3ea1e-0c46-41f3-84ea-490b6b1db30f', now(), now(), NULL),
+('9a6d021d-1daa-4320-a6ea-4b62dd8ac5c5', '9300778f-cce0-4efe-af6c-e399d8170315', 'dedb2044-1d2f-4dc7-84c6-509ec69c82e1', now(), now(), NULL),
+('ae444444-4444-4444-4444-444444444444', '9300778f-cce0-4efe-af6c-e399d8170315', '6b5c3642-c026-4e89-81f7-024c40638f9a', now(), now(), NULL);
+
 -- Insert games
 INSERT INTO games (
     id, season_id, round, date,
