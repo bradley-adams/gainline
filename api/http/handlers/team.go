@@ -19,31 +19,24 @@ import (
 //	@Tags		Teams
 //	@Accept		json
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"Competition ID"
-//	@Param		team			body		api.TeamRequest			true	"Team details to create"
-//	@Success	201				{object}	api.TeamResponse		"Successful operation"
-//	@Failure	400				{object}	response.ErrorResponse	"Bad request"
-//	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
-//	@Router		/competitions/{competitionID}/teams [post]
+//	@Param		team	body		api.TeamRequest			true	"Team details to create"
+//	@Success	201		{object}	api.TeamResponse		"Successful operation"
+//	@Failure	400		{object}	response.ErrorResponse	"Bad request"
+//	@Failure	500		{object}	response.ErrorResponse	"Internal server error"
+//	@Router		/teams [post]
 func handleCreateTeam(
 	logger zerolog.Logger,
 	db db_handler.DB,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid competition ID")
-			return
-		}
-
 		req := &api.TeamRequest{}
-		err = ctx.BindJSON(req)
+		err := ctx.BindJSON(req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "bad request")
 			return
 		}
 
-		team, err := service.CreateTeam(ctx, db, req, competitionID)
+		team, err := service.CreateTeam(ctx, db, req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to add team")
 			return
@@ -53,25 +46,19 @@ func handleCreateTeam(
 	}
 }
 
-// handleGetTeams retrieves all teams for a given competition
+// handleGetTeams retrieves all teams
 //
-//	@Summary	Retrieve all teams for a competition
+//	@Summary	Retrieve all teams
 //	@ID			get-teams
 //	@Tags		Teams
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"Competition ID"
-//	@Success	200				{array}		api.TeamResponse		"List of teams"
-//	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
-//	@Router		/competitions/{competitionID}/teams [get]
+//	@Success	200	{array}		api.TeamResponse		"List of teams"
+//	@Failure	500	{object}	response.ErrorResponse	"Internal server error"
+//	@Router		/teams [get]
 func handleGetTeams(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid competition ID")
-			return
-		}
 
-		teams, err := service.GetTeams(ctx, db, competitionID)
+		teams, err := service.GetTeams(ctx, db)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get teams")
 			return
@@ -92,27 +79,20 @@ func handleGetTeams(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@ID			get-team
 //	@Tags		Teams
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"Competition ID"
-//	@Param		teamID			path		string					true	"Team ID"
-//	@Success	200				{object}	api.TeamResponse		"Team found"
-//	@Failure	400				{object}	response.ErrorResponse	"Invalid team ID"
-//	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
-//	@Router		/competitions/{competitionID}/teams/{teamID} [get]
+//	@Param		teamID	path		string					true	"Team ID"
+//	@Success	200		{object}	api.TeamResponse		"Team found"
+//	@Failure	400		{object}	response.ErrorResponse	"Invalid team ID"
+//	@Failure	500		{object}	response.ErrorResponse	"Internal server error"
+//	@Router		/teams/{teamID} [get]
 func handleGetTeam(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid competition ID")
-			return
-		}
-
 		teamID, err := uuid.Parse(ctx.Param("teamID"))
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid team ID")
 			return
 		}
 
-		team, err := service.GetTeam(ctx, db, competitionID, teamID)
+		team, err := service.GetTeam(ctx, db, teamID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get team")
 			return
@@ -129,21 +109,14 @@ func handleGetTeam(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@Tags		Teams
 //	@Accept		json
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"Competition ID"
-//	@Param		teamID			path		string					true	"Team ID"
-//	@Param		team			body		api.TeamRequest			true	"Team details to update"
-//	@Success	200				{object}	api.TeamResponse		"Team updated"
-//	@Failure	400				{object}	response.ErrorResponse	"Bad request"
-//	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
-//	@Router		/competitions/{competitionID}/teams/{teamID} [put]
+//	@Param		teamID	path		string					true	"Team ID"
+//	@Param		team	body		api.TeamRequest			true	"Team details to update"
+//	@Success	200		{object}	api.TeamResponse		"Team updated"
+//	@Failure	400		{object}	response.ErrorResponse	"Bad request"
+//	@Failure	500		{object}	response.ErrorResponse	"Internal server error"
+//	@Router		/teams/{teamID} [put]
 func handleUpdateTeam(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid competition ID")
-			return
-		}
-
 		teamID, err := uuid.Parse(ctx.Param("teamID"))
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid team ID")
@@ -157,7 +130,7 @@ func handleUpdateTeam(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 			return
 		}
 
-		team, err := service.UpdateTeam(ctx, db, req, competitionID, teamID)
+		team, err := service.UpdateTeam(ctx, db, req, teamID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to update team")
 			return
@@ -173,27 +146,20 @@ func handleUpdateTeam(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@ID			delete-team
 //	@Tags		Teams
 //	@Produce	json
-//	@Param		competitionID	path			string	true	"Competition ID"
-//	@Param		teamID			path			string	true	"Team ID"
-//	@Success	204				"No Content"	"Team deleted successfully"
-//	@Failure	400				{object}		response.ErrorResponse	"Invalid team ID"
-//	@Failure	500				{object}		response.ErrorResponse	"Internal server error"
-//	@Router		/competitions/{competitionID}/teams/{teamID} [delete]
+//	@Param		teamID	path			string	true	"Team ID"
+//	@Success	204		"No Content"	"Team deleted successfully"
+//	@Failure	400		{object}		response.ErrorResponse	"Invalid team ID"
+//	@Failure	500		{object}		response.ErrorResponse	"Internal server error"
+//	@Router		/teams/{teamID} [delete]
 func handleDeleteTeam(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid competition ID")
-			return
-		}
-
 		teamID, err := uuid.Parse(ctx.Param("teamID"))
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid team ID")
 			return
 		}
 
-		err = service.DeleteTeam(ctx, db, competitionID, teamID)
+		err = service.DeleteTeam(ctx, db, teamID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to delete team")
 			return

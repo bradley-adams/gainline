@@ -239,6 +239,20 @@ func (mr *MockQueriesMockRecorder) CreateSeason(arg0, arg1 any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSeason", reflect.TypeOf((*MockQueries)(nil).CreateSeason), arg0, arg1)
 }
 
+// CreateTeam mocks base method.
+func (m *MockQueries) CreateTeam(arg0 context.Context, arg1 db.CreateTeamParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateTeam", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateTeam indicates an expected call of CreateTeam.
+func (mr *MockQueriesMockRecorder) CreateTeam(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTeam", reflect.TypeOf((*MockQueries)(nil).CreateTeam), arg0, arg1)
+}
+
 // DeleteCompetition mocks base method.
 func (m *MockQueries) DeleteCompetition(arg0 context.Context, arg1 db.DeleteCompetitionParams) error {
 	m.ctrl.T.Helper()
@@ -265,6 +279,20 @@ func (m *MockQueries) DeleteSeason(arg0 context.Context, arg1 db.DeleteSeasonPar
 func (mr *MockQueriesMockRecorder) DeleteSeason(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSeason", reflect.TypeOf((*MockQueries)(nil).DeleteSeason), arg0, arg1)
+}
+
+// DeleteTeam mocks base method.
+func (m *MockQueries) DeleteTeam(arg0 context.Context, arg1 db.DeleteTeamParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteTeam", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteTeam indicates an expected call of DeleteTeam.
+func (mr *MockQueriesMockRecorder) DeleteTeam(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTeam", reflect.TypeOf((*MockQueries)(nil).DeleteTeam), arg0, arg1)
 }
 
 // GetCompetition mocks base method.
@@ -327,6 +355,36 @@ func (mr *MockQueriesMockRecorder) GetSeasons(arg0, arg1 any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSeasons", reflect.TypeOf((*MockQueries)(nil).GetSeasons), arg0, arg1)
 }
 
+// GetTeam mocks base method.
+func (m *MockQueries) GetTeam(arg0 context.Context, arg1 uuid.UUID) (db.Team, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTeam", arg0, arg1)
+	ret0, _ := ret[0].(db.Team)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTeam indicates an expected call of GetTeam.
+func (mr *MockQueriesMockRecorder) GetTeam(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTeam", reflect.TypeOf((*MockQueries)(nil).GetTeam), arg0, arg1)
+}
+
+// GetTeams mocks base method.
+func (m *MockQueries) GetTeams(arg0 context.Context) ([]db.Team, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTeams", arg0)
+	ret0, _ := ret[0].([]db.Team)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTeams indicates an expected call of GetTeams.
+func (mr *MockQueriesMockRecorder) GetTeams(arg0 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTeams", reflect.TypeOf((*MockQueries)(nil).GetTeams), arg0)
+}
+
 // UpdateCompetition mocks base method.
 func (m *MockQueries) UpdateCompetition(arg0 context.Context, arg1 db.UpdateCompetitionParams) error {
 	m.ctrl.T.Helper()
@@ -353,4 +411,18 @@ func (m *MockQueries) UpdateSeason(arg0 context.Context, arg1 db.UpdateSeasonPar
 func (mr *MockQueriesMockRecorder) UpdateSeason(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSeason", reflect.TypeOf((*MockQueries)(nil).UpdateSeason), arg0, arg1)
+}
+
+// UpdateTeam mocks base method.
+func (m *MockQueries) UpdateTeam(arg0 context.Context, arg1 db.UpdateTeamParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTeam", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateTeam indicates an expected call of UpdateTeam.
+func (mr *MockQueriesMockRecorder) UpdateTeam(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTeam", reflect.TypeOf((*MockQueries)(nil).UpdateTeam), arg0, arg1)
 }

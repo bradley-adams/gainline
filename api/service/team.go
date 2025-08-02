@@ -16,13 +16,12 @@ func CreateTeam(
 	ctx context.Context,
 	dbHandler db_handler.DB,
 	req *api.TeamRequest,
-	competitionID uuid.UUID,
 ) (db.Team, error) {
 	var team db.Team
 
 	err := db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
 		var err error
-		team, err = createTeam(ctx, queries, req, competitionID)
+		team, err = createTeam(ctx, queries, req)
 		return err
 	})
 	if err != nil {
@@ -36,18 +35,16 @@ func createTeam(
 	ctx context.Context,
 	queries db_handler.Queries,
 	req *api.TeamRequest,
-	competitionID uuid.UUID,
 ) (db.Team, error) {
 	now := time.Now()
 	createTeamParams := db.CreateTeamParams{
-		ID:            uuid.New(),
-		CompetitionID: competitionID,
-		Name:          req.Name,
-		Abbreviation:  req.Abbreviation,
-		Location:      req.Location,
-		CreatedAt:     now,
-		UpdatedAt:     now,
-		DeletedAt:     sql.NullTime{Time: time.Time{}, Valid: false},
+		ID:           uuid.New(),
+		Name:         req.Name,
+		Abbreviation: req.Abbreviation,
+		Location:     req.Location,
+		CreatedAt:    now,
+		UpdatedAt:    now,
+		DeletedAt:    sql.NullTime{Time: time.Time{}, Valid: false},
 	}
 
 	err := queries.CreateTeam(ctx, createTeamParams)
@@ -66,13 +63,12 @@ func createTeam(
 func GetTeams(
 	ctx context.Context,
 	dbHandler db_handler.DB,
-	competitionID uuid.UUID,
 ) ([]db.Team, error) {
 	var teams []db.Team
 
 	err := db_handler.Run(ctx, dbHandler, func(queries db_handler.Queries) error {
 		var err error
-		teams, err = queries.GetTeams(ctx, competitionID)
+		teams, err = queries.GetTeams(ctx)
 		if err != nil {
 			return errors.Wrap(err, "unable to get teams")
 		}
@@ -88,7 +84,6 @@ func GetTeams(
 func GetTeam(
 	ctx context.Context,
 	dbHandler db_handler.DB,
-	competitionID uuid.UUID,
 	teamID uuid.UUID,
 ) (db.Team, error) {
 	var team db.Team
@@ -98,9 +93,6 @@ func GetTeam(
 		team, err = queries.GetTeam(ctx, teamID)
 		if err != nil {
 			return errors.Wrap(err, "unable to get team")
-		}
-		if team.CompetitionID != competitionID {
-			return errors.New("team does not belong to the specified competition")
 		}
 		return nil
 	})
@@ -115,14 +107,13 @@ func UpdateTeam(
 	ctx context.Context,
 	dbHandler db_handler.DB,
 	req *api.TeamRequest,
-	competitionID uuid.UUID,
 	teamID uuid.UUID,
 ) (db.Team, error) {
 	var team db.Team
 
 	err := db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
 		var txErr error
-		team, txErr = updateTeam(ctx, queries, req, competitionID, teamID)
+		team, txErr = updateTeam(ctx, queries, req, teamID)
 		return txErr
 	})
 	if err != nil {
@@ -136,29 +127,18 @@ func updateTeam(
 	ctx context.Context,
 	queries db_handler.Queries,
 	req *api.TeamRequest,
-	competitionID uuid.UUID,
 	teamID uuid.UUID,
 ) (db.Team, error) {
-	team, err := queries.GetTeam(ctx, teamID)
-	if err != nil {
-		return db.Team{}, errors.Wrap(err, "unable to get team for update")
-	}
-
-	if team.CompetitionID != competitionID {
-		return db.Team{}, errors.New("team does not belong to the specified competition")
-	}
-
 	now := time.Now()
 	updateTeamParams := db.UpdateTeamParams{
-		CompetitionID: competitionID,
-		Name:          req.Name,
-		Abbreviation:  req.Abbreviation,
-		Location:      req.Location,
-		UpdatedAt:     now,
-		ID:            teamID,
+		Name:         req.Name,
+		Abbreviation: req.Abbreviation,
+		Location:     req.Location,
+		UpdatedAt:    now,
+		ID:           teamID,
 	}
 
-	err = queries.UpdateTeam(ctx, updateTeamParams)
+	err := queries.UpdateTeam(ctx, updateTeamParams)
 	if err != nil {
 		return db.Team{}, errors.Wrap(err, "unable to update team")
 	}
@@ -174,35 +154,24 @@ func updateTeam(
 func DeleteTeam(
 	ctx context.Context,
 	dbHandler db_handler.DB,
-	competitionID uuid.UUID,
 	teamID uuid.UUID,
 ) error {
 	return db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
-		return deleteTeam(ctx, queries, competitionID, teamID)
+		return deleteTeam(ctx, queries, teamID)
 	})
 }
 
 func deleteTeam(
 	ctx context.Context,
 	queries db_handler.Queries,
-	competitionID uuid.UUID,
 	teamID uuid.UUID,
 ) error {
-	team, err := queries.GetTeam(ctx, teamID)
-	if err != nil {
-		return errors.Wrap(err, "unable to get team for deletion")
-	}
-
-	if team.CompetitionID != competitionID {
-		return errors.New("team does not belong to the specified competition")
-	}
-
 	deleteTeamParams := db.DeleteTeamParams{
-		ID:        team.ID,
+		ID:        teamID,
 		DeletedAt: sql.NullTime{Time: time.Now(), Valid: true},
 	}
 
-	err = queries.DeleteTeam(ctx, deleteTeamParams)
+	err := queries.DeleteTeam(ctx, deleteTeamParams)
 	if err != nil {
 		return errors.Wrap(err, "unable to delete team")
 	}

@@ -150,7 +150,6 @@ AND
 -- Insert a new team into the database
 INSERT INTO teams (
 	id,
-	competition_id,
 	name,
 	abbreviation,
 	location,
@@ -160,7 +159,6 @@ INSERT INTO teams (
 )
 VALUES (
 	@id,
-	@competition_id,
 	@name,
 	@abbreviation,
 	@location,
@@ -173,7 +171,6 @@ VALUES (
 -- Fetch a team by id, excluding soft-deleted teams
 SELECT
 	id,
-	competition_id,
 	name,
 	abbreviation,
 	location,
@@ -191,7 +188,6 @@ AND
 -- Fetch all teams for a competition, excluding soft-deleted teams
 SELECT
 	id,
-	competition_id,
 	name,
 	abbreviation,
 	location,
@@ -201,15 +197,12 @@ SELECT
 FROM
 	teams
 WHERE
-	competition_id = @competition_id
-AND
 	deleted_at IS NULL;	
 
 -- name: UpdateTeam :exec
 -- Update an existing team by id
 UPDATE teams
 SET
-	competition_id = @competition_id,
 	name = @name,
 	abbreviation = @abbreviation,
 	location = @location,

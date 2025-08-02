@@ -91,14 +91,13 @@ type Season struct {
 }
 
 type Team struct {
-	ID            uuid.UUID
-	CompetitionID uuid.UUID
-	Name          string
-	Abbreviation  string
-	Location      string
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	DeletedAt     sql.NullTime
+	ID           uuid.UUID
+	Name         string
+	Abbreviation string
+	Location     string
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	DeletedAt    sql.NullTime
 }
 
 type User struct {
