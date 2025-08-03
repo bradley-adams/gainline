@@ -58,7 +58,7 @@ func CreateSeason(
 		return err
 	})
 	if err != nil {
-		return SeasonWithTeams{}, err
+		return SeasonWithTeams{}, errors.Wrap(err, "failed creating season")
 	}
 
 	return seasonWithTeams, nil
@@ -73,12 +73,19 @@ func createSeason(
 	now := time.Now()
 	seasonID := uuid.New()
 
-	if err := insertSeason(ctx, queries, seasonID, competitionID, req, now); err != nil {
+	err := insertSeason(ctx, queries, seasonID, competitionID, req, now)
+	if err != nil {
 		return SeasonWithTeams{}, err
 	}
 
 	teamIDs := dedupeUUIDs(req.TeamIDs)
-	if err := ensureSeasonHasTeams(ctx, queries, seasonID, teamIDs, now, nil); err != nil {
+	err = ensureTeamsExist(ctx, queries, teamIDs)
+	if err != nil {
+		return SeasonWithTeams{}, err
+	}
+
+	err = ensureSeasonHasTeams(ctx, queries, seasonID, teamIDs, now, nil)
+	if err != nil {
 		return SeasonWithTeams{}, err
 	}
 
@@ -102,16 +109,19 @@ func insertSeason(
 		UpdatedAt:     now,
 		DeletedAt:     sql.NullTime{Time: time.Time{}, Valid: false},
 	}
-	if err := queries.CreateSeason(ctx, createSeasonParams); err != nil {
-		return errors.Wrap(err, "unable to create new season")
+
+	err := queries.CreateSeason(ctx, createSeasonParams)
+	if err != nil {
+		return errors.Wrap(err, "unable to create season")
 	}
 	return nil
 }
 
 func ensureTeamsExist(ctx context.Context, queries db_handler.Queries, teamIDs []uuid.UUID) error {
 	for _, id := range teamIDs {
-		if _, err := queries.GetTeam(ctx, id); err != nil {
-			return errors.Wrapf(err, "unable to find team %s", id.String())
+		_, err := queries.GetTeam(ctx, id)
+		if err != nil {
+			return errors.Wrapf(err, "unable to get team %s", id.String())
 		}
 	}
 	return nil
@@ -123,16 +133,12 @@ func ensureSeasonHasTeams(
 	seasonID uuid.UUID,
 	teamIDs []uuid.UUID,
 	now time.Time,
-	existingMap map[uuid.UUID]db.GetSeasonTeamsRow, // pass nil when not pre-fetched
+	existingMap map[uuid.UUID]db.GetSeasonTeamsRow,
 ) error {
-	// validate existence
-	if err := ensureTeamsExist(ctx, queries, teamIDs); err != nil {
-		return err
-	}
-
 	for _, teamID := range teamIDs {
 		if existingMap != nil {
-			if _, already := existingMap[teamID]; already {
+			_, already := existingMap[teamID]
+			if already {
 				continue
 			}
 		}
@@ -145,7 +151,9 @@ func ensureSeasonHasTeams(
 			UpdatedAt: now,
 			DeletedAt: sql.NullTime{Time: time.Time{}, Valid: false},
 		}
-		if err := queries.CreateSeasonTeams(ctx, createSeasonTeamsParams); err != nil {
+
+		err := queries.CreateSeasonTeams(ctx, createSeasonTeamsParams)
+		if err != nil {
 			return errors.Wrapf(err, "unable to add team %s to season %s", teamID.String(), seasonID.String())
 		}
 	}
@@ -159,9 +167,17 @@ func getSeasonWithTeams(
 ) (SeasonWithTeams, error) {
 	season, err := queries.GetSeason(ctx, seasonID)
 	if err != nil {
-		return SeasonWithTeams{}, errors.Wrap(err, "unable to get season after creation")
+		return SeasonWithTeams{}, errors.Wrap(err, "unable to get season")
 	}
 
+	return buildSeasonWithTeams(ctx, queries, season)
+}
+
+func buildSeasonWithTeams(
+	ctx context.Context,
+	queries db_handler.Queries,
+	season db.Season,
+) (SeasonWithTeams, error) {
 	seasonTeams, err := queries.GetSeasonTeams(ctx, season.ID)
 	if err != nil {
 		return SeasonWithTeams{}, errors.Wrap(err, "unable to get season teams")
@@ -214,7 +230,7 @@ func GetSeasons(
 		return err
 	})
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed getting seasons")
 	}
 
 	return seasons, nil
@@ -233,7 +249,7 @@ func getSeasons(
 	}
 
 	for _, s := range seasons {
-		swt, err := getSeasonWithTeams(ctx, queries, s.ID)
+		swt, err := buildSeasonWithTeams(ctx, queries, s)
 		if err != nil {
 			return nil, err
 		}
@@ -257,7 +273,7 @@ func GetSeason(
 		return err
 	})
 	if err != nil {
-		return SeasonWithTeams{}, err
+		return SeasonWithTeams{}, errors.Wrap(err, "failed getting season")
 	}
 
 	return season, nil
@@ -268,7 +284,8 @@ func getSeason(
 	queries db_handler.Queries,
 	competitionID, seasonID uuid.UUID,
 ) (SeasonWithTeams, error) {
-	if _, err := validateSeasonOwnership(ctx, queries, seasonID, competitionID); err != nil {
+	_, err := validateSeasonOwnership(ctx, queries, seasonID, competitionID)
+	if err != nil {
 		return SeasonWithTeams{}, err
 	}
 
@@ -290,7 +307,7 @@ func UpdateSeason(
 		return txErr
 	})
 	if err != nil {
-		return SeasonWithTeams{}, err
+		return SeasonWithTeams{}, errors.Wrap(err, "failed updating season")
 	}
 
 	return seasonWithTeams, nil
@@ -331,7 +348,7 @@ func validateSeasonOwnership(
 ) (db.Season, error) {
 	season, err := queries.GetSeason(ctx, seasonID)
 	if err != nil {
-		return db.Season{}, errors.Wrap(err, "unable to get season for update")
+		return db.Season{}, errors.Wrap(err, "unable to get season")
 	}
 	if season.CompetitionID != competitionID {
 		return db.Season{}, errors.New("season does not belong to the specified competition")
@@ -369,7 +386,8 @@ func syncSeasonTeams(
 	rawTeamIDs []uuid.UUID,
 	now time.Time,
 ) error {
-	requestedTeamIDs, err := validateRequestedTeams(ctx, queries, rawTeamIDs)
+	requestedTeamIDs := dedupeUUIDs(rawTeamIDs)
+	err := ensureTeamsExist(ctx, queries, requestedTeamIDs)
 	if err != nil {
 		return err
 	}
@@ -379,27 +397,12 @@ func syncSeasonTeams(
 		return err
 	}
 
-	if err := ensureSeasonHasTeams(ctx, queries, seasonID, requestedTeamIDs, now, existingMap); err != nil {
+	err = ensureSeasonHasTeams(ctx, queries, seasonID, requestedTeamIDs, now, existingMap)
+	if err != nil {
 		return err
 	}
 
-	if err := removeExtraSeasonTeams(ctx, queries, seasonID, existingLinks, requestedSet); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func validateRequestedTeams(
-	ctx context.Context,
-	queries db_handler.Queries,
-	rawTeamIDs []uuid.UUID,
-) ([]uuid.UUID, error) {
-	requestedTeamIDs := dedupeUUIDs(rawTeamIDs)
-	if err := ensureTeamsExist(ctx, queries, requestedTeamIDs); err != nil {
-		return nil, err
-	}
-	return requestedTeamIDs, nil
+	return removeExtraSeasonTeams(ctx, queries, seasonID, existingLinks, requestedSet)
 }
 
 func buildSeasonTeamMaps(
@@ -458,9 +461,14 @@ func DeleteSeason(
 	competitionID uuid.UUID,
 	seasonID uuid.UUID,
 ) error {
-	return db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
+	err := db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
 		return deleteSeason(ctx, queries, competitionID, seasonID)
 	})
+	if err != nil {
+		return errors.Wrap(err, "failed deleting season")
+	}
+
+	return nil
 }
 
 func deleteSeason(
@@ -481,7 +489,8 @@ func deleteSeason(
 	now := time.Now()
 
 	// Soft-delete all season_team links
-	if err := deleteSeasonTeams(ctx, queries, seasonID, now); err != nil {
+	err = deleteSeasonTeams(ctx, queries, seasonID, now)
+	if err != nil {
 		return err
 	}
 
@@ -491,7 +500,8 @@ func deleteSeason(
 		DeletedAt: sql.NullTime{Time: now, Valid: true},
 	}
 
-	if err := queries.DeleteSeason(ctx, deleteSeasonParams); err != nil {
+	err = queries.DeleteSeason(ctx, deleteSeasonParams)
+	if err != nil {
 		return errors.Wrap(err, "unable to delete season")
 	}
 
