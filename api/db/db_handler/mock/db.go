@@ -239,6 +239,20 @@ func (mr *MockQueriesMockRecorder) CreateSeason(arg0, arg1 any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSeason", reflect.TypeOf((*MockQueries)(nil).CreateSeason), arg0, arg1)
 }
 
+// CreateSeasonTeams mocks base method.
+func (m *MockQueries) CreateSeasonTeams(arg0 context.Context, arg1 db.CreateSeasonTeamsParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateSeasonTeams", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateSeasonTeams indicates an expected call of CreateSeasonTeams.
+func (mr *MockQueriesMockRecorder) CreateSeasonTeams(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSeasonTeams", reflect.TypeOf((*MockQueries)(nil).CreateSeasonTeams), arg0, arg1)
+}
+
 // CreateTeam mocks base method.
 func (m *MockQueries) CreateTeam(arg0 context.Context, arg1 db.CreateTeamParams) error {
 	m.ctrl.T.Helper()
@@ -279,6 +293,20 @@ func (m *MockQueries) DeleteSeason(arg0 context.Context, arg1 db.DeleteSeasonPar
 func (mr *MockQueriesMockRecorder) DeleteSeason(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSeason", reflect.TypeOf((*MockQueries)(nil).DeleteSeason), arg0, arg1)
+}
+
+// DeleteSeasonTeam mocks base method.
+func (m *MockQueries) DeleteSeasonTeam(arg0 context.Context, arg1 db.DeleteSeasonTeamParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteSeasonTeam", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteSeasonTeam indicates an expected call of DeleteSeasonTeam.
+func (mr *MockQueriesMockRecorder) DeleteSeasonTeam(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSeasonTeam", reflect.TypeOf((*MockQueries)(nil).DeleteSeasonTeam), arg0, arg1)
 }
 
 // DeleteTeam mocks base method.
@@ -338,6 +366,21 @@ func (m *MockQueries) GetSeason(arg0 context.Context, arg1 uuid.UUID) (db.Season
 func (mr *MockQueriesMockRecorder) GetSeason(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSeason", reflect.TypeOf((*MockQueries)(nil).GetSeason), arg0, arg1)
+}
+
+// GetSeasonTeams mocks base method.
+func (m *MockQueries) GetSeasonTeams(arg0 context.Context, arg1 uuid.UUID) ([]db.GetSeasonTeamsRow, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSeasonTeams", arg0, arg1)
+	ret0, _ := ret[0].([]db.GetSeasonTeamsRow)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSeasonTeams indicates an expected call of GetSeasonTeams.
+func (mr *MockQueriesMockRecorder) GetSeasonTeams(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSeasonTeams", reflect.TypeOf((*MockQueries)(nil).GetSeasonTeams), arg0, arg1)
 }
 
 // GetSeasons mocks base method.
