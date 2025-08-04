@@ -17,6 +17,60 @@ definitions:
       updated_at:
         type: string
     type: object
+  api.GameRequest:
+    properties:
+      away_score:
+        type: integer
+      away_team_id:
+        type: string
+      date:
+        type: string
+      home_score:
+        type: integer
+      home_team_id:
+        type: string
+      round:
+        type: integer
+      status:
+        $ref: '#/definitions/api.GameStatus'
+    type: object
+  api.GameResponse:
+    properties:
+      away_score:
+        type: integer
+      away_team_id:
+        type: string
+      created_at:
+        type: string
+      date:
+        type: string
+      deleted_at:
+        type: string
+      home_score:
+        type: integer
+      home_team_id:
+        type: string
+      id:
+        type: string
+      round:
+        type: integer
+      season_id:
+        type: string
+      status:
+        $ref: '#/definitions/api.GameStatus'
+      updated_at:
+        type: string
+    type: object
+  api.GameStatus:
+    enum:
+    - scheduled
+    - playing
+    - finished
+    type: string
+    x-enum-varnames:
+    - GameStatusScheduled
+    - GameStatusPlaying
+    - GameStatusFinished
   api.SeasonRequest:
     properties:
       TeamIDs:
@@ -388,6 +442,190 @@ paths:
       summary: Update an existing season
       tags:
       - Seasons
+  /competitions/{competitionID}/seasons/{seasonID}/games:
+    get:
+      operationId: get-games
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - description: Season ID
+        in: path
+        name: seasonID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of games
+          schema:
+            items:
+              $ref: '#/definitions/api.GameResponse'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get all games for a season
+      tags:
+      - Games
+    post:
+      consumes:
+      - application/json
+      operationId: create-game
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - description: Season ID
+        in: path
+        name: seasonID
+        required: true
+        type: string
+      - description: Game details to create
+        in: body
+        name: game
+        required: true
+        schema:
+          $ref: '#/definitions/api.GameRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/api.GameResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Create a new game
+      tags:
+      - Games
+  /competitions/{competitionID}/seasons/{seasonID}/games/{gameID}:
+    delete:
+      operationId: delete-game
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - description: Season ID
+        in: path
+        name: seasonID
+        required: true
+        type: string
+      - description: Game ID
+        in: path
+        name: gameID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: "No Content\"\t\"Game deleted successfully"
+        "400":
+          description: Invalid game ID
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Delete a game by ID
+      tags:
+      - Games
+    get:
+      operationId: get-game
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - description: Season ID
+        in: path
+        name: seasonID
+        required: true
+        type: string
+      - description: Game ID
+        in: path
+        name: gameID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Game found
+          schema:
+            $ref: '#/definitions/api.GameResponse'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get a single game by ID
+      tags:
+      - Games
+    put:
+      consumes:
+      - application/json
+      operationId: update-game
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - description: Season ID
+        in: path
+        name: seasonID
+        required: true
+        type: string
+      - description: Game ID
+        in: path
+        name: gameID
+        required: true
+        type: string
+      - description: Game details to update
+        in: body
+        name: game
+        required: true
+        schema:
+          $ref: '#/definitions/api.GameRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Game updated
+          schema:
+            $ref: '#/definitions/api.GameResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Update a game
+      tags:
+      - Games
   /teams:
     get:
       operationId: get-teams

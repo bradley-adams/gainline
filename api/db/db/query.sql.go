@@ -50,6 +50,71 @@ func (q *Queries) CreateCompetition(ctx context.Context, arg CreateCompetitionPa
 	return err
 }
 
+const createGame = `-- name: CreateGame :exec
+INSERT INTO games (
+    id,
+    season_id,
+    round,
+    date,
+    home_team_id,
+    away_team_id,
+    home_score,
+    away_score,
+    status,
+    created_at,
+    updated_at,
+    deleted_at
+)
+VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10,
+    $11,
+    $12
+)
+`
+
+type CreateGameParams struct {
+	ID         uuid.UUID
+	SeasonID   uuid.UUID
+	Round      int32
+	Date       time.Time
+	HomeTeamID uuid.UUID
+	AwayTeamID uuid.UUID
+	HomeScore  sql.NullInt32
+	AwayScore  sql.NullInt32
+	Status     GameStatus
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	DeletedAt  sql.NullTime
+}
+
+// Insert a new game into the database
+func (q *Queries) CreateGame(ctx context.Context, arg CreateGameParams) error {
+	_, err := q.db.ExecContext(ctx, createGame,
+		arg.ID,
+		arg.SeasonID,
+		arg.Round,
+		arg.Date,
+		arg.HomeTeamID,
+		arg.AwayTeamID,
+		arg.HomeScore,
+		arg.AwayScore,
+		arg.Status,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+		arg.DeletedAt,
+	)
+	return err
+}
+
 const createSeason = `-- name: CreateSeason :exec
 INSERT INTO seasons (
 	id,
@@ -206,6 +271,27 @@ func (q *Queries) DeleteCompetition(ctx context.Context, arg DeleteCompetitionPa
 	return err
 }
 
+const deleteGame = `-- name: DeleteGame :exec
+UPDATE games
+SET
+    deleted_at = $1
+WHERE
+    id = $2
+AND
+    deleted_at IS NULL
+`
+
+type DeleteGameParams struct {
+	DeletedAt sql.NullTime
+	ID        uuid.UUID
+}
+
+// Soft delete a game
+func (q *Queries) DeleteGame(ctx context.Context, arg DeleteGameParams) error {
+	_, err := q.db.ExecContext(ctx, deleteGame, arg.DeletedAt, arg.ID)
+	return err
+}
+
 const deleteSeason = `-- name: DeleteSeason :exec
 UPDATE seasons
 SET
@@ -324,6 +410,108 @@ func (q *Queries) GetCompetitions(ctx context.Context) ([]Competition, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getGame = `-- name: GetGame :one
+SELECT
+    id,
+    season_id,
+    round,
+    date,
+    home_team_id,
+    away_team_id,
+    home_score,
+    away_score,
+    status,
+    created_at,
+    updated_at,
+    deleted_at
+FROM
+    games
+WHERE
+    id = $1
+AND
+    deleted_at IS NULL
+`
+
+// Fetch a game by id, excluding soft-deleted games
+func (q *Queries) GetGame(ctx context.Context, id uuid.UUID) (Game, error) {
+	row := q.db.QueryRowContext(ctx, getGame, id)
+	var i Game
+	err := row.Scan(
+		&i.ID,
+		&i.SeasonID,
+		&i.Round,
+		&i.Date,
+		&i.HomeTeamID,
+		&i.AwayTeamID,
+		&i.HomeScore,
+		&i.AwayScore,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const getGames = `-- name: GetGames :many
+SELECT
+    id,
+    season_id,
+    round,
+    date,
+    home_team_id,
+    away_team_id,
+    home_score,
+    away_score,
+    status,
+    created_at,
+    updated_at,
+    deleted_at
+FROM
+    games
+WHERE
+    season_id = $1
+AND
+    deleted_at IS NULL
+`
+
+// Fetch all games for a season, excluding soft-deleted games
+func (q *Queries) GetGames(ctx context.Context, seasonID uuid.UUID) ([]Game, error) {
+	rows, err := q.db.QueryContext(ctx, getGames, seasonID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Game
+	for rows.Next() {
+		var i Game
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeasonID,
+			&i.Round,
+			&i.Date,
+			&i.HomeTeamID,
+			&i.AwayTeamID,
+			&i.HomeScore,
+			&i.AwayScore,
+			&i.Status,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
@@ -581,6 +769,51 @@ type UpdateCompetitionParams struct {
 // Update an existing competition by id
 func (q *Queries) UpdateCompetition(ctx context.Context, arg UpdateCompetitionParams) error {
 	_, err := q.db.ExecContext(ctx, updateCompetition, arg.Name, arg.ID)
+	return err
+}
+
+const updateGame = `-- name: UpdateGame :exec
+UPDATE games
+SET
+    round = $1,
+    date = $2,
+    home_team_id = $3,
+    away_team_id = $4,
+    home_score = $5,
+    away_score = $6,
+    status = $7,
+    updated_at = $8
+WHERE
+    id = $9
+AND
+    deleted_at IS NULL
+`
+
+type UpdateGameParams struct {
+	Round      int32
+	Date       time.Time
+	HomeTeamID uuid.UUID
+	AwayTeamID uuid.UUID
+	HomeScore  sql.NullInt32
+	AwayScore  sql.NullInt32
+	Status     GameStatus
+	UpdatedAt  time.Time
+	ID         uuid.UUID
+}
+
+// Update an existing game by id
+func (q *Queries) UpdateGame(ctx context.Context, arg UpdateGameParams) error {
+	_, err := q.db.ExecContext(ctx, updateGame,
+		arg.Round,
+		arg.Date,
+		arg.HomeTeamID,
+		arg.AwayTeamID,
+		arg.HomeScore,
+		arg.AwayScore,
+		arg.Status,
+		arg.UpdatedAt,
+		arg.ID,
+	)
 	return err
 }
 

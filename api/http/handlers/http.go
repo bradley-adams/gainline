@@ -48,6 +48,13 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger) *gin.Engine {
 		v1public.GET("/teams/:teamID", handleGetTeam(logger, db))
 		v1public.PUT("/teams/:teamID", handleUpdateTeam(logger, db))
 		v1public.DELETE("/teams/:teamID", handleDeleteTeam(logger, db))
+
+		// games
+		v1public.POST("/competitions/:competitionID/seasons/:seasonID/games", handleCreateGame(logger, db))
+		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games", handleGetGames(logger, db))
+		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleGetGame(logger, db))
+		v1public.PUT("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleUpdateGame(logger, db))
+		v1public.DELETE("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleDeleteGame(logger, db))
 	}
 	return router
 }

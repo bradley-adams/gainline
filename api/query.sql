@@ -266,3 +266,105 @@ WHERE
   id = @id
 AND
   deleted_at IS NULL;
+
+-- name: CreateGame :exec
+-- Insert a new game into the database
+INSERT INTO games (
+    id,
+    season_id,
+    round,
+    date,
+    home_team_id,
+    away_team_id,
+    home_score,
+    away_score,
+    status,
+    created_at,
+    updated_at,
+    deleted_at
+)
+VALUES (
+    @id,
+    @season_id,
+    @round,
+    @date,
+    @home_team_id,
+    @away_team_id,
+    @home_score,
+    @away_score,
+    @status,
+    @created_at,
+    @updated_at,
+    @deleted_at
+);
+
+-- name: GetGame :one
+-- Fetch a game by id, excluding soft-deleted games
+SELECT
+    id,
+    season_id,
+    round,
+    date,
+    home_team_id,
+    away_team_id,
+    home_score,
+    away_score,
+    status,
+    created_at,
+    updated_at,
+    deleted_at
+FROM
+    games
+WHERE
+    id = @id
+AND
+    deleted_at IS NULL;
+
+-- name: GetGames :many
+-- Fetch all games for a season, excluding soft-deleted games
+SELECT
+    id,
+    season_id,
+    round,
+    date,
+    home_team_id,
+    away_team_id,
+    home_score,
+    away_score,
+    status,
+    created_at,
+    updated_at,
+    deleted_at
+FROM
+    games
+WHERE
+    season_id = @season_id
+AND
+    deleted_at IS NULL;
+
+-- name: UpdateGame :exec
+-- Update an existing game by id
+UPDATE games
+SET
+    round = @round,
+    date = @date,
+    home_team_id = @home_team_id,
+    away_team_id = @away_team_id,
+    home_score = @home_score,
+    away_score = @away_score,
+    status = @status,
+    updated_at = @updated_at
+WHERE
+    id = @id
+AND
+    deleted_at IS NULL;
+
+-- name: DeleteGame :exec
+-- Soft delete a game
+UPDATE games
+SET
+    deleted_at = @deleted_at
+WHERE
+    id = @id
+AND
+    deleted_at IS NULL;
