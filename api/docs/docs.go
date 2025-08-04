@@ -463,6 +463,279 @@ const docTemplate = `{
                 }
             }
         },
+        "/competitions/{competitionID}/seasons/{seasonID}/games": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Games"
+                ],
+                "summary": "Get all games for a season",
+                "operationId": "get-games",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Competition ID",
+                        "name": "competitionID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Season ID",
+                        "name": "seasonID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of games",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/api.GameResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Games"
+                ],
+                "summary": "Create a new game",
+                "operationId": "create-game",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Competition ID",
+                        "name": "competitionID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Season ID",
+                        "name": "seasonID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Game details to create",
+                        "name": "game",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.GameRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/api.GameResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/competitions/{competitionID}/seasons/{seasonID}/games/{gameID}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Games"
+                ],
+                "summary": "Get a single game by ID",
+                "operationId": "get-game",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Competition ID",
+                        "name": "competitionID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Season ID",
+                        "name": "seasonID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Game ID",
+                        "name": "gameID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Game found",
+                        "schema": {
+                            "$ref": "#/definitions/api.GameResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid ID",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Games"
+                ],
+                "summary": "Update a game",
+                "operationId": "update-game",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Competition ID",
+                        "name": "competitionID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Season ID",
+                        "name": "seasonID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Game ID",
+                        "name": "gameID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Game details to update",
+                        "name": "game",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.GameRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Game updated",
+                        "schema": {
+                            "$ref": "#/definitions/api.GameResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Games"
+                ],
+                "summary": "Delete a game by ID",
+                "operationId": "delete-game",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Competition ID",
+                        "name": "competitionID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Season ID",
+                        "name": "seasonID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Game ID",
+                        "name": "gameID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content\"\t\"Game deleted successfully"
+                    },
+                    "400": {
+                        "description": "Invalid game ID",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/teams": {
             "get": {
                 "produces": [
@@ -693,6 +966,86 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "api.GameRequest": {
+            "type": "object",
+            "properties": {
+                "away_score": {
+                    "type": "integer"
+                },
+                "away_team_id": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "home_score": {
+                    "type": "integer"
+                },
+                "home_team_id": {
+                    "type": "string"
+                },
+                "round": {
+                    "type": "integer"
+                },
+                "status": {
+                    "$ref": "#/definitions/api.GameStatus"
+                }
+            }
+        },
+        "api.GameResponse": {
+            "type": "object",
+            "properties": {
+                "away_score": {
+                    "type": "integer"
+                },
+                "away_team_id": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "date": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "home_score": {
+                    "type": "integer"
+                },
+                "home_team_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "round": {
+                    "type": "integer"
+                },
+                "season_id": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/api.GameStatus"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.GameStatus": {
+            "type": "string",
+            "enum": [
+                "scheduled",
+                "playing",
+                "finished"
+            ],
+            "x-enum-varnames": [
+                "GameStatusScheduled",
+                "GameStatusPlaying",
+                "GameStatusFinished"
+            ]
         },
         "api.SeasonRequest": {
             "type": "object",
