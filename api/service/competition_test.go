@@ -71,7 +71,7 @@ var _ = Describe("competition", func() {
 	validTestError := errors.New("a valid testing error")
 
 	Describe("CreateCompetition", func() {
-		It("should create a new competition with no errors", func() {
+		It("should create a new competition without errors", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -104,7 +104,7 @@ var _ = Describe("competition", func() {
 			Expect(competition.DeletedAt.Time).To(Equal(validCompetitionResponse.DeletedAt.Time))
 		})
 
-		It("transaction begin error should return formatted", func() {
+		It("should return formatted error if transaction begin fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -119,7 +119,7 @@ var _ = Describe("competition", func() {
 			Expect(err.Error()).To(Equal(validTestError.Error()))
 		})
 
-		It("insert competition error should return formatted and then rollback", func() {
+		It("should rollback and return formatted error on insert failure", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -141,7 +141,7 @@ var _ = Describe("competition", func() {
 			Expect(err.Error()).To(Equal("unable to create new competition: a valid testing error"))
 		})
 
-		It("get competition error should return formatted and then rollback", func() {
+		It("should rollback and return formatted error on get failure", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -167,7 +167,7 @@ var _ = Describe("competition", func() {
 			Expect(err.Error()).To(Equal("unable to get new competition: a valid testing error"))
 		})
 
-		It("a commit error should return formatted", func() {
+		It("should return formatted error on commit failure", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -198,7 +198,7 @@ var _ = Describe("competition", func() {
 	})
 
 	Describe("GetCompetitions", func() {
-		It("should get all competitions with no errors", func() {
+		It("should retrieve all competitions without errors", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
@@ -222,7 +222,7 @@ var _ = Describe("competition", func() {
 			Expect(competitionsResult[1].DeletedAt.Time).To(Equal(validCompetitionsResponse[1].DeletedAt.Time))
 		})
 
-		It("get competitions error should return formatted", func() {
+		It("should return formatted error when retrieval fails", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
@@ -238,7 +238,7 @@ var _ = Describe("competition", func() {
 	})
 
 	Describe("GetCompetition", func() {
-		It("should get a competition with no errors", func() {
+		It("should retrieve a competition without errors", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
@@ -257,7 +257,7 @@ var _ = Describe("competition", func() {
 			Expect(competition.DeletedAt.Time).To(Equal(validCompetitionResponse.DeletedAt.Time))
 		})
 
-		It("get competition error should return formatted", func() {
+		It("should return formatted error when retrieval fails", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
@@ -274,7 +274,7 @@ var _ = Describe("competition", func() {
 	})
 
 	Describe("UpdateCompetition", func() {
-		It("should update a competition with no errors", func() {
+		It("should update a competition without errors", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -312,7 +312,7 @@ var _ = Describe("competition", func() {
 			Expect(competition.DeletedAt.Time).To(Equal(validCompetitionResponse.DeletedAt.Time))
 		})
 
-		It("transaction begin error should return formatted", func() {
+		It("should return formatted error if transaction begin fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -332,7 +332,7 @@ var _ = Describe("competition", func() {
 			Expect(err.Error()).To(Equal(validTestError.Error()))
 		})
 
-		It("update competition error should return formatted and then rollback", func() {
+		It("should rollback and return formatted error on update failure", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -354,7 +354,7 @@ var _ = Describe("competition", func() {
 			Expect(err.Error()).To(Equal("unable to update competition: a valid testing error"))
 		})
 
-		It("get competition error should return formatted and then rollback", func() {
+		It("should rollback and return formatted error on get updated competition failure", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -380,7 +380,7 @@ var _ = Describe("competition", func() {
 			Expect(err.Error()).To(Equal("unable to get updated competition: a valid testing error"))
 		})
 
-		It("a commit error should return formatted", func() {
+		It("should return formatted error on commit failure", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -411,7 +411,7 @@ var _ = Describe("competition", func() {
 	})
 
 	Describe("DeleteCompetition", func() {
-		It("should soft delete a competition with no errors", func() {
+		It("should soft delete a competition without errors", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -434,7 +434,7 @@ var _ = Describe("competition", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
-		It("transaction begin error should return formatted", func() {
+		It("should return formatted error if transaction begin fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -448,7 +448,7 @@ var _ = Describe("competition", func() {
 			Expect(err.Error()).To(Equal(validTestError.Error()))
 		})
 
-		It("delete competition error should return formatted and then rollback", func() {
+		It("should rollback and return formatted error on delete failure", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -469,7 +469,7 @@ var _ = Describe("competition", func() {
 			Expect(err.Error()).To(Equal("unable to delete competition: a valid testing error"))
 		})
 
-		It("a commit error should return formatted", func() {
+		It("should return formatted error on commit failure", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
