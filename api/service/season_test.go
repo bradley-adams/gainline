@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/bradley-adams/gainline/db/db"
@@ -28,19 +27,19 @@ var _ = Describe("season", func() {
 		mockQueries = mock_db.NewMockQueries(ctrl)
 	})
 
-	validSeasonID := uuid.New()
-	validSeasonID2 := uuid.New()
+	validSeasonID := uuid.MustParse("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
+	validSeasonID2 := uuid.MustParse("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb")
 
-	validCompetitionID := uuid.New()
-	invalidCompetitionID := uuid.New()
+	validCompetitionID := uuid.MustParse("cccccccc-cccc-4ccc-8ccc-cccccccccccc")
+	invalidCompetitionID := uuid.MustParse("dddddddd-dddd-4ddd-8ddd-dddddddddddd")
 
-	validSeasonTeamID := uuid.New()
-	validSeasonTeamID2 := uuid.New()
-	validSeasonTeamID3 := uuid.New()
+	validSeasonTeamID := uuid.MustParse("eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee")
+	validSeasonTeamID2 := uuid.MustParse("ffffffff-ffff-4fff-8fff-ffffffffffff")
+	validSeasonTeamID3 := uuid.MustParse("99999999-9999-4999-8999-999999999999")
 
-	validTeamID := uuid.New()
-	validTeamID2 := uuid.New()
-	validTeamID3 := uuid.New()
+	validTeamID := uuid.MustParse("11111111-1111-4111-8111-111111111111")
+	validTeamID2 := uuid.MustParse("22222222-2222-4222-8222-222222222222")
+	validTeamID3 := uuid.MustParse("33333333-3333-4333-8333-333333333333")
 
 	validTeamIDs := []uuid.UUID{validTeamID, validTeamID2}
 
@@ -178,7 +177,7 @@ var _ = Describe("season", func() {
 	validTestError := errors.New("a valid testing error")
 
 	Describe("CreateSeason", func() {
-		It("should create a new season with no errors", func() {
+		It("should create a new season without errors", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -242,7 +241,7 @@ var _ = Describe("season", func() {
 			Expect(season.DeletedAt.Time).To(Equal(validSeasonResponse.DeletedAt.Time))
 		})
 
-		It("transaction begin error should return formatted", func() {
+		It("should return a formatted error when transaction begin fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -257,7 +256,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed creating season: a valid testing error"))
 		})
 
-		It("insert season error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when inserting season fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -279,7 +278,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed creating season: unable to create season: a valid testing error"))
 		})
 
-		It("get team error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when fetching a team fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -306,7 +305,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(ContainSubstring(": a valid testing error"))
 		})
 
-		It("create season teams error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when creating season teams fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -341,7 +340,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(ContainSubstring(": a valid testing error"))
 		})
 
-		It("get season error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when fetching the season fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -383,7 +382,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed creating season: unable to get season: a valid testing error"))
 		})
 
-		It("a commit error should return formatted", func() {
+		It("should return a formatted error when commit fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -434,7 +433,7 @@ var _ = Describe("season", func() {
 	})
 
 	Describe("GetSeasons", func() {
-		It("should get all seasons with no errors", func() {
+		It("should get all seasons without errors", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
@@ -473,7 +472,7 @@ var _ = Describe("season", func() {
 			Expect(seasons[1].DeletedAt.Time).To(Equal(validSeasonsResponse[1].DeletedAt.Time))
 		})
 
-		It("get seasons error should return formatted", func() {
+		It("should return a formatted error when getting seasons fails", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
@@ -488,7 +487,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed getting seasons: unable to get seasons: a valid testing error"))
 		})
 
-		It("get season teams error should return formatted", func() {
+		It("should return a formatted error when getting season teams fails", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
@@ -510,7 +509,7 @@ var _ = Describe("season", func() {
 	})
 
 	Describe("GetSeason", func() {
-		It("should get a season with no errors", func() {
+		It("should get a season without errors", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
@@ -540,7 +539,7 @@ var _ = Describe("season", func() {
 			Expect(season.DeletedAt.Time).To(Equal(validSeasonResponse.DeletedAt.Time))
 		})
 
-		It("get season error should return formatted", func() {
+		It("should return a formatted error when getting a season fails", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
@@ -555,7 +554,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed getting season: unable to get season: a valid testing error"))
 		})
 
-		It("get season teams error should return formatted", func() {
+		It("should return a formatted error when getting season teams fails", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
@@ -580,7 +579,7 @@ var _ = Describe("season", func() {
 	})
 
 	Describe("UpdateSeason", func() {
-		It("should update a season with no errors", func() {
+		It("should update a season without errors", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -658,7 +657,7 @@ var _ = Describe("season", func() {
 			Expect(season.DeletedAt.Time).To(Equal(validSeasonResponse.DeletedAt.Time))
 		})
 
-		It("transaction begin error should return formatted", func() {
+		It("should return a formatted error when transaction begin fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -679,7 +678,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed updating season: a valid testing error"))
 		})
 
-		It("get season error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when getting the season fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -707,7 +706,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed updating season: unable to get season: a valid testing error"))
 		})
 
-		It("season must belong to competition error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error if the season does not belong to the competition", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -735,7 +734,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed updating season: season does not belong to the specified competition"))
 		})
 
-		It("update season error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when updating the season fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -767,7 +766,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed updating season: unable to update season: a valid testing error"))
 		})
 
-		It("get team error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when getting a team fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -804,14 +803,10 @@ var _ = Describe("season", func() {
 			)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			expected := fmt.Sprintf(
-				"failed updating season: unable to get team %s: a valid testing error",
-				validTeamID2.String(),
-			)
-			Expect(err).To(MatchError(expected))
+			Expect(err.Error()).To(Equal("failed updating season: unable to get team 22222222-2222-4222-8222-222222222222: a valid testing error"))
 		})
 
-		It("get season team error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when getting existing season teams fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -855,7 +850,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed updating season: unable to get season's existing teams: a valid testing error"))
 		})
 
-		It("delete season team error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when deleting a season team fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -904,15 +899,10 @@ var _ = Describe("season", func() {
 			)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			expected := fmt.Sprintf(
-				"failed updating season: unable to remove team %s from season %s: a valid testing error",
-				validTeamID3.String(),
-				validSeasonID.String(),
-			)
-			Expect(err).To(MatchError(expected))
+			Expect(err.Error()).To(Equal("failed updating season: unable to remove team 33333333-3333-4333-8333-333333333333 from season aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa: a valid testing error"))
 		})
 
-		It("get season after update error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when getting the season after update fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -968,7 +958,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed updating season: unable to get season: a valid testing error"))
 		})
 
-		It("get season team after update error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when getting season teams after update fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -1027,7 +1017,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed updating season: unable to get season teams: a valid testing error"))
 		})
 
-		It("get team after update error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when getting a team after update fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -1095,7 +1085,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed updating season: unable to get team: a valid testing error"))
 		})
 
-		It("get team after update error should return formatted and then rollback", func() {
+		It("should return a formatted error when commit fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -1168,7 +1158,7 @@ var _ = Describe("season", func() {
 	})
 
 	Describe("DeleteSeason", func() {
-		It("should soft delete a season with no errors", func() {
+		It("should soft delete a season without errors", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -1208,7 +1198,7 @@ var _ = Describe("season", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
-		It("transaction begin error should return formatted", func() {
+		It("should return a formatted error when transaction begin fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -1222,7 +1212,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed deleting season: a valid testing error"))
 		})
 
-		It("get season error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when getting the season fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -1243,7 +1233,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed deleting season: unable to get season for deletion: a valid testing error"))
 		})
 
-		It("get season teams error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when getting season teams fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -1268,7 +1258,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed deleting season: unable to get season teams for deletion: a valid testing error"))
 		})
 
-		It("delete season team error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when deleting a season team fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -1294,15 +1284,10 @@ var _ = Describe("season", func() {
 
 			err := DeleteSeason(context.Background(), mockDB, validCompetitionID, validSeasonID)
 
-			expected := fmt.Sprintf(
-				"failed deleting season: unable to remove team %s from season %s: a valid testing error",
-				validTeamID.String(),
-				validSeasonID.String(),
-			)
-			Expect(err).To(MatchError(expected))
+			Expect(err.Error()).To(Equal("failed deleting season: unable to remove team 11111111-1111-4111-8111-111111111111 from season aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa: a valid testing error"))
 		})
 
-		It("delete season error should return formatted and then rollback", func() {
+		It("should rollback and return a formatted error when deleting the season fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -1339,7 +1324,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed deleting season: unable to delete season: a valid testing error"))
 		})
 
-		It("a commit error should return formatted", func() {
+		It("should return a formatted error when commit fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
