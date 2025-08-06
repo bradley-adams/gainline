@@ -1,0 +1,69 @@
+<h1>Schedule</h1>
+
+<div class="container">
+  <form [formGroup]="scheduleForm">
+    
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Competition</mat-label>
+      <mat-select formControlName="competition">
+        <mat-option *ngFor="let comp of competitions" [value]="comp.id">
+          {{ comp.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Season</mat-label>
+      <mat-select formControlName="season">
+        <mat-option *ngFor="let s of seasons" [value]="s.id">
+            {{ s.start_date | date: 'dd/MM/yyyy HH:mm' }} to {{ s.end_date | date: 'dd/MM/yyyy HH:mm' }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Round</mat-label>
+        <mat-select formControlName="round">
+        <mat-option *ngFor="let round of rounds" [value]="round">
+            {{ round }}
+        </mat-option>
+        </mat-select>
+    </mat-form-field>
+  </form>
+</div>
+
+<table mat-table [dataSource]="dataSource">
+    <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let game">{{ game.date | date: 'dd/MM/yyyy HH:mm' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="homeTeamId">
+        <th mat-header-cell *matHeaderCellDef>Home Team</th>
+        <td mat-cell *matCellDef="let game">{{ game.home_team_id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="homeScore">
+        <th mat-header-cell *matHeaderCellDef>Home Score</th>
+        <td mat-cell *matCellDef="let game">{{ game.home_score }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="awayScore">
+        <th mat-header-cell *matHeaderCellDef>Away Score</th>
+        <td mat-cell *matCellDef="let game">{{ game.away_score }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="awayTeamId">
+        <th mat-header-cell *matHeaderCellDef>Away Team</th>
+        <td mat-cell *matCellDef="let game">{{ game.away_team_id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let game">{{ game.status }}</td>
+    </ng-container>
+
+    <!-- Header and Row Definitions -->
+    <tr mat-header-row *matHeaderRowDef="['date', 'homeTeamId', 'homeScore', 'awayScore', 'awayTeamId', 'status']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['date', 'homeTeamId', 'homeScore', 'awayScore', 'awayTeamId', 'status']"></tr>
+</table>
