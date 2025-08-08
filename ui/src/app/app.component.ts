@@ -9,19 +9,10 @@ import { HeaderComponent } from './components/header/header.component'
     standalone: true,
     imports: [CommonModule, RouterOutlet, MatSidenavModule, HeaderComponent],
     template: `
-      <app-header></app-header>
-      <router-outlet></router-outlet>
+        <div class="mat-typography app-frame mat-app-background">
+            <app-header></app-header>
+            <router-outlet></router-outlet>
+        </div>
     `,
-    styles: `
-        .contents {
-            box-sizing: border-box;
-            background-color: transparent;
-            margin: 0;
-            position: absolute;
-            height: auto;
-            inset: 0;
-            padding: 0;
-        }
-    `
 })
 export class AppComponent {}
