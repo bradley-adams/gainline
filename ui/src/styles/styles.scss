@@ -1,0 +1,22 @@
+@use "@angular/material" as mat;
+@use "./m3-theme" as m3-theme;
+
+@include mat.core();
+
+:root {
+  @include mat.core-theme(m3-theme.$dark-theme);
+  @include mat.all-component-themes(m3-theme.$dark-theme);
+  @include mat.system-level-colors(m3-theme.$dark-theme);
+
+  mat-toolbar {
+    background: mat.get-theme-color(m3-theme.$dark-theme, primary-container);
+  }
+}
+
+html,
+body,
+app-root,
+.app-frame {
+  margin: 0;
+  height: 100%;
+}
