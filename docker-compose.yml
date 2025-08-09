@@ -1,6 +1,11 @@
 networks:
   backend:
 
+volumes:
+  gainline-data:
+    name: gainline-data
+  ui-node-modules:
+
 services:
   gainline-db:
     image: postgres:16
@@ -15,7 +20,7 @@ services:
       - gainline-data:/var/lib/postgresql/data
     networks:
       - backend
-
+    restart: unless-stopped
 
   gainline-migrate:
     image: migrate/migrate
@@ -49,16 +54,18 @@ services:
       PORT: 8080
     networks:
       - backend
+    restart: unless-stopped
 
 
-  # gainline-ui:
-  #   container_name: gainline-ui
-  #   ports:
-  #     - "4200:4200"
-  #   depends_on:
-  #     - gainline-api
-
-volumes:
-  gainline-data:
-    name: gainline-data
-
+  gainline-ui:
+    container_name: gainline-ui
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"  # maps container nginx port 80 to host 4200
+    depends_on:
+      - gainline-api
+    networks:
+      - backend
+    restart: unless-stopped
