@@ -1,0 +1,24 @@
+# Version control
+.git
+.gitignore
+
+# Local build artifacts
+bin
+app
+
+# Docker files
+Dockerfile
+docker-compose.yml
+
+# IDE/editor files
+.vscode
+.idea
+*.swp
+
+# OS generated files
+.DS_Store
+*.log
+
+# Environment files (optional - depends if you want to copy .env or not)
+.env.local
+.env.test
