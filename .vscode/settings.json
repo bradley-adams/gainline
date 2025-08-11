@@ -1,7 +1,17 @@
 {
-    "cSpell.words": [
-        "Gainline"
-    ],
-    "github.copilot.nextEditSuggestions.enabled": false,
-    "github.copilot.nextEditSuggestions.fixes": true
+  "cSpell.words": ["Gainline"],
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "github.copilot.nextEditSuggestions.fixes": true,
+
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
