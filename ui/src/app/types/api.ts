@@ -19,6 +19,10 @@ export interface Game {
     deleted_at?: Date
 }
 
+export interface CompetitionUpdate {
+    name: string
+}
+
 export interface Competition {
     id: string
     name: string
