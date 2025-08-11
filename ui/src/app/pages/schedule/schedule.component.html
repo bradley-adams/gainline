@@ -1,41 +1,41 @@
 <h1>Schedule</h1>
 
 <div class="container">
-  <form [formGroup]="scheduleForm">
-    
-    <mat-form-field appearance="outline" class="form-field">
-      <mat-label>Competition</mat-label>
-      <mat-select formControlName="competition">
-        <mat-option *ngFor="let comp of competitions" [value]="comp.id">
-          {{ comp.name }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+    <form [formGroup]="scheduleForm">
+        <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Competition</mat-label>
+            <mat-select formControlName="competition">
+                <mat-option *ngFor="let comp of competitions" [value]="comp.id">
+                    {{ comp.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Season</mat-label>
-      <mat-select formControlName="season">
-        <mat-option *ngFor="let s of seasons" [value]="s.id">
-            {{ s.start_date | date: 'dd/MM/yyyy HH:mm' }} to {{ s.end_date | date: 'dd/MM/yyyy HH:mm' }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Season</mat-label>
+            <mat-select formControlName="season">
+                <mat-option *ngFor="let s of seasons" [value]="s.id">
+                    {{ s.start_date | date : 'dd/MM/yyyy HH:mm' }} to
+                    {{ s.end_date | date : 'dd/MM/yyyy HH:mm' }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
 
-    <mat-form-field appearance="outline">
-        <mat-label>Round</mat-label>
-        <mat-select formControlName="round">
-        <mat-option *ngFor="let round of rounds" [value]="round">
-            {{ round }}
-        </mat-option>
-        </mat-select>
-    </mat-form-field>
-  </form>
+        <mat-form-field appearance="outline">
+            <mat-label>Round</mat-label>
+            <mat-select formControlName="round">
+                <mat-option *ngFor="let round of rounds" [value]="round">
+                    {{ round }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
 </div>
 
 <table mat-table [dataSource]="dataSource">
     <ng-container matColumnDef="date">
         <th mat-header-cell *matHeaderCellDef>Date</th>
-        <td mat-cell *matCellDef="let game">{{ game.date | date: 'dd/MM/yyyy HH:mm' }}</td>
+        <td mat-cell *matCellDef="let game">{{ game.date | date : 'dd/MM/yyyy HH:mm' }}</td>
     </ng-container>
 
     <ng-container matColumnDef="homeTeamId">
@@ -64,6 +64,20 @@
     </ng-container>
 
     <!-- Header and Row Definitions -->
-    <tr mat-header-row *matHeaderRowDef="['date', 'homeTeamId', 'homeScore', 'awayScore', 'awayTeamId', 'status']"></tr>
-    <tr mat-row *matRowDef="let row; columns: ['date', 'homeTeamId', 'homeScore', 'awayScore', 'awayTeamId', 'status']"></tr>
+    <tr
+        mat-header-row
+        *matHeaderRowDef="[
+            'date',
+            'homeTeamId',
+            'homeScore',
+            'awayScore',
+            'awayTeamId',
+            'status'
+        ]"></tr>
+    <tr
+        mat-row
+        *matRowDef="
+            let row;
+            columns: ['date', 'homeTeamId', 'homeScore', 'awayScore', 'awayTeamId', 'status']
+        "></tr>
 </table>
