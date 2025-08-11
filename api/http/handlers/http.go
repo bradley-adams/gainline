@@ -28,6 +28,8 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger) *gin.Engine {
 
 	v1public := router.Group("/v1").Use(cors.Default())
 	{
+		v1public.OPTIONS("/*path")
+
 		//competitions
 		v1public.POST("/competitions", handleCreateCompetition(logger, db))
 		v1public.GET("/competitions", handleGetCompetitions(logger, db))

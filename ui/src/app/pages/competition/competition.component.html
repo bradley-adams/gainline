@@ -1,0 +1,17 @@
+<h1 *ngIf="!isEditMode">Create Competition</h1>
+<h1 *ngIf="isEditMode">Update Competition</h1>
+
+<div class="container">
+  <form [formGroup]="competitionForm" (ngSubmit)="submitForm()">
+    
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" />
+      <mat-error *ngIf="competitionForm.get('name')?.hasError('required')">Name is required</mat-error>
+    </mat-form-field>
+
+    <button type="submit" mat-raised-button color="primary">SAVE</button>
+    <button mat-stroked-button [routerLink]="['/schedule']">CANCEL</button>
+
+  </form>
+</div>
