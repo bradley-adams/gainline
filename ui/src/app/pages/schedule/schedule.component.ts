@@ -17,9 +17,9 @@ import { CompetitionsService } from '../../services/competitions/competitions.se
     styleUrls: ['./schedule.component.scss']
 })
 export class ScheduleComponent implements OnInit {
-    private readonly gamesService = inject(GamesService)
-    private readonly seasonsService = inject(SeasonsService)
     private readonly competitionsService = inject(CompetitionsService)
+    private readonly seasonsService = inject(SeasonsService)
+    private readonly gamesService = inject(GamesService)
     private readonly formBuilder = inject(FormBuilder)
 
     public dataSource = new MatTableDataSource<Game>([])
