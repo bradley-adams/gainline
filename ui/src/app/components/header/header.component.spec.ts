@@ -5,7 +5,8 @@ import { By } from '@angular/platform-browser'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideRouter } from '@angular/router'
-import { CompetitionComponent } from '../../pages/competition/competition.component'
+import { CompetitionListComponent } from '../../pages/competition-list/competition-list.component'
+import { ScheduleComponent } from '../../pages/schedule/schedule.component'
 
 describe('HeaderComponent', () => {
     let component: HeaderComponent
@@ -17,7 +18,16 @@ describe('HeaderComponent', () => {
             providers: [
                 provideHttpClient(),
                 provideHttpClientTesting(),
-                provideRouter([{ path: 'competitions/create', component: CompetitionComponent }])
+                provideRouter([
+                    {
+                        path: 'schedule',
+                        component: ScheduleComponent
+                    },
+                    {
+                        path: 'admin/competitions',
+                        component: CompetitionListComponent
+                    }
+                ])
             ]
         }).compileComponents()
 
@@ -35,11 +45,11 @@ describe('HeaderComponent', () => {
         expect(toolbarText).toContain('Gainline')
     })
 
-    it('should have an icon linking to /competitions/create', () => {
+    it('should have an icon linking to /admin/competitions', () => {
         const iconDebugEl = fixture.debugElement.query(By.css('mat-icon'))
         expect(iconDebugEl).toBeTruthy()
 
         const routerLink = iconDebugEl.attributes['ng-reflect-router-link']
-        expect(routerLink).toBe('/competitions/create')
+        expect(routerLink).toBe('/admin/competitions')
     })
 })

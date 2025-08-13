@@ -1,14 +1,16 @@
-import { Routes } from '@angular/router';
-import { ScheduleComponent } from './pages/schedule/schedule.component';
-import { CompetitionComponent } from './pages/competition/competition.component';
+import { Routes } from '@angular/router'
+import { ScheduleComponent } from './pages/schedule/schedule.component'
+import { CompetitionListComponent } from './pages/competition-list/competition-list.component'
+import { CompetitionDetailComponent } from './pages/competition-detail/competition-detail.component'
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/schedule', pathMatch: 'full' },
+    { path: '', redirectTo: '/schedule', pathMatch: 'full' },
 
-  { path: 'schedule', component: ScheduleComponent },
+    { path: 'schedule', component: ScheduleComponent },
 
-  { path: 'competitions/create', component: CompetitionComponent },
-    
-  { path: 'competitions/:competition-id', component: CompetitionComponent },
+    { path: 'admin', component: CompetitionListComponent },
+
+    { path: 'admin/competitions', component: CompetitionListComponent },
+    { path: 'admin/competitions/create', component: CompetitionDetailComponent },
+    { path: 'admin/competitions/:competition-id', component: CompetitionDetailComponent }
 ]
-
