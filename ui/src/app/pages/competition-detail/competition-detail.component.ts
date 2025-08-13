@@ -1,19 +1,19 @@
-import { Component, OnInit, inject } from '@angular/core'
-import { CompetitionsService } from '../../services/competitions/competitions.service'
+import { Component, inject } from '@angular/core'
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MaterialModule } from '../../shared/material/material.module'
-import { CompetitionUpdate } from '../../types/api'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
+import { CompetitionsService } from '../../services/competitions/competitions.service'
+import { CompetitionUpdate } from '../../types/api'
 import { CommonModule } from '@angular/common'
+import { MaterialModule } from '../../shared/material/material.module'
 
 @Component({
-    selector: 'app-competition',
+    selector: 'app-competition-detail',
     standalone: true,
     imports: [CommonModule, RouterModule, MaterialModule, ReactiveFormsModule],
-    templateUrl: './competition.component.html',
-    styleUrl: './competition.component.scss'
+    templateUrl: './competition-detail.component.html',
+    styleUrl: './competition-detail.component.scss'
 })
-export class CompetitionComponent implements OnInit {
+export class CompetitionDetailComponent {
     private readonly formBuilder = inject(FormBuilder)
     private readonly route = inject(ActivatedRoute)
     private readonly router = inject(Router)

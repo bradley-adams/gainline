@@ -3,7 +3,7 @@ import { AppComponent } from './app.component'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideRouter } from '@angular/router'
-import { CompetitionComponent } from './pages/competition/competition.component'
+import { CompetitionDetailComponent } from './pages/competition-detail/competition-detail.component'
 
 describe('AppComponent', () => {
     beforeEach(async () => {
@@ -12,7 +12,9 @@ describe('AppComponent', () => {
             providers: [
                 provideHttpClient(),
                 provideHttpClientTesting(),
-                provideRouter([{ path: 'competitions/create', component: CompetitionComponent }])
+                provideRouter([
+                    { path: 'competitions/create', component: CompetitionDetailComponent }
+                ])
             ]
         }).compileComponents()
     })

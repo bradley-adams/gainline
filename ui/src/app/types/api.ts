@@ -1,24 +1,3 @@
-export enum GameStatus {
-    SCHEDULED = 'scheduled',
-    PLAYING = 'playing',
-    FINISHED = 'finished'
-}
-
-export interface Game {
-    id: string
-    season_id: string
-    round: number
-    date: Date
-    home_team_id: string
-    away_team_id: string
-    home_score: number
-    away_score: number
-    status: GameStatus
-    created_at: Date
-    updated_at: Date
-    deleted_at?: Date
-}
-
 export interface CompetitionUpdate {
     name: string
 }
@@ -51,4 +30,25 @@ export interface Team {
     location: string
     name: string
     updated_at: Date
+}
+
+export enum GameStatus {
+    SCHEDULED = 'scheduled',
+    PLAYING = 'playing',
+    FINISHED = 'finished'
+}
+
+export interface Game {
+    id: string
+    season_id: string
+    round: number
+    date: Date
+    home_team_id: string
+    away_team_id: string
+    home_score: number
+    away_score: number
+    status: GameStatus
+    created_at: Date
+    updated_at: Date
+    deleted_at?: Date
 }

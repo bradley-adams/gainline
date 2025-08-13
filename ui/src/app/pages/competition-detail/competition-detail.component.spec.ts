@@ -1,27 +1,31 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { CompetitionComponent } from './competition.component'
 import { provideRouter } from '@angular/router'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { provideHttpClient } from '@angular/common/http'
+import { CompetitionDetailComponent } from './competition-detail.component'
+import { CompetitionListComponent } from '../competition-list/competition-list.component'
 
-describe('CompetitionComponent', () => {
-    let component: CompetitionComponent
-    let fixture: ComponentFixture<CompetitionComponent>
+describe('CompetitionDetailComponent', () => {
+    let component: CompetitionDetailComponent
+    let fixture: ComponentFixture<CompetitionDetailComponent>
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [CompetitionComponent, NoopAnimationsModule],
+            imports: [CompetitionDetailComponent, NoopAnimationsModule],
             providers: [
                 provideHttpClient(),
                 provideHttpClientTesting(),
                 provideRouter([
-                    { path: 'competitions/:competition-id', component: CompetitionComponent }
+                    {
+                        path: 'admin/competitions',
+                        component: CompetitionListComponent
+                    }
                 ])
             ]
         }).compileComponents()
 
-        fixture = TestBed.createComponent(CompetitionComponent)
+        fixture = TestBed.createComponent(CompetitionDetailComponent)
         component = fixture.componentInstance
         fixture.detectChanges()
     })
