@@ -1,7 +1,3 @@
-export interface CompetitionUpdate {
-    name: string
-}
-
 export interface Competition {
     id: string
     name: string
