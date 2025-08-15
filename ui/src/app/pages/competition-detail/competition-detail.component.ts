@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core'
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { CompetitionsService } from '../../services/competitions/competitions.service'
-import { CompetitionUpdate } from '../../types/api'
+import { Competition } from '../../types/api'
 import { CommonModule } from '@angular/common'
 import { MaterialModule } from '../../shared/material/material.module'
 
@@ -42,7 +42,7 @@ export class CompetitionDetailComponent {
             return
         }
 
-        const competitionData: CompetitionUpdate = this.competitionForm.value
+        const competitionData: Competition = this.competitionForm.value
         if (!this.isEditMode) {
             this.createCompetition(competitionData)
         } else if (this.competitionId) {
@@ -61,19 +61,19 @@ export class CompetitionDetailComponent {
         })
     }
 
-    private createCompetition(newCompetition: CompetitionUpdate): void {
+    private createCompetition(newCompetition: Competition): void {
         this.competitionsService.createCompetition(newCompetition).subscribe({
             next: (competition) => {
-                this.router.navigate(['/competitions', competition.id])
+                this.router.navigate(['/admin/competitions', competition.id])
             },
             error: (err) => console.error('Error creating competition:', err)
         })
     }
 
-    private updateCompetition(id: string, updatedCompetition: CompetitionUpdate): void {
+    private updateCompetition(id: string, updatedCompetition: Competition): void {
         this.competitionsService.updateCompetition(id, updatedCompetition).subscribe({
             next: () => {
-                this.router.navigate(['/competitions', this.competitionId])
+                this.router.navigate(['/admin/competitions', this.competitionId])
             },
             error: (err) => console.error('Error updating competition:', err)
         })

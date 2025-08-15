@@ -20,7 +20,6 @@ export class CompetitionsService {
     }
 
     createCompetition(competition: Partial<Competition>): Observable<Competition> {
-        console.log('Posting competition:', competition)
         return this.http.post<Competition>(`${this.path}/v1/competitions`, competition)
     }
 

@@ -1,0 +1,51 @@
+<h1>Seasons</h1>
+
+<div class="actions">
+    <button
+        mat-raised-button
+        color="primary"
+        [routerLink]="['/admin/competitions', competitionId, 'seasons', 'create']">
+        Create Season
+    </button>
+</div>
+
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z2">
+    <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>Season ID</th>
+        <td mat-cell *matCellDef="let season">{{ season.id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="start">
+        <th mat-header-cell *matHeaderCellDef>Starts</th>
+        <td mat-cell *matCellDef="let season">{{ season.start_date | date : 'medium' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="end">
+        <th mat-header-cell *matHeaderCellDef>Ends</th>
+        <td mat-cell *matCellDef="let season">{{ season.end_date | date : 'medium' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="rounds">
+        <th mat-header-cell *matHeaderCellDef>Rounds</th>
+        <td mat-cell *matCellDef="let season">{{ season.rounds }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let season">
+            <button
+                mat-icon-button
+                [routerLink]="['/admin/competitions', competitionId, 'seasons', season.id]">
+                <mat-icon>edit</mat-icon>
+            </button>
+            <button
+                mat-icon-button
+                [routerLink]="['/admin/competitions', competitionId, 'seasons', season.id, 'games']">
+                <mat-icon>calendar_today</mat-icon>
+            </button>
+        </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['id', 'start', 'end', 'rounds', 'actions']"></tr>
+    <tr mat-row *matRowDef="let row; columns: ['id', 'start', 'end', 'rounds', 'actions']"></tr>
+</table>
