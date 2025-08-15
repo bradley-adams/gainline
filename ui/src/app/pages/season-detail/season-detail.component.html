@@ -4,17 +4,28 @@
 <div class="container">
     <form [formGroup]="seasonForm" (ngSubmit)="submitForm()">
         <mat-form-field appearance="outline">
-            <mat-label>Season Dates</mat-label>
-            <mat-date-range-input [rangePicker]="picker">
-                <input matStartDate formControlName="start_date" placeholder="Start date" />
-                <input matEndDate formControlName="end_date" placeholder="End date" />
-            </mat-date-range-input>
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-date-range-picker #picker></mat-date-range-picker>
-
+            <mat-label>Start Date</mat-label>
+            <input
+                matInput
+                [matDatepicker]="startPicker"
+                formControlName="start_date"
+                placeholder="Choose start date" />
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
             <mat-error *ngIf="seasonForm.get('start_date')?.hasError('required')">
                 Start date is required
             </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>End Date</mat-label>
+            <input
+                matInput
+                [matDatepicker]="endPicker"
+                formControlName="end_date"
+                placeholder="Choose end date" />
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
             <mat-error *ngIf="seasonForm.get('end_date')?.hasError('required')">
                 End date is required
             </mat-error>
@@ -22,7 +33,7 @@
 
         <mat-form-field appearance="outline">
             <mat-label>Rounds</mat-label>
-            <input matInput type="number" min="1" max="50" formControlName="rounds" />
+            <input matInput type="number" min="1" max="50" formControlName="rounds" class="no-spinner" />
             <mat-error *ngIf="seasonForm.get('rounds')?.hasError('required')">Rounds are required</mat-error>
         </mat-form-field>
 
