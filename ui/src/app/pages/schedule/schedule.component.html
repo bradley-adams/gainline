@@ -22,7 +22,7 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Round</mat-label>
+            <mat-label>Rounds</mat-label>
             <mat-select formControlName="round">
                 <mat-option *ngFor="let round of rounds" [value]="round">
                     {{ round }}
@@ -66,14 +66,7 @@
     <!-- Header and Row Definitions -->
     <tr
         mat-header-row
-        *matHeaderRowDef="[
-            'date',
-            'homeTeamId',
-            'homeScore',
-            'awayScore',
-            'awayTeamId',
-            'status'
-        ]"></tr>
+        *matHeaderRowDef="['date', 'homeTeamId', 'homeScore', 'awayScore', 'awayTeamId', 'status']"></tr>
     <tr
         mat-row
         *matRowDef="

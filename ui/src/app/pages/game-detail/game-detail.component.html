@@ -1,0 +1,85 @@
+<h1>{{ isEditMode ? 'Update Game' : 'Create Game' }}</h1>
+
+<div class="container">
+    <form [formGroup]="gameForm" (ngSubmit)="submitForm()">
+        <mat-form-field appearance="outline">
+            <mat-label>Round</mat-label>
+            <mat-select formControlName="round">
+                <mat-option *ngFor="let round of rounds" [value]="round">Round {{ round }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="gameForm.get('round')?.hasError('required')">Round is required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Date</mat-label>
+            <input
+                matInput
+                [matDatepicker]="datePicker"
+                formControlName="date"
+                placeholder="Choose game date" />
+            <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+            <mat-datepicker #datePicker></mat-datepicker>
+            <mat-error *ngIf="gameForm.get('date')?.hasError('required')">Date is required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Home Team</mat-label>
+            <mat-select formControlName="home_team_id">
+                <mat-option *ngFor="let team of teams" [value]="team.id">
+                    {{ team.name }}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="gameForm.get('home_team_id')?.hasError('required')">
+                Home team is required
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Away Team</mat-label>
+            <mat-select formControlName="away_team_id">
+                <mat-option *ngFor="let team of teams" [value]="team.id">
+                    {{ team.name }}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="gameForm.get('away_team_id')?.hasError('required')">
+                Away team is required
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Home Score</mat-label>
+            <input
+                matInput
+                type="number"
+                formControlName="home_score"
+                class="no-spinner"
+                (wheel)="$event.preventDefault()" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Away Score</mat-label>
+            <input
+                matInput
+                type="number"
+                formControlName="away_score"
+                class="no-spinner"
+                (wheel)="$event.preventDefault()" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="status">
+                <mat-option value="scheduled">Scheduled</mat-option>
+                <mat-option value="playing">Playing</mat-option>
+                <mat-option value="Finished">Finished</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <button type="submit" mat-raised-button color="primary">SAVE</button>
+        <button
+            mat-stroked-button
+            [routerLink]="['/admin/competitions', competitionId, 'seasons', seasonId, 'games']">
+            CANCEL
+        </button>
+    </form>
+</div>

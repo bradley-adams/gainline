@@ -32,12 +32,11 @@ export class SeasonDetailComponent {
     private readonly formBuilder = inject(FormBuilder)
     private readonly route = inject(ActivatedRoute)
     private readonly router = inject(Router)
-    private readonly competitionsService = inject(CompetitionsService)
     private readonly seasonsService = inject(SeasonsService)
     private readonly teamsService = inject(TeamsService)
 
     public seasonForm!: FormGroup
-    private competitionId: string | null = null
+    public competitionId: string | null = null
     private seasonId: string | null = null
     public isEditMode = false
 
@@ -101,7 +100,7 @@ export class SeasonDetailComponent {
     private createSeason(competitionId: string, newSeason: Season): void {
         this.seasonsService.createSeason(competitionId, newSeason).subscribe({
             next: (season) => {
-                this.router.navigate(['/admin/competitions', this.competitionId, 'seasons', season.id])
+                this.router.navigate(['/admin/competitions', this.competitionId, 'seasons'])
             },
             error: (err) => console.error('Error creating season:', err)
         })
@@ -110,7 +109,7 @@ export class SeasonDetailComponent {
     private updateSeason(competitionId: string, id: string, updatedSeason: Season): void {
         this.seasonsService.updateSeason(competitionId, id, updatedSeason).subscribe({
             next: (season) => {
-                this.router.navigate(['/admin/competitions', this.competitionId, 'seasons', season.id])
+                this.router.navigate(['/admin/competitions', this.competitionId, 'seasons'])
             },
             error: (err) => console.error('Error updating season:', err)
         })
