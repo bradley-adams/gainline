@@ -33,7 +33,14 @@
 
         <mat-form-field appearance="outline">
             <mat-label>Rounds</mat-label>
-            <input matInput type="number" min="1" max="50" formControlName="rounds" class="no-spinner" />
+            <input
+                matInput
+                type="number"
+                min="1"
+                max="50"
+                formControlName="rounds"
+                class="no-spinner"
+                (wheel)="$event.preventDefault()" />
             <mat-error *ngIf="seasonForm.get('rounds')?.hasError('required')">Rounds are required</mat-error>
         </mat-form-field>
 
@@ -47,6 +54,8 @@
         </mat-form-field>
 
         <button type="submit" mat-raised-button color="primary">SAVE</button>
-        <button mat-stroked-button [routerLink]="['/admin/competitions']">CANCEL</button>
+        <button mat-stroked-button [routerLink]="['/admin/competitions', competitionId, 'seasons']">
+            CANCEL
+        </button>
     </form>
 </div>

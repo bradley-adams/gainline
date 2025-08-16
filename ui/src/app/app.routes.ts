@@ -4,6 +4,8 @@ import { CompetitionListComponent } from './pages/competition-list/competition-l
 import { CompetitionDetailComponent } from './pages/competition-detail/competition-detail.component'
 import { SeasonListComponent } from './pages/season-list/season-list.component'
 import { SeasonDetailComponent } from './pages/season-detail/season-detail.component'
+import { GameListComponent } from './pages/game-list/game-list.component'
+import { GameDetailComponent } from './pages/game-detail/game-detail.component'
 
 // prettier-ignore
 export const routes: Routes = [
@@ -11,8 +13,9 @@ export const routes: Routes = [
 
     { path: 'schedule', component: ScheduleComponent },
 
-    // Admin - Competitions
     { path: 'admin', component: CompetitionListComponent },
+    
+    // Admin - Competitions
     { path: 'admin/competitions', component: CompetitionListComponent },
     { path: 'admin/competitions/create', component: CompetitionDetailComponent },
     { path: 'admin/competitions/:competition-id', component: CompetitionDetailComponent },
@@ -20,5 +23,10 @@ export const routes: Routes = [
     // Admin - Seasons
     { path: 'admin/competitions/:competition-id/seasons', component: SeasonListComponent },
     { path: 'admin/competitions/:competition-id/seasons/create', component: SeasonDetailComponent },
-    { path: 'admin/competitions/:competition-id/seasons/:season-id', component: SeasonDetailComponent }
+    { path: 'admin/competitions/:competition-id/seasons/:season-id', component: SeasonDetailComponent },
+
+    // Admin - Games
+    { path: 'admin/competitions/:competition-id/seasons/:season-id/games', component: GameListComponent },
+    { path: 'admin/competitions/:competition-id/seasons/:season-id/games/create', component: GameDetailComponent },
+    { path: 'admin/competitions/:competition-id/seasons/:season-id/games/:game-id', component: GameDetailComponent }
 ];
