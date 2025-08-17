@@ -6,6 +6,7 @@ import { SeasonListComponent } from './pages/season-list/season-list.component'
 import { SeasonDetailComponent } from './pages/season-detail/season-detail.component'
 import { GameListComponent } from './pages/game-list/game-list.component'
 import { GameDetailComponent } from './pages/game-detail/game-detail.component'
+import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component'
 
 // prettier-ignore
 export const routes: Routes = [
@@ -13,7 +14,7 @@ export const routes: Routes = [
 
     { path: 'schedule', component: ScheduleComponent },
 
-    { path: 'admin', component: CompetitionListComponent },
+    { path: 'admin', component: AdminDashboardComponent },
     
     // Admin - Competitions
     { path: 'admin/competitions', component: CompetitionListComponent },
