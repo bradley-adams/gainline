@@ -45,11 +45,11 @@ describe('HeaderComponent', () => {
         expect(toolbarText).toContain('Gainline')
     })
 
-    it('should have an icon linking to /admin/competitions', () => {
+    it('should have an icon linking to /admin', () => {
         const iconDebugEl = fixture.debugElement.query(By.css('mat-icon'))
         expect(iconDebugEl).toBeTruthy()
 
         const routerLink = iconDebugEl.attributes['ng-reflect-router-link']
-        expect(routerLink).toBe('/admin/competitions')
+        expect(routerLink).toBe('/admin')
     })
 })

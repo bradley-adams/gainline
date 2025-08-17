@@ -1,32 +1,35 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 
-import { GameDetailComponent } from './game-detail.component'
+import { TeamListComponent } from './team-list.component'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideRouter } from '@angular/router'
-import { NoopAnimationsModule } from '@angular/platform-browser/animations'
-import { GameListComponent } from '../game-list/game-list.component'
+import { TeamDetailComponent } from '../team-detail/team-detail.component'
 
-describe('GameDetailComponent', () => {
-    let component: GameDetailComponent
-    let fixture: ComponentFixture<GameDetailComponent>
+describe('TeamListComponent', () => {
+    let component: TeamListComponent
+    let fixture: ComponentFixture<TeamListComponent>
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            imports: [GameDetailComponent, NoopAnimationsModule],
+            imports: [TeamListComponent],
             providers: [
                 provideHttpClient(),
                 provideHttpClientTesting(),
                 provideRouter([
                     {
-                        path: 'admin/competitions/:competition-id/seasons/:season-id/games',
-                        component: GameListComponent
+                        path: 'admin/teams/create',
+                        component: TeamDetailComponent
+                    },
+                    {
+                        path: 'admin/teams/:team-id',
+                        component: TeamDetailComponent
                     }
                 ])
             ]
         }).compileComponents()
 
-        fixture = TestBed.createComponent(GameDetailComponent)
+        fixture = TestBed.createComponent(TeamListComponent)
         component = fixture.componentInstance
         fixture.detectChanges()
     })
