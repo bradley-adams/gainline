@@ -1,23 +1,41 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 
-import { AdminDashboardComponent } from './admin-dashboard.component';
+import { AdminDashboardComponent } from './admin-dashboard.component'
+import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { provideRouter } from '@angular/router'
+import { TeamListComponent } from '../team-list/team-list.component'
+import { CompetitionListComponent } from '../competition-list/competition-list.component'
 
 describe('AdminDashboardComponent', () => {
-  let component: AdminDashboardComponent;
-  let fixture: ComponentFixture<AdminDashboardComponent>;
+    let component: AdminDashboardComponent
+    let fixture: ComponentFixture<AdminDashboardComponent>
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AdminDashboardComponent]
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [AdminDashboardComponent],
+            providers: [
+                provideHttpClient(),
+                provideHttpClientTesting(),
+                provideRouter([
+                    {
+                        path: 'admin/teams',
+                        component: TeamListComponent
+                    },
+                    {
+                        path: 'admin/competitions',
+                        component: CompetitionListComponent
+                    }
+                ])
+            ]
+        }).compileComponents()
+
+        fixture = TestBed.createComponent(AdminDashboardComponent)
+        component = fixture.componentInstance
+        fixture.detectChanges()
     })
-    .compileComponents();
 
-    fixture = TestBed.createComponent(AdminDashboardComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+    it('should create', () => {
+        expect(component).toBeTruthy()
+    })
+})
