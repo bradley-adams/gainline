@@ -54,7 +54,10 @@
         </mat-form-field>
 
         <button type="submit" mat-raised-button color="primary">SAVE</button>
-        <button mat-stroked-button [routerLink]="['/admin/competitions', competitionId, 'seasons']">
+        <button
+            type="button"
+            mat-stroked-button
+            [routerLink]="['/admin/competitions', competitionId, 'seasons']">
             CANCEL
         </button>
     </form>

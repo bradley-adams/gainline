@@ -6,12 +6,10 @@
         <mat-form-field appearance="outline">
             <mat-label>Name</mat-label>
             <input matInput formControlName="name" />
-            <mat-error *ngIf="competitionForm.get('name')?.hasError('required')">
-                Name is required
-            </mat-error>
+            <mat-error *ngIf="competitionForm.get('name')?.hasError('required')">Name is required</mat-error>
         </mat-form-field>
 
         <button type="submit" mat-raised-button color="primary">SAVE</button>
-        <button mat-stroked-button [routerLink]="['/admin/competitions']">CANCEL</button>
+        <button type="button" mat-stroked-button [routerLink]="['/admin/competitions']">CANCEL</button>
     </form>
 </div>

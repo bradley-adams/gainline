@@ -7,6 +7,8 @@ import { SeasonDetailComponent } from './pages/season-detail/season-detail.compo
 import { GameListComponent } from './pages/game-list/game-list.component'
 import { GameDetailComponent } from './pages/game-detail/game-detail.component'
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component'
+import { TeamListComponent } from './pages/team-list/team-list.component'
+import { TeamDetailComponent } from './pages/team-detail/team-detail.component'
 
 // prettier-ignore
 export const routes: Routes = [
@@ -29,5 +31,10 @@ export const routes: Routes = [
     // Admin - Games
     { path: 'admin/competitions/:competition-id/seasons/:season-id/games', component: GameListComponent },
     { path: 'admin/competitions/:competition-id/seasons/:season-id/games/create', component: GameDetailComponent },
-    { path: 'admin/competitions/:competition-id/seasons/:season-id/games/:game-id', component: GameDetailComponent }
-];
+    { path: 'admin/competitions/:competition-id/seasons/:season-id/games/:game-id', component: GameDetailComponent },
+
+    // Admin - Teams
+    { path: 'admin/teams', component: TeamListComponent },
+    { path: 'admin/teams/create', component: TeamDetailComponent },
+    { path: 'admin/teams/:team-id', component: TeamDetailComponent },
+]

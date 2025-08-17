@@ -31,4 +31,8 @@
 
     <tr mat-header-row *matHeaderRowDef="['name', 'created', 'actions']"></tr>
     <tr mat-row *matRowDef="let row; columns: ['name', 'created', 'actions']"></tr>
+
+    <tr *ngIf="dataSource.data.length === 0">
+        <td colspan="7" class="text-center">No games found</td>
+    </tr>
 </table>

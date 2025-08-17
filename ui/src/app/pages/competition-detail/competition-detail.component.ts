@@ -64,7 +64,7 @@ export class CompetitionDetailComponent {
     private createCompetition(newCompetition: Competition): void {
         this.competitionsService.createCompetition(newCompetition).subscribe({
             next: (competition) => {
-                this.router.navigate(['/admin/competitions', competition.id])
+                this.router.navigate(['/admin/competitions'])
             },
             error: (err) => console.error('Error creating competition:', err)
         })
@@ -73,7 +73,7 @@ export class CompetitionDetailComponent {
     private updateCompetition(id: string, updatedCompetition: Competition): void {
         this.competitionsService.updateCompetition(id, updatedCompetition).subscribe({
             next: () => {
-                this.router.navigate(['/admin/competitions', this.competitionId])
+                this.router.navigate(['/admin/competitions'])
             },
             error: (err) => console.error('Error updating competition:', err)
         })
