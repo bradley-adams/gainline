@@ -1,0 +1,26 @@
+<h1 *ngIf="!isEditMode">Create Team</h1>
+<h1 *ngIf="isEditMode">Update Team</h1>
+
+<div class="container">
+    <form [formGroup]="teamForm" (ngSubmit)="submitForm()">
+        <mat-form-field appearance="outline">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" />
+            <mat-error *ngIf="teamForm.get('name')?.hasError('required')">Name is required</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Abbreviation</mat-label>
+            <input matInput formControlName="abbreviation" />
+            <mat-error *ngIf="teamForm.get('abbreviation')?.hasError('required')">
+                Abbreviation is required
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Location</mat-label>
+            <input matInput formControlName="location" />
+            <mat-error *ngIf="teamForm.get('location')?.hasError('required')">Location is required</mat-error>
+        </mat-form-field>
+        <button type="submit" mat-raised-button color="primary">SAVE</button>
+        <button type="button" mat-stroked-button [routerLink]="['/admin/teams']">CANCEL</button>
+    </form>
+</div>
