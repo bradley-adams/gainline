@@ -20,10 +20,13 @@
     <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let comp">
-            <button mat-icon-button [routerLink]="['/admin/competitions', comp.id]">
+            <button data-testid="edit-button" mat-icon-button [routerLink]="['/admin/competitions', comp.id]">
                 <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button [routerLink]="['/admin/competitions', comp.id, 'seasons']">
+            <button
+                data-testid="seasons-button"
+                mat-icon-button
+                [routerLink]="['/admin/competitions', comp.id, 'seasons']">
                 <mat-icon>calendar_today</mat-icon>
             </button>
         </td>
