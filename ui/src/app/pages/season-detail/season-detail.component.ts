@@ -90,7 +90,8 @@ export class SeasonDetailComponent {
                 this.seasonForm.patchValue({
                     start_date: season.start_date,
                     end_date: season.end_date,
-                    rounds: season.rounds
+                    rounds: season.rounds,
+                    teams: (season.teams as Team[]).map((t) => t.id)
                 })
             },
             error: (err) => console.error('Error loading season:', err)
@@ -99,7 +100,7 @@ export class SeasonDetailComponent {
 
     private createSeason(competitionId: string, newSeason: Season): void {
         this.seasonsService.createSeason(competitionId, newSeason).subscribe({
-            next: (season) => {
+            next: () => {
                 this.router.navigate(['/admin/competitions', this.competitionId, 'seasons'])
             },
             error: (err) => console.error('Error creating season:', err)
@@ -108,7 +109,7 @@ export class SeasonDetailComponent {
 
     private updateSeason(competitionId: string, id: string, updatedSeason: Season): void {
         this.seasonsService.updateSeason(competitionId, id, updatedSeason).subscribe({
-            next: (season) => {
+            next: () => {
                 this.router.navigate(['/admin/competitions', this.competitionId, 'seasons'])
             },
             error: (err) => console.error('Error updating season:', err)

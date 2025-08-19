@@ -94,7 +94,9 @@ export class GameDetailComponent {
     private loadSeason(competitionId: string, id: string): void {
         this.seasonsService.getSeason(competitionId, id).subscribe({
             next: (season: Season) => {
-                this.teams = season.teams
+                this.teams = season.teams.map((t) =>
+                    typeof t === 'string' ? ({ id: t, name: t } as Team) : t
+                )
                 this.rounds = Array.from({ length: season.rounds }, (_, i) => i + 1)
             },
             error: (err) => console.error('Error loading season:', err)
