@@ -78,7 +78,7 @@ func createSeason(
 		return SeasonWithTeams{}, err
 	}
 
-	teamIDs := dedupeUUIDs(req.TeamIDs)
+	teamIDs := dedupeUUIDs(req.Teams)
 	err = ensureTeamsExist(ctx, queries, teamIDs)
 	if err != nil {
 		return SeasonWithTeams{}, err
@@ -333,7 +333,7 @@ func updateSeason(
 	}
 
 	// dedupe + sync teams (adds missing and removes extras)
-	err = syncSeasonTeams(ctx, queries, seasonID, req.TeamIDs, now)
+	err = syncSeasonTeams(ctx, queries, seasonID, req.Teams, now)
 	if err != nil {
 		return SeasonWithTeams{}, err
 	}

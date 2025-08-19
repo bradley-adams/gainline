@@ -73,16 +73,16 @@ definitions:
     - GameStatusFinished
   api.SeasonRequest:
     properties:
-      TeamIDs:
-        items:
-          type: string
-        type: array
       end_date:
         type: string
       rounds:
         type: integer
       start_date:
         type: string
+      teams:
+        items:
+          type: string
+        type: array
     type: object
   api.SeasonResponse:
     properties:
@@ -465,6 +465,10 @@ paths:
             items:
               $ref: '#/definitions/api.GameResponse'
             type: array
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:

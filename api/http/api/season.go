@@ -11,7 +11,7 @@ type SeasonRequest struct {
 	StartDate time.Time   `json:"start_date"`
 	EndDate   time.Time   `json:"end_date"`
 	Rounds    int32       `json:"rounds"`
-	TeamIDs   []uuid.UUID `json:"TeamIDs"`
+	Teams     []uuid.UUID `json:"teams"`
 }
 
 type SeasonResponse struct {
