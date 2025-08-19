@@ -14,7 +14,7 @@ export interface Season {
     id: string
     rounds: number
     start_date: Date
-    teams: Team[]
+    teams: (string | Team)[]
     updated_at: Date
 }
 

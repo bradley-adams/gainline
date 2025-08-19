@@ -49,7 +49,7 @@ var _ = Describe("season", func() {
 		StartDate: validTimeNow,
 		EndDate:   validTimeNow.AddDate(0, 5, 0),
 		Rounds:    15,
-		TeamIDs:   validTeamIDs,
+		Teams:   validTeamIDs,
 	}
 
 	var validNilSeason db.Season
