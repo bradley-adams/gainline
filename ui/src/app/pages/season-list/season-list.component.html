@@ -34,11 +34,13 @@
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let season">
             <button
+                data-testid="edit-button"
                 mat-icon-button
                 [routerLink]="['/admin/competitions', competitionId, 'seasons', season.id]">
                 <mat-icon>edit</mat-icon>
             </button>
             <button
+                data-testid="games-button"
                 mat-icon-button
                 [routerLink]="['/admin/competitions', competitionId, 'seasons', season.id, 'games']">
                 <mat-icon>calendar_today</mat-icon>

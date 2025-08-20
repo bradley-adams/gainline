@@ -120,7 +120,7 @@ describe('CompetitionListComponent', () => {
         expect(call).toEqual('/admin/competitions/comp1')
 
         seasonsButton.click()
-        const call2 = routerSpy.calls.all()[0].args[0].toString()
-        expect(call2).toEqual('/admin/competitions/comp1')
+        const call2 = routerSpy.calls.all()[1].args[0].toString()
+        expect(call2).toEqual('/admin/competitions/comp1/seasons')
     })
 })
