@@ -53,6 +53,7 @@ describe('SeasonDetailComponent', () => {
             updated_at: new Date('2024-01-04T00:00:00Z')
         }
     ]
+
     const mockSeason1: Season = {
         id: 'season1',
         competition_id: 'comp1',

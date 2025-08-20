@@ -29,7 +29,7 @@ describe('CompetitionDetailComponent', () => {
         updated_at: new Date('2023-02-02T00:00:00Z')
     }
 
-    function mockRouteWithId(id: string | null) {
+    function mockRoute(id: string | null) {
         return {
             snapshot: {
                 paramMap: {
@@ -67,7 +67,7 @@ describe('CompetitionDetailComponent', () => {
 
     describe('Create mode', () => {
         beforeEach(() => {
-            TestBed.overrideProvider(ActivatedRoute, { useValue: mockRouteWithId(null) })
+            TestBed.overrideProvider(ActivatedRoute, { useValue: mockRoute(null) })
             fixture = TestBed.createComponent(CompetitionDetailComponent)
             component = fixture.componentInstance
             fixture.detectChanges()
@@ -116,7 +116,7 @@ describe('CompetitionDetailComponent', () => {
 
     describe('Edit mode', () => {
         beforeEach(() => {
-            TestBed.overrideProvider(ActivatedRoute, { useValue: mockRouteWithId('123') })
+            TestBed.overrideProvider(ActivatedRoute, { useValue: mockRoute('123') })
             fixture = TestBed.createComponent(CompetitionDetailComponent)
             component = fixture.componentInstance
             fixture.detectChanges()
