@@ -104,6 +104,15 @@ describe('GameListComponent', () => {
         expect(rows[2].textContent).toContain('scheduled')
     })
 
+    it('should display "No games found" row when dataSource is empty', () => {
+        component.dataSource.data = []
+
+        const noDataRow: HTMLElement = fixture.nativeElement.querySelector('tr.mat-row td.mat-cell')
+
+        expect(noDataRow).toBeTruthy()
+        expect(noDataRow.textContent).toContain('No games found')
+    })
+
     it('should show error when games fail to load', () => {
         const error = new Error('Failed to load')
         spyOn(console, 'error')

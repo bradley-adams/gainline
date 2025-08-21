@@ -34,4 +34,8 @@
 
     <tr mat-header-row *matHeaderRowDef="['name', 'created', 'actions']"></tr>
     <tr mat-row *matRowDef="let row; columns: ['name', 'created', 'actions']"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center" colspan="3">No competitions found</td>
+    </tr>
 </table>

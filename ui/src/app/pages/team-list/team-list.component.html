@@ -38,4 +38,8 @@
     <tr
         mat-row
         *matRowDef="let row; columns: ['name', 'abbreviation', 'location', 'created', 'actions']"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="5">No teams found.</td>
+    </tr>
 </table>

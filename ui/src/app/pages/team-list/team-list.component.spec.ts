@@ -37,4 +37,13 @@ describe('TeamListComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy()
     })
+
+    it('should display "No teams found" row when dataSource is empty', () => {
+        component.dataSource.data = []
+
+        const noDataRow: HTMLElement = fixture.nativeElement.querySelector('tr.mat-row td.mat-cell')
+
+        expect(noDataRow).toBeTruthy()
+        expect(noDataRow.textContent).toContain('No teams found')
+    })
 })
