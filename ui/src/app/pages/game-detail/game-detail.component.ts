@@ -44,23 +44,21 @@ export class GameDetailComponent {
     public rounds: number[] = []
 
     ngOnInit(): void {
-        this.route.paramMap.subscribe((params) => {
-            this.competitionId = params.get('competition-id')
-            this.seasonId = params.get('season-id')
-            this.gameId = params.get('game-id')
+        const params = this.route.snapshot.paramMap
+        this.competitionId = params.get('competition-id')
+        this.seasonId = params.get('season-id')
+        this.gameId = params.get('game-id')
 
-            this.isEditMode = !!this.gameId
+        this.isEditMode = !!this.gameId
+        this.initForm()
 
-            this.initForm()
+        if (this.competitionId && this.seasonId) {
+            this.loadSeason(this.competitionId, this.seasonId)
+        }
 
-            if (this.competitionId && this.seasonId) {
-                this.loadSeason(this.competitionId, this.seasonId)
-            }
-
-            if (this.isEditMode && this.competitionId && this.seasonId && this.gameId) {
-                this.loadGame(this.competitionId, this.seasonId, this.gameId)
-            }
-        })
+        if (this.isEditMode && this.competitionId && this.seasonId && this.gameId) {
+            this.loadGame(this.competitionId, this.seasonId, this.gameId)
+        }
     }
 
     private initForm(): void {
