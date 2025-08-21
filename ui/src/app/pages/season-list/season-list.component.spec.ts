@@ -122,6 +122,15 @@ describe('SeasonListComponent', () => {
         expect(rows[2].textContent).toContain('season2')
     })
 
+    it('should display "No seasons found" row when dataSource is empty', () => {
+        component.dataSource.data = []
+
+        const noDataRow: HTMLElement = fixture.nativeElement.querySelector('tr.mat-row td.mat-cell')
+
+        expect(noDataRow).toBeTruthy()
+        expect(noDataRow.textContent).toContain('No seasons found')
+    })
+
     it('should show error when seasons fail to load', () => {
         const error = new Error('Failed to load')
         spyOn(console, 'error')
