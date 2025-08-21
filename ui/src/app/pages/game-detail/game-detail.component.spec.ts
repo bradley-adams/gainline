@@ -132,6 +132,7 @@ describe('GameDetailComponent', () => {
         it('should create', () => {
             expect(component).toBeTruthy()
         })
+
         it('should mark round, date, home_team_id, away_team_id and status as required', () => {
             const roundControl = component.gameForm.get('round')
             const dateControl = component.gameForm.get('date')
