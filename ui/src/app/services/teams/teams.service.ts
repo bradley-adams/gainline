@@ -12,7 +12,7 @@ export class TeamsService {
     private readonly http = inject(HttpClient)
 
     getTeams(): Observable<Team[]> {
-        return this.http.get<Team[]>(`${this.path}/v1/teams `)
+        return this.http.get<Team[]>(`${this.path}/v1/teams`)
     }
 
     getTeam(id: string): Observable<Team> {
