@@ -13,19 +13,19 @@ export class GamesService {
 
     getGames(competitionId: string, seasonId: string): Observable<Game[]> {
         return this.http.get<Game[]>(
-            `${this.path}/v1/competitions/${competitionId}/seasons/${seasonId}/games `
+            `${this.path}/v1/competitions/${competitionId}/seasons/${seasonId}/games`
         )
     }
 
     getGame(competitionId: string, seasonId: string, id: string): Observable<Game> {
         return this.http.get<Game>(
-            `${this.path}/v1/competitions/${competitionId}/seasons/${seasonId}/games/${id} `
+            `${this.path}/v1/competitions/${competitionId}/seasons/${seasonId}/games/${id}`
         )
     }
 
     createGame(competitionId: string, seasonId: string, game: Partial<Game>): Observable<Game> {
         return this.http.post<Game>(
-            `${this.path}/v1/competitions/${competitionId}/seasons/${seasonId}/games `,
+            `${this.path}/v1/competitions/${competitionId}/seasons/${seasonId}/games`,
             game
         )
     }
