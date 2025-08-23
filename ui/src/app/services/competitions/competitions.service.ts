@@ -27,7 +27,7 @@ export class CompetitionsService {
         return this.http.put<Competition>(`${this.path}/v1/competitions/${id}`, competition)
     }
 
-    deleteCompetition(id: string): Observable<void> {
+    deleteCompetition(id: string) {
         return this.http.delete<void>(`${this.path}/v1/competitions/${id}`)
     }
 }
