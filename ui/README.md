@@ -25,3 +25,11 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## ToDos:
+
+-   Use the Delete endpoints for Competitions, Seasons, Games and Teams.
+-   Breadcrumb to navigate out of the depths like games etc.
+-   Better teams in season selector. Giant dropdown select is rough atm.
+-   Better display of teams in season.
+-   Better selecting of teams for games.
