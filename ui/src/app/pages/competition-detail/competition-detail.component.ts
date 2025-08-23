@@ -5,6 +5,7 @@ import { CompetitionsService } from '../../services/competitions/competitions.se
 import { Competition } from '../../types/api'
 import { CommonModule } from '@angular/common'
 import { MaterialModule } from '../../shared/material/material.module'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 @Component({
     selector: 'app-competition-detail',
@@ -18,6 +19,7 @@ export class CompetitionDetailComponent {
     private readonly route = inject(ActivatedRoute)
     private readonly router = inject(Router)
     private readonly competitionsService = inject(CompetitionsService)
+    private readonly notificationService = inject(NotificationService)
 
     public competitionForm!: FormGroup
     private competitionId: string | null = null
@@ -39,6 +41,7 @@ export class CompetitionDetailComponent {
     submitForm(): void {
         if (this.competitionForm.invalid) {
             console.error('competition form is invalid')
+            this.notificationService.showError('Form Error', 'Please fill out all required fields.')
             return
         }
 
@@ -50,6 +53,20 @@ export class CompetitionDetailComponent {
         }
     }
 
+    confirmDelete(): void {
+        const competitionName = this.competitionForm.value.name
+        const confirmationMessage = `Are you sure you want to delete competition "${competitionName}"?`
+
+        this.notificationService
+            .showConfirm('Confirm Delete', confirmationMessage)
+            .afterClosed()
+            .subscribe((confirmed) => {
+                if (confirmed && this.competitionId) {
+                    this.removeCompetition(this.competitionId)
+                }
+            })
+    }
+
     private loadCompetition(id: string): void {
         this.competitionsService.getCompetition(id).subscribe({
             next: (competition) => {
@@ -57,25 +74,51 @@ export class CompetitionDetailComponent {
                     name: competition.name
                 })
             },
-            error: (err) => console.error('Error loading competition:', err)
+            error: (err) => {
+                console.error('Error loading competition:', err)
+                this.notificationService.showError('Load Error', 'Failed to load competition')
+            }
         })
     }
 
     private createCompetition(newCompetition: Competition): void {
         this.competitionsService.createCompetition(newCompetition).subscribe({
             next: () => {
+                this.notificationService.showSnackbar('Competition created successfully', 'OK')
                 this.router.navigate(['/admin/competitions'])
             },
-            error: (err) => console.error('Error creating competition:', err)
+            error: (err) => {
+                console.error('Error creating competition:', err)
+                this.notificationService.showError('Create Error', 'Failed to create competition')
+            }
         })
     }
 
     private updateCompetition(id: string, updatedCompetition: Competition): void {
         this.competitionsService.updateCompetition(id, updatedCompetition).subscribe({
             next: () => {
+                this.notificationService.showSnackbar('Competition updated successfully', 'OK')
                 this.router.navigate(['/admin/competitions'])
             },
-            error: (err) => console.error('Error updating competition:', err)
+            error: (err) => {
+                console.error('Error updating competition:', err)
+                this.notificationService.showError('Update Error', 'Failed to update competition')
+            }
+        })
+    }
+
+    private removeCompetition(competitionId: string): void {
+        if (!competitionId) return
+
+        this.competitionsService.deleteCompetition(competitionId).subscribe({
+            next: () => {
+                this.notificationService.showSnackbar('Competition deleted successfully', 'OK')
+                this.router.navigate(['/admin/competitions'])
+            },
+            error: (err) => {
+                console.error('Error deleting competition:', err)
+                this.notificationService.showError('Delete Error', 'Failed to delete competition')
+            }
         })
     }
 }

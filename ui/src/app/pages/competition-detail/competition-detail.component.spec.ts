@@ -8,12 +8,14 @@ import { CompetitionListComponent } from '../competition-list/competition-list.c
 import { Competition } from '../../types/api'
 import { CompetitionsService } from '../../services/competitions/competitions.service'
 import { of, throwError } from 'rxjs'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 describe('CompetitionDetailComponent', () => {
     let component: CompetitionDetailComponent
     let fixture: ComponentFixture<CompetitionDetailComponent>
 
     let competitionsService: jasmine.SpyObj<CompetitionsService>
+    let notificationService: jasmine.SpyObj<NotificationService>
 
     const mockCompetition1: Competition = {
         id: 'comp1',
@@ -43,11 +45,19 @@ describe('CompetitionDetailComponent', () => {
         competitionsService = jasmine.createSpyObj('CompetitionsService', [
             'getCompetition',
             'createCompetition',
-            'updateCompetition'
+            'updateCompetition',
+            'deleteCompetition'
         ])
         competitionsService.getCompetition.and.returnValue(of(mockCompetition1))
         competitionsService.createCompetition.and.returnValue(of(mockCompetition1))
         competitionsService.updateCompetition.and.returnValue(of(mockCompetition2))
+        competitionsService.deleteCompetition.and.returnValue(of(undefined))
+
+        notificationService = jasmine.createSpyObj('NotificationService', [
+            'showConfirm',
+            'showError',
+            'showSnackbar'
+        ])
 
         await TestBed.configureTestingModule({
             imports: [CompetitionDetailComponent, NoopAnimationsModule],
@@ -60,7 +70,8 @@ describe('CompetitionDetailComponent', () => {
                         component: CompetitionListComponent
                     }
                 ]),
-                { provide: CompetitionsService, useValue: competitionsService }
+                { provide: CompetitionsService, useValue: competitionsService },
+                { provide: NotificationService, useValue: notificationService }
             ]
         }).compileComponents()
     })
@@ -87,30 +98,31 @@ describe('CompetitionDetailComponent', () => {
         })
 
         it('should not submit if form is invalid', () => {
-            spyOn(console, 'error')
             component.submitForm()
-            expect(console.error).toHaveBeenCalledWith('competition form is invalid')
+            expect(notificationService.showError).toHaveBeenCalledWith(
+                'Form Error',
+                'Please fill out all required fields.'
+            )
         })
 
         it('should call createCompetition when in create mode and form is valid', () => {
-            component.isEditMode = false
             component.competitionForm.setValue({ name: 'New Comp' })
-
             component.submitForm()
-
             expect(competitionsService.createCompetition).toHaveBeenCalledWith({ name: 'New Comp' })
+            expect(notificationService.showSnackbar).toHaveBeenCalledWith(
+                'Competition created successfully',
+                'OK'
+            )
         })
 
-        it('should log error if createCompetition fails', () => {
-            const error = new Error('Failed to create')
-            spyOn(console, 'error')
-            competitionsService.createCompetition.and.returnValue(throwError(() => error))
-
-            component.isEditMode = false
+        it('should show error if createCompetition fails', () => {
+            competitionsService.createCompetition.and.returnValue(throwError(() => new Error('Failed')))
             component.competitionForm.setValue({ name: 'Bad Comp' })
             component.submitForm()
-
-            expect(console.error).toHaveBeenCalledWith('Error creating competition:', error)
+            expect(notificationService.showError).toHaveBeenCalledWith(
+                'Create Error',
+                'Failed to create competition'
+            )
         })
     })
 
@@ -127,35 +139,62 @@ describe('CompetitionDetailComponent', () => {
             expect(component.competitionForm.value.name).toBe('Competition 1')
         })
 
-        it('should log error if loadCompetition fails', () => {
-            const error = new Error('Failed to load')
-            spyOn(console, 'error')
-            competitionsService.getCompetition.and.returnValue(throwError(() => error))
-
-            component['loadCompetition']('123') // trigger loadComp again
-
-            expect(console.error).toHaveBeenCalledWith('Error loading competition:', error)
+        it('should show error if loadCompetition fails', () => {
+            competitionsService.getCompetition.and.returnValue(throwError(() => new Error('Failed')))
+            component['loadCompetition']('123')
+            expect(notificationService.showError).toHaveBeenCalledWith(
+                'Load Error',
+                'Failed to load competition'
+            )
         })
 
         it('should call updateCompetition when in edit mode and form is valid', () => {
             component.competitionForm.setValue({ name: 'Updated Comp' })
-
             component.submitForm()
-
             expect(competitionsService.updateCompetition).toHaveBeenCalledWith('123', {
                 name: 'Updated Comp'
             })
+            expect(notificationService.showSnackbar).toHaveBeenCalledWith(
+                'Competition updated successfully',
+                'OK'
+            )
         })
 
-        it('should log error if updateCompetition fails', () => {
-            const error = new Error('Failed to update')
-            spyOn(console, 'error')
-            competitionsService.updateCompetition.and.returnValue(throwError(() => error))
-
+        it('should show error if updateCompetition fails', () => {
+            competitionsService.updateCompetition.and.returnValue(throwError(() => new Error('Failed')))
             component.competitionForm.setValue({ name: 'Bad Update' })
             component.submitForm()
+            expect(notificationService.showError).toHaveBeenCalledWith(
+                'Update Error',
+                'Failed to update competition'
+            )
+        })
 
-            expect(console.error).toHaveBeenCalledWith('Error updating competition:', error)
+        it('should call deleteCompetition when confirmed', () => {
+            notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+            component.confirmDelete()
+            expect(competitionsService.deleteCompetition).toHaveBeenCalledWith('123')
+            expect(notificationService.showSnackbar).toHaveBeenCalledWith(
+                'Competition deleted successfully',
+                'OK'
+            )
+        })
+
+        it('should not call deleteCompetition when cancelled', () => {
+            notificationService.showConfirm.and.returnValue({ afterClosed: () => of(false) } as any)
+            component.confirmDelete()
+            expect(competitionsService.deleteCompetition).not.toHaveBeenCalled()
+            expect(notificationService.showSnackbar).not.toHaveBeenCalled()
+        })
+
+        it('should show error if deleteCompetition fails', () => {
+            competitionsService.deleteCompetition.and.returnValue(throwError(() => new Error('Failed')))
+            notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+            component.confirmDelete()
+            expect(notificationService.showError).toHaveBeenCalledWith(
+                'Delete Error',
+                'Failed to delete competition'
+            )
         })
     })
 })

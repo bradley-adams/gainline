@@ -33,3 +33,4 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 -   Better teams in season selector. Giant dropdown select is rough atm.
 -   Better display of teams in season.
 -   Better selecting of teams for games.
+-   Do toolbar color the right way and get delete button color working.
