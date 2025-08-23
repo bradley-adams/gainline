@@ -4,7 +4,6 @@ go run .
 
 http://localhost:8080
 
-
 curl http://localhost:8080/health
 
 http://localhost:8080/swagger/index.html#/
@@ -21,7 +20,7 @@ sqlc generate
 
 ```
 swag init -g http/handlers/http.go
-``` 
+```
 
 ```
 swag fmt
@@ -30,3 +29,9 @@ swag fmt
 ```
 mockgen -destination=/home/bradley/Personal/gainline/api/db/db_handler/mock/db.go -package=mock_db github.com/bradley-adams/gainline/db/db_handler DB,Queries
 ```
+
+## Todo:
+
+- Adding request validation.
+- Middleware checking ownership.
+- Metrics maybe
