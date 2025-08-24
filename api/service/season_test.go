@@ -49,7 +49,7 @@ var _ = Describe("season", func() {
 		StartDate: validTimeNow,
 		EndDate:   validTimeNow.AddDate(0, 5, 0),
 		Rounds:    15,
-		Teams:   validTeamIDs,
+		Teams:     validTeamIDs,
 	}
 
 	var validNilSeason db.Season
@@ -1170,15 +1170,11 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validSeasonFromDB, nil)
-			mockQueries.EXPECT().GetSeasonTeams(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonTeamsFromDB, nil)
-			mockQueries.EXPECT().DeleteSeasonTeam(
+			mockQueries.EXPECT().DeleteGamesBySeasonID(
 				gomock.Any(),
 				gomock.Any(),
 			).Return(nil)
-			mockQueries.EXPECT().DeleteSeasonTeam(
+			mockQueries.EXPECT().DeleteSeasonTeamsBySeasonID(
 				gomock.Any(),
 				gomock.Any(),
 			).Return(nil)
@@ -1233,7 +1229,7 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed deleting season: unable to get season for deletion: a valid testing error"))
 		})
 
-		It("should rollback and return a formatted error when getting season teams fails", func() {
+		It("should rollback and return a formatted error when deleting games fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
 				gomock.Any(),
@@ -1245,36 +1241,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validSeasonFromDB, nil)
-			mockQueries.EXPECT().GetSeasonTeams(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(nil, validTestError)
-			mockDB.EXPECT().Rollback(
-				gomock.Any(),
-			).Times(1)
-
-			err := DeleteSeason(context.Background(), mockDB, validCompetitionID, validSeasonID)
-
-			Expect(err.Error()).To(Equal("failed deleting season: unable to get season teams for deletion: a valid testing error"))
-		})
-
-		It("should rollback and return a formatted error when deleting a season team fails", func() {
-			mockDB.EXPECT().BeginTx(
-				gomock.Any(),
-				gomock.Any(),
-			)
-			mockDB.EXPECT().New(
-				gomock.Any(),
-			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
-			mockQueries.EXPECT().GetSeasonTeams(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonTeamsFromDB, nil)
-			mockQueries.EXPECT().DeleteSeasonTeam(
+			mockQueries.EXPECT().DeleteGamesBySeasonID(
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validTestError)
@@ -1283,8 +1250,35 @@ var _ = Describe("season", func() {
 			).Times(1)
 
 			err := DeleteSeason(context.Background(), mockDB, validCompetitionID, validSeasonID)
+			Expect(err.Error()).To(Equal("failed deleting season: unable to delete games for season: a valid testing error"))
+		})
 
-			Expect(err.Error()).To(Equal("failed deleting season: unable to remove team 11111111-1111-4111-8111-111111111111 from season aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa: a valid testing error"))
+		It("should rollback and return a formatted error when deleting season teams fails", func() {
+			mockDB.EXPECT().BeginTx(
+				gomock.Any(),
+				gomock.Any(),
+			)
+			mockDB.EXPECT().New(
+				gomock.Any(),
+			).Return(mockQueries)
+			mockQueries.EXPECT().GetSeason(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validSeasonFromDB, nil)
+			mockQueries.EXPECT().DeleteGamesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteSeasonTeamsBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTestError)
+			mockDB.EXPECT().Rollback(
+				gomock.Any(),
+			).Times(1)
+
+			err := DeleteSeason(context.Background(), mockDB, validCompetitionID, validSeasonID)
+			Expect(err.Error()).To(Equal("failed deleting season: unable to delete season teams for season: a valid testing error"))
 		})
 
 		It("should rollback and return a formatted error when deleting the season fails", func() {
@@ -1299,15 +1293,11 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validSeasonFromDB, nil)
-			mockQueries.EXPECT().GetSeasonTeams(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonTeamsFromDB, nil)
-			mockQueries.EXPECT().DeleteSeasonTeam(
+			mockQueries.EXPECT().DeleteGamesBySeasonID(
 				gomock.Any(),
 				gomock.Any(),
 			).Return(nil)
-			mockQueries.EXPECT().DeleteSeasonTeam(
+			mockQueries.EXPECT().DeleteSeasonTeamsBySeasonID(
 				gomock.Any(),
 				gomock.Any(),
 			).Return(nil)
@@ -1336,15 +1326,11 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validSeasonFromDB, nil)
-			mockQueries.EXPECT().GetSeasonTeams(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonTeamsFromDB, nil)
-			mockQueries.EXPECT().DeleteSeasonTeam(
+			mockQueries.EXPECT().DeleteGamesBySeasonID(
 				gomock.Any(),
 				gomock.Any(),
 			).Return(nil)
-			mockQueries.EXPECT().DeleteSeasonTeam(
+			mockQueries.EXPECT().DeleteSeasonTeamsBySeasonID(
 				gomock.Any(),
 				gomock.Any(),
 			).Return(nil)

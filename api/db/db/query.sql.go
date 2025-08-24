@@ -292,6 +292,53 @@ func (q *Queries) DeleteGame(ctx context.Context, arg DeleteGameParams) error {
 	return err
 }
 
+const deleteGamesByCompetitionID = `-- name: DeleteGamesByCompetitionID :exec
+UPDATE games
+SET
+    deleted_at = $1
+WHERE
+    season_id IN (
+        SELECT id
+        FROM seasons
+        WHERE competition_id = $2
+          AND deleted_at IS NULL
+    )
+AND
+    deleted_at IS NULL
+`
+
+type DeleteGamesByCompetitionIDParams struct {
+	DeletedAt     sql.NullTime
+	CompetitionID uuid.UUID
+}
+
+// Soft delete all games belonging to a competition via seasons
+func (q *Queries) DeleteGamesByCompetitionID(ctx context.Context, arg DeleteGamesByCompetitionIDParams) error {
+	_, err := q.db.ExecContext(ctx, deleteGamesByCompetitionID, arg.DeletedAt, arg.CompetitionID)
+	return err
+}
+
+const deleteGamesBySeasonID = `-- name: DeleteGamesBySeasonID :exec
+UPDATE games
+SET
+  deleted_at = $1
+WHERE
+  season_id = $2
+AND
+  deleted_at IS NULL
+`
+
+type DeleteGamesBySeasonIDParams struct {
+	DeletedAt sql.NullTime
+	SeasonID  uuid.UUID
+}
+
+// Soft delete all games for a given season
+func (q *Queries) DeleteGamesBySeasonID(ctx context.Context, arg DeleteGamesBySeasonIDParams) error {
+	_, err := q.db.ExecContext(ctx, deleteGamesBySeasonID, arg.DeletedAt, arg.SeasonID)
+	return err
+}
+
 const deleteSeason = `-- name: DeleteSeason :exec
 UPDATE seasons
 SET
@@ -331,6 +378,48 @@ type DeleteSeasonTeamParams struct {
 // Soft delete a team_season record
 func (q *Queries) DeleteSeasonTeam(ctx context.Context, arg DeleteSeasonTeamParams) error {
 	_, err := q.db.ExecContext(ctx, deleteSeasonTeam, arg.DeletedAt, arg.ID)
+	return err
+}
+
+const deleteSeasonTeamsBySeasonID = `-- name: DeleteSeasonTeamsBySeasonID :exec
+UPDATE season_teams
+SET
+  deleted_at = $1
+WHERE
+  season_id = $2
+AND
+  deleted_at IS NULL
+`
+
+type DeleteSeasonTeamsBySeasonIDParams struct {
+	DeletedAt sql.NullTime
+	SeasonID  uuid.UUID
+}
+
+// Soft delete all team_season records for a given season
+func (q *Queries) DeleteSeasonTeamsBySeasonID(ctx context.Context, arg DeleteSeasonTeamsBySeasonIDParams) error {
+	_, err := q.db.ExecContext(ctx, deleteSeasonTeamsBySeasonID, arg.DeletedAt, arg.SeasonID)
+	return err
+}
+
+const deleteSeasonsByCompetitionID = `-- name: DeleteSeasonsByCompetitionID :exec
+UPDATE seasons
+SET
+    deleted_at = $1
+WHERE
+    competition_id = $2
+AND
+    deleted_at IS NULL
+`
+
+type DeleteSeasonsByCompetitionIDParams struct {
+	DeletedAt     sql.NullTime
+	CompetitionID uuid.UUID
+}
+
+// Soft delete all seasons for a competition
+func (q *Queries) DeleteSeasonsByCompetitionID(ctx context.Context, arg DeleteSeasonsByCompetitionIDParams) error {
+	_, err := q.db.ExecContext(ctx, deleteSeasonsByCompetitionID, arg.DeletedAt, arg.CompetitionID)
 	return err
 }
 

@@ -419,6 +419,15 @@ var _ = Describe("competition", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
+			mockQueries.EXPECT().DeleteGamesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+
+			mockQueries.EXPECT().DeleteSeasonsByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
 			mockQueries.EXPECT().DeleteCompetition(
 				gomock.Any(),
 				gomock.Any(),
@@ -448,6 +457,50 @@ var _ = Describe("competition", func() {
 			Expect(err.Error()).To(Equal(validTestError.Error()))
 		})
 
+		It("should rollback and return error if deleting games fails", func() {
+			mockDB.EXPECT().BeginTx(
+				gomock.Any(),
+				gomock.Any(),
+			)
+			mockDB.EXPECT().New(
+				gomock.Any(),
+			).Return(mockQueries)
+			mockQueries.EXPECT().DeleteGamesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTestError)
+			mockDB.EXPECT().Rollback(
+				gomock.Any(),
+			).AnyTimes()
+
+			err := DeleteCompetition(context.Background(), mockDB, validCompetitionID)
+			Expect(err.Error()).To(Equal("unable to delete games for competition: a valid testing error"))
+		})
+
+		It("should rollback and return error if deleting seasons fails", func() {
+			mockDB.EXPECT().BeginTx(
+				gomock.Any(),
+				gomock.Any(),
+			)
+			mockDB.EXPECT().New(
+				gomock.Any(),
+			).Return(mockQueries)
+			mockQueries.EXPECT().DeleteGamesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteSeasonsByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTestError)
+			mockDB.EXPECT().Rollback(
+				gomock.Any(),
+			).AnyTimes()
+
+			err := DeleteCompetition(context.Background(), mockDB, validCompetitionID)
+			Expect(err.Error()).To(Equal("unable to delete seasons for competition: a valid testing error"))
+		})
+
 		It("should rollback and return formatted error on delete failure", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
@@ -456,6 +509,14 @@ var _ = Describe("competition", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
+			mockQueries.EXPECT().DeleteGamesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteSeasonsByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
 			mockQueries.EXPECT().DeleteCompetition(
 				gomock.Any(),
 				gomock.Any(),
@@ -477,6 +538,14 @@ var _ = Describe("competition", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
+			mockQueries.EXPECT().DeleteGamesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteSeasonsByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
 			mockQueries.EXPECT().DeleteCompetition(
 				gomock.Any(),
 				gomock.Any(),
