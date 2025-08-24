@@ -28,7 +28,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## ToDos:
 
--   Use the Delete endpoints for Competitions, Seasons, Games and Teams.
+-   Use the Delete endpoints for Seasons, Games and Teams.
 -   Breadcrumb to navigate out of the depths like games etc.
 -   Better teams in season selector. Giant dropdown select is rough atm.
 -   Better display of teams in season.

@@ -11,6 +11,7 @@ import { MaterialModule } from '../../shared/material/material.module'
 import { GamesService } from '../../services/games/games.service'
 import { SeasonsService } from '../../services/seasons/seasons.service'
 import { Season, Team, Game } from '../../types/api'
+import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
 
 @Component({
     selector: 'app-game-detail',
@@ -23,7 +24,8 @@ import { Season, Team, Game } from '../../types/api'
         MatDatepickerModule,
         MatNativeDateModule,
         MatFormFieldModule,
-        MatInputModule
+        MatInputModule,
+        BreadcrumbComponent
     ],
     templateUrl: './game-detail.component.html',
     styleUrls: ['./game-detail.component.scss']

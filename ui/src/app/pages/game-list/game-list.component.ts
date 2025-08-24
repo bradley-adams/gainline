@@ -5,11 +5,12 @@ import { Game } from '../../types/api'
 import { CommonModule } from '@angular/common'
 import { MaterialModule } from '../../shared/material/material.module'
 import { ActivatedRoute, RouterModule } from '@angular/router'
+import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
 
 @Component({
     selector: 'app-game-list',
     standalone: true,
-    imports: [CommonModule, MaterialModule, RouterModule],
+    imports: [CommonModule, MaterialModule, RouterModule, BreadcrumbComponent],
     templateUrl: './game-list.component.html',
     styleUrl: './game-list.component.scss'
 })

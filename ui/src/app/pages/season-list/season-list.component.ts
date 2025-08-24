@@ -3,13 +3,14 @@ import { Component, inject } from '@angular/core'
 import { MaterialModule } from '../../shared/material/material.module'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { MatTableDataSource } from '@angular/material/table'
-import { Competition, Season } from '../../types/api'
+import { Season } from '../../types/api'
 import { SeasonsService } from '../../services/seasons/seasons.service'
+import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
 
 @Component({
     selector: 'app-season-list',
     standalone: true,
-    imports: [CommonModule, MaterialModule, RouterModule],
+    imports: [CommonModule, MaterialModule, RouterModule, BreadcrumbComponent],
     templateUrl: './season-list.component.html',
     styleUrl: './season-list.component.scss'
 })
