@@ -6,11 +6,12 @@ import { Competition } from '../../types/api'
 import { CommonModule } from '@angular/common'
 import { MaterialModule } from '../../shared/material/material.module'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
 
 @Component({
     selector: 'app-competition-detail',
     standalone: true,
-    imports: [CommonModule, RouterModule, MaterialModule, ReactiveFormsModule],
+    imports: [CommonModule, RouterModule, MaterialModule, ReactiveFormsModule, BreadcrumbComponent],
     templateUrl: './competition-detail.component.html',
     styleUrl: './competition-detail.component.scss'
 })

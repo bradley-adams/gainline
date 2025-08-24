@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MatNativeDateModule } from '@angular/material/core'
+import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
 
 @Component({
     selector: 'app-season-detail',
@@ -23,7 +24,8 @@ import { MatNativeDateModule } from '@angular/material/core'
         MatDatepickerModule,
         MatNativeDateModule,
         MatFormFieldModule,
-        MatInputModule
+        MatInputModule,
+        BreadcrumbComponent
     ],
     templateUrl: './season-detail.component.html',
     styleUrl: './season-detail.component.scss'
