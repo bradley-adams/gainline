@@ -477,58 +477,87 @@ func deleteSeason(
 	competitionID uuid.UUID,
 	seasonID uuid.UUID,
 ) error {
-	season, err := queries.GetSeason(ctx, seasonID)
-	if err != nil {
-		return errors.Wrap(err, "unable to get season for deletion")
-	}
-
-	if season.CompetitionID != competitionID {
-		return errors.New("season does not belong to the specified competition")
-	}
-
-	now := time.Now()
-
-	// Soft-delete all season_team links
-	err = deleteSeasonTeams(ctx, queries, seasonID, now)
+	season, err := validateSeason(ctx, queries, competitionID, seasonID)
 	if err != nil {
 		return err
 	}
 
-	// Soft-delete the season itself
-	deleteSeasonParams := db.DeleteSeasonParams{
-		ID:        season.ID,
-		DeletedAt: sql.NullTime{Time: now, Valid: true},
+	now := time.Now()
+
+	err = softDeleteSeasonDependencies(ctx, queries, seasonID, now)
+	if err != nil {
+		return err
 	}
 
-	err = queries.DeleteSeason(ctx, deleteSeasonParams)
+	err = softDeleteSeason(ctx, queries, season.ID, now)
 	if err != nil {
-		return errors.Wrap(err, "unable to delete season")
+		return err
 	}
 
 	return nil
 }
 
-func deleteSeasonTeams(
+func validateSeason(
+	ctx context.Context,
+	queries db_handler.Queries,
+	competitionID uuid.UUID,
+	seasonID uuid.UUID,
+) (db.Season, error) {
+	season, err := queries.GetSeason(ctx, seasonID)
+	if err != nil {
+		return db.Season{}, errors.Wrap(err, "unable to get season for deletion")
+	}
+
+	if season.CompetitionID != competitionID {
+		return db.Season{}, errors.New("season does not belong to the specified competition")
+	}
+
+	return season, nil
+}
+
+func softDeleteSeasonDependencies(
 	ctx context.Context,
 	queries db_handler.Queries,
 	seasonID uuid.UUID,
 	now time.Time,
 ) error {
-	seasonTeams, err := queries.GetSeasonTeams(ctx, seasonID)
+	// Delete games
+	deleteGamesBySeasonIDParams := db.DeleteGamesBySeasonIDParams{
+		DeletedAt: sql.NullTime{Time: now, Valid: true},
+		SeasonID:  seasonID,
+	}
+	err := queries.DeleteGamesBySeasonID(ctx, deleteGamesBySeasonIDParams)
 	if err != nil {
-		return errors.Wrap(err, "unable to get season teams for deletion")
+		return errors.Wrap(err, "unable to delete games for season")
 	}
 
-	for _, st := range seasonTeams {
-		deleteParams := db.DeleteSeasonTeamParams{
-			ID:        st.ID,
-			DeletedAt: sql.NullTime{Time: now, Valid: true},
-		}
-
-		err := queries.DeleteSeasonTeam(ctx, deleteParams)
-		if err != nil {
-			return errors.Wrapf(err, "unable to remove team %s from season %s", st.TeamID.String(), seasonID.String())
-		}
+	// Delete season teams
+	deleteSeasonTeamsBySeasonIDParams := db.DeleteSeasonTeamsBySeasonIDParams{
+		DeletedAt: sql.NullTime{Time: now, Valid: true},
+		SeasonID:  seasonID,
 	}
+	err = queries.DeleteSeasonTeamsBySeasonID(ctx, deleteSeasonTeamsBySeasonIDParams)
+	if err != nil {
+		return errors.Wrap(err, "unable to delete season teams for season")
+	}
+
+	return nil
+}
+
+func softDeleteSeason(
+	ctx context.Context,
+	queries db_handler.Queries,
+	seasonID uuid.UUID,
+	now time.Time,
+) error {
+	deleteSeasonParams := db.DeleteSeasonParams{
+		ID:        seasonID,
+		DeletedAt: sql.NullTime{Time: now, Valid: true},
+	}
+	err := queries.DeleteSeason(ctx, deleteSeasonParams)
+	if err != nil {
+		return errors.Wrap(err, "unable to delete season")
+	}
+
 	return nil
 }

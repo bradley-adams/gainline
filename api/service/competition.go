@@ -160,12 +160,34 @@ func deleteCompetition(
 	queries db_handler.Queries,
 	competitionID uuid.UUID,
 ) error {
+	now := time.Now()
+
+	deleteGamesByCompetitionIDParams := db.DeleteGamesByCompetitionIDParams{
+		DeletedAt:     sql.NullTime{Time: now, Valid: true},
+		CompetitionID: competitionID,
+	}
+
+	err := queries.DeleteGamesByCompetitionID(ctx, deleteGamesByCompetitionIDParams)
+	if err != nil {
+		return errors.Wrap(err, "unable to delete games for competition")
+	}
+
+	deleteSeasonsByCompetitionIDParams := db.DeleteSeasonsByCompetitionIDParams{
+		DeletedAt:     sql.NullTime{Time: now, Valid: true},
+		CompetitionID: competitionID,
+	}
+
+	err = queries.DeleteSeasonsByCompetitionID(ctx, deleteSeasonsByCompetitionIDParams)
+	if err != nil {
+		return errors.Wrap(err, "unable to delete seasons for competition")
+	}
+
 	deleteCompetitionParams := db.DeleteCompetitionParams{
-		DeletedAt: sql.NullTime{Time: time.Now(), Valid: true},
+		DeletedAt: sql.NullTime{Time: now, Valid: true},
 		ID:        competitionID,
 	}
 
-	err := queries.DeleteCompetition(ctx, deleteCompetitionParams)
+	err = queries.DeleteCompetition(ctx, deleteCompetitionParams)
 	if err != nil {
 		return errors.Wrap(err, "unable to delete competition")
 	}

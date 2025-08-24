@@ -86,6 +86,14 @@ func DeleteSeason(
 	return q.DeleteSeason(ctx, params)
 }
 
+func DeleteSeasonsByCompetitionID(
+	ctx context.Context,
+	q Queries,
+	params db.DeleteSeasonsByCompetitionIDParams,
+) error {
+	return q.DeleteSeasonsByCompetitionID(ctx, params)
+}
+
 func CreateTeam(
 	ctx context.Context,
 	q Queries,
@@ -147,4 +155,68 @@ func DeleteSeasonTeam(
 	params db.DeleteSeasonTeamParams,
 ) error {
 	return q.DeleteSeasonTeam(ctx, params)
+}
+
+func DeleteSeasonTeamsBySeasonID(
+	ctx context.Context,
+	q Queries,
+	params db.DeleteSeasonTeamsBySeasonIDParams,
+) error {
+	return q.DeleteSeasonTeamsBySeasonID(ctx, params)
+}
+
+func CreateGame(
+	ctx context.Context,
+	q Queries,
+	params db.CreateGameParams,
+) error {
+	return q.CreateGame(ctx, params)
+}
+
+func GetGame(
+	ctx context.Context,
+	q Queries,
+	id uuid.UUID,
+) (db.Game, error) {
+	return q.GetGame(ctx, id)
+}
+
+func GetGames(
+	ctx context.Context,
+	q Queries,
+	seasonID uuid.UUID,
+) ([]db.Game, error) {
+	return q.GetGames(ctx, seasonID)
+}
+
+func UpdateGame(
+	ctx context.Context,
+	q Queries,
+	params db.UpdateGameParams,
+) error {
+	return q.UpdateGame(ctx, params)
+}
+
+func DeleteGame(
+	ctx context.Context,
+	q Queries,
+	params db.DeleteGameParams,
+) error {
+	return q.DeleteGame(ctx, params)
+}
+
+func DeleteGamesByCompetitionID(
+	ctx context.Context,
+	q Queries,
+	params db.DeleteGamesByCompetitionIDParams,
+) error {
+	return q.DeleteGamesByCompetitionID(ctx, params)
+}
+
+func DeleteGamesBySeasonID(
+	ctx context.Context,
+	q Queries,
+	params db.DeleteGamesBySeasonIDParams,
+) error {
+	return q.DeleteGamesBySeasonID(ctx, params)
 }

@@ -309,6 +309,34 @@ func (mr *MockQueriesMockRecorder) DeleteGame(arg0, arg1 any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteGame", reflect.TypeOf((*MockQueries)(nil).DeleteGame), arg0, arg1)
 }
 
+// DeleteGamesByCompetitionID mocks base method.
+func (m *MockQueries) DeleteGamesByCompetitionID(arg0 context.Context, arg1 db.DeleteGamesByCompetitionIDParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteGamesByCompetitionID", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteGamesByCompetitionID indicates an expected call of DeleteGamesByCompetitionID.
+func (mr *MockQueriesMockRecorder) DeleteGamesByCompetitionID(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteGamesByCompetitionID", reflect.TypeOf((*MockQueries)(nil).DeleteGamesByCompetitionID), arg0, arg1)
+}
+
+// DeleteGamesBySeasonID mocks base method.
+func (m *MockQueries) DeleteGamesBySeasonID(arg0 context.Context, arg1 db.DeleteGamesBySeasonIDParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteGamesBySeasonID", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteGamesBySeasonID indicates an expected call of DeleteGamesBySeasonID.
+func (mr *MockQueriesMockRecorder) DeleteGamesBySeasonID(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteGamesBySeasonID", reflect.TypeOf((*MockQueries)(nil).DeleteGamesBySeasonID), arg0, arg1)
+}
+
 // DeleteSeason mocks base method.
 func (m *MockQueries) DeleteSeason(arg0 context.Context, arg1 db.DeleteSeasonParams) error {
 	m.ctrl.T.Helper()
@@ -335,6 +363,34 @@ func (m *MockQueries) DeleteSeasonTeam(arg0 context.Context, arg1 db.DeleteSeaso
 func (mr *MockQueriesMockRecorder) DeleteSeasonTeam(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSeasonTeam", reflect.TypeOf((*MockQueries)(nil).DeleteSeasonTeam), arg0, arg1)
+}
+
+// DeleteSeasonTeamsBySeasonID mocks base method.
+func (m *MockQueries) DeleteSeasonTeamsBySeasonID(arg0 context.Context, arg1 db.DeleteSeasonTeamsBySeasonIDParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteSeasonTeamsBySeasonID", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteSeasonTeamsBySeasonID indicates an expected call of DeleteSeasonTeamsBySeasonID.
+func (mr *MockQueriesMockRecorder) DeleteSeasonTeamsBySeasonID(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSeasonTeamsBySeasonID", reflect.TypeOf((*MockQueries)(nil).DeleteSeasonTeamsBySeasonID), arg0, arg1)
+}
+
+// DeleteSeasonsByCompetitionID mocks base method.
+func (m *MockQueries) DeleteSeasonsByCompetitionID(arg0 context.Context, arg1 db.DeleteSeasonsByCompetitionIDParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteSeasonsByCompetitionID", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteSeasonsByCompetitionID indicates an expected call of DeleteSeasonsByCompetitionID.
+func (mr *MockQueriesMockRecorder) DeleteSeasonsByCompetitionID(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSeasonsByCompetitionID", reflect.TypeOf((*MockQueries)(nil).DeleteSeasonsByCompetitionID), arg0, arg1)
 }
 
 // DeleteTeam mocks base method.

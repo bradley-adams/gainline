@@ -146,6 +146,16 @@ WHERE
 AND
 	deleted_at IS NULL;
 
+-- name: DeleteSeasonsByCompetitionID :exec
+-- Soft delete all seasons for a competition
+UPDATE seasons
+SET
+    deleted_at = @deleted_at
+WHERE
+    competition_id = @competition_id
+AND
+    deleted_at IS NULL;
+
 -- name: CreateTeam :exec
 -- Insert a new team into the database
 INSERT INTO teams (
@@ -267,6 +277,16 @@ WHERE
 AND
   deleted_at IS NULL;
 
+-- name: DeleteSeasonTeamsBySeasonID :exec
+-- Soft delete all team_season records for a given season
+UPDATE season_teams
+SET
+  deleted_at = @deleted_at
+WHERE
+  season_id = @season_id
+AND
+  deleted_at IS NULL;
+
 -- name: CreateGame :exec
 -- Insert a new game into the database
 INSERT INTO games (
@@ -368,3 +388,28 @@ WHERE
     id = @id
 AND
     deleted_at IS NULL;
+
+-- name: DeleteGamesByCompetitionID :exec
+-- Soft delete all games belonging to a competition via seasons
+UPDATE games
+SET
+    deleted_at = @deleted_at
+WHERE
+    season_id IN (
+        SELECT id
+        FROM seasons
+        WHERE competition_id = @competition_id
+          AND deleted_at IS NULL
+    )
+AND
+    deleted_at IS NULL;
+
+-- name: DeleteGamesBySeasonID :exec
+-- Soft delete all games for a given season
+UPDATE games
+SET
+  deleted_at = @deleted_at
+WHERE
+  season_id = @season_id
+AND
+  deleted_at IS NULL;
