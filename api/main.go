@@ -6,6 +6,7 @@ import (
 	"time"
 
 	_ "github.com/bradley-adams/gainline/docs"
+	"github.com/go-playground/validator/v10"
 	_ "github.com/lib/pq"
 
 	"github.com/bradley-adams/gainline/db/db_handler"
@@ -36,9 +37,13 @@ func main() {
 	logger.Info().Msgf("%s starting", serviceName)
 
 	db := setupWrapperDB(logger)
+	validate, err := setUpValidator(logger)
+	if err != nil {
+		panic(err)
+	}
 
 	logger.Debug().Msg("setting up router...")
-	r := handlers.SetupRouter(db, logger)
+	r := handlers.SetupRouter(db, logger, validate)
 
 	logger.Info().Msg(serviceName + " started")
 	logger.Fatal().Err(r.Run(":8080")).Msg("failed to start server")
@@ -84,4 +89,12 @@ func setupDB(logger zerolog.Logger) *sqlx.DB {
 	}
 
 	return db
+}
+
+func setUpValidator(logger zerolog.Logger) (*validator.Validate, error) {
+	logger.Info().Msg("setting up validator...")
+
+	validate := validator.New()
+
+	return validate, nil
 }

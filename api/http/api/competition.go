@@ -9,7 +9,7 @@ import (
 )
 
 type CompetitionRequest struct {
-	Name string `json:"name"`
+	Name string `json:"name" validate:"required"`
 }
 
 type CompetitionResponse struct {

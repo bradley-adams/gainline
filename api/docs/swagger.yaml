@@ -3,6 +3,8 @@ definitions:
     properties:
       name:
         type: string
+    required:
+    - name
     type: object
   api.CompetitionResponse:
     properties:
