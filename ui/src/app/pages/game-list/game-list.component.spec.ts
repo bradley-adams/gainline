@@ -5,10 +5,11 @@ import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router'
 import { GameDetailComponent } from '../game-detail/game-detail.component'
-import { Game, GameStatus } from '../../types/api'
+import { Game, GameStatus, Season, Team } from '../../types/api'
 import { GamesService } from '../../services/games/games.service'
 import { of, throwError } from 'rxjs'
 import { By } from '@angular/platform-browser'
+import { SeasonsService } from '../../services/seasons/seasons.service'
 
 describe('GameListComponent', () => {
     let component: GameListComponent
@@ -16,6 +17,53 @@ describe('GameListComponent', () => {
     let router: Router
 
     let gamesService: jasmine.SpyObj<GamesService>
+    let seasonsService: jasmine.SpyObj<SeasonsService>
+
+    const mockTeams: Team[] = [
+        {
+            id: 'team1',
+            abbreviation: 'T1',
+            location: 'City A',
+            name: 'Team One',
+            created_at: new Date('2024-01-01T00:00:00Z'),
+            updated_at: new Date('2024-01-01T00:00:00Z')
+        },
+        {
+            id: 'team2',
+            abbreviation: 'T2',
+            location: 'City B',
+            name: 'Team Two',
+            created_at: new Date('2024-01-02T00:00:00Z'),
+            updated_at: new Date('2024-01-02T00:00:00Z')
+        },
+        {
+            id: 'team3',
+            abbreviation: 'T3',
+            location: 'City C',
+            name: 'Team Three',
+            created_at: new Date('2024-01-03T00:00:00Z'),
+            updated_at: new Date('2024-01-03T00:00:00Z')
+        },
+        {
+            id: 'team4',
+            abbreviation: 'T4',
+            location: 'City D',
+            name: 'Team Four',
+            created_at: new Date('2024-01-04T00:00:00Z'),
+            updated_at: new Date('2024-01-04T00:00:00Z')
+        }
+    ]
+
+    const mockSeason: Season = {
+        id: 'season1',
+        competition_id: 'comp1',
+        rounds: 3,
+        start_date: new Date('2025-01-01T00:00:00Z'),
+        end_date: new Date('2025-12-31T23:59:59Z'),
+        teams: mockTeams,
+        created_at: new Date('2024-12-01T00:00:00Z'),
+        updated_at: new Date('2024-12-01T00:00:00Z')
+    }
 
     const mockGames: Game[] = [
         {
@@ -48,7 +96,10 @@ describe('GameListComponent', () => {
 
     beforeEach(async () => {
         gamesService = jasmine.createSpyObj('GamesService', ['getGames'])
+        seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeason'])
+
         gamesService.getGames.and.returnValue(of(mockGames))
+        seasonsService.getSeason.and.returnValue(of(mockSeason))
 
         await TestBed.configureTestingModule({
             imports: [GameListComponent],
@@ -66,6 +117,7 @@ describe('GameListComponent', () => {
                     }
                 ]),
                 { provide: GamesService, useValue: gamesService },
+                { provide: SeasonsService, useValue: seasonsService },
                 {
                     provide: ActivatedRoute,
                     useValue: {
@@ -87,20 +139,16 @@ describe('GameListComponent', () => {
         expect(component).toBeTruthy()
     })
 
-    it('should load games into the table', () => {
+    it('should load games with team names', () => {
         const rows = fixture.nativeElement.querySelectorAll('tr')
-        expect(rows.length).toBe(3)
+        expect(rows.length).toBe(3) // header + 2 games
 
-        // first game row
-        expect(rows[1].textContent).toContain('02/02/2025')
-        expect(rows[1].textContent).toContain('team1')
-        expect(rows[1].textContent).toContain('team2')
+        expect(rows[1].textContent).toContain('Team One')
+        expect(rows[1].textContent).toContain('Team Two')
         expect(rows[1].textContent).toContain('finished')
 
-        // second game row
-        expect(rows[2].textContent).toContain('02/03/2025')
-        expect(rows[2].textContent).toContain('team3')
-        expect(rows[2].textContent).toContain('team4')
+        expect(rows[2].textContent).toContain('Team Three')
+        expect(rows[2].textContent).toContain('Team Four')
         expect(rows[2].textContent).toContain('scheduled')
     })
 
@@ -117,18 +165,24 @@ describe('GameListComponent', () => {
         const error = new Error('Failed to load')
         spyOn(console, 'error')
 
-        gamesService.getGames.and.returnValue(throwError(() => error))
+        seasonsService.getSeason.and.returnValue(throwError(() => error))
+        component.ngOnInit()
+        expect(console.error).toHaveBeenCalledWith('Error loading season:', error)
+    })
 
+    it('should show error when games fail to load', () => {
+        const error = new Error('Failed to load games')
+        spyOn(console, 'error')
+
+        gamesService.getGames.and.returnValue(throwError(() => error))
         component.ngOnInit()
         expect(console.error).toHaveBeenCalledWith('Error loading games:', error)
     })
 
-    it('should navigate when "Create Game" button is clicked', () => {
+    it('create button navigates correctly', () => {
         const routerSpy = spyOn(router, 'navigateByUrl')
-        fixture.detectChanges()
 
         const button = fixture.debugElement.query(By.css('.actions button'))
-
         button.nativeElement.click()
         const call = routerSpy.calls.all()[0].args[0].toString()
         expect(call).toEqual('/admin/competitions/comp1/seasons/season1/games/create')
@@ -136,7 +190,7 @@ describe('GameListComponent', () => {
 
     it('should display table correctly', () => {
         const tableRows = fixture.nativeElement.querySelectorAll('tr')
-        expect(tableRows.length).toBe(mockGames.length + 1)
+        expect(tableRows.length).toBe(mockGames.length + 1) // header + 2 games
 
         // Header row
         const headerRow = tableRows[0]
@@ -148,19 +202,21 @@ describe('GameListComponent', () => {
         expect(headerRow.cells[5].innerHTML).toBe('Status')
         expect(headerRow.cells[6].innerHTML).toBe('Actions')
 
+        // First game row
         expect(tableRows[1].cells[0].textContent).toBe('02/02/2025 04:00')
-        expect(tableRows[1].cells[1].textContent).toBe('team1')
+        expect(tableRows[1].cells[1].textContent).toBe('Team One')
         expect(tableRows[1].cells[2].textContent).toBe('2')
         expect(tableRows[1].cells[3].textContent).toBe('1')
-        expect(tableRows[1].cells[4].textContent).toBe('team2')
+        expect(tableRows[1].cells[4].textContent).toBe('Team Two')
         expect(tableRows[1].cells[5].textContent).toBe('finished')
         expect(tableRows[1].cells[6].textContent).toBe('edit')
 
+        // Second game row
         expect(tableRows[2].cells[0].textContent).toBe('02/03/2025 04:00')
-        expect(tableRows[2].cells[1].textContent).toBe('team3')
+        expect(tableRows[2].cells[1].textContent).toBe('Team Three')
         expect(tableRows[2].cells[2].textContent).toBe('0')
         expect(tableRows[2].cells[3].textContent).toBe('0')
-        expect(tableRows[2].cells[4].textContent).toBe('team4')
+        expect(tableRows[2].cells[4].textContent).toBe('Team Four')
         expect(tableRows[2].cells[5].textContent).toBe('scheduled')
         expect(tableRows[2].cells[6].textContent).toBe('edit')
     })
@@ -169,8 +225,8 @@ describe('GameListComponent', () => {
         const routerSpy = spyOn(router, 'navigateByUrl')
 
         const editButton = fixture.debugElement.query(By.css('[data-testid="edit-button"]'))
-
         editButton.nativeElement.click()
+
         const call = routerSpy.calls.all()[0].args[0].toString()
         expect(call).toEqual('/admin/competitions/comp1/seasons/season1/games/game1')
     })
