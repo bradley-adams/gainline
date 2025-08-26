@@ -32,7 +32,6 @@ mockgen -destination=/home/bradley/Personal/gainline/api/db/db_handler/mock/db.g
 
 ## Todo:
 
-- Cascading deletes in code
 - Adding request validation.
 - Middleware checking ownership.
 - Metrics maybe
