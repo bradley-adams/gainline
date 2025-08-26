@@ -5,6 +5,7 @@ import (
 	"github.com/bradley-adams/gainline/docs"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -15,7 +16,7 @@ import (
 //	@title			Gainline Api
 //	@description	A set of endpoints for managing gainline tasks
 //	@version		1.0
-func SetupRouter(db db_handler.DB, logger zerolog.Logger) *gin.Engine {
+func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Validate) *gin.Engine {
 	logger.Debug().Msg("setting up http router...")
 
 	gin.SetMode(gin.ReleaseMode)
@@ -31,7 +32,7 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger) *gin.Engine {
 		v1public.OPTIONS("/*path")
 
 		//competitions
-		v1public.POST("/competitions", handleCreateCompetition(logger, db))
+		v1public.POST("/competitions", handleCreateCompetition(logger, db, validate))
 		v1public.GET("/competitions", handleGetCompetitions(logger, db))
 		v1public.GET("/competitions/:competitionID", handleGetCompetition(logger, db))
 		v1public.PUT("/competitions/:competitionID", handleUpdateCompetition(logger, db))
