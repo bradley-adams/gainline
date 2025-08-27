@@ -8,10 +8,10 @@ import (
 )
 
 type SeasonRequest struct {
-	StartDate time.Time   `json:"start_date"`
-	EndDate   time.Time   `json:"end_date"`
-	Rounds    int32       `json:"rounds"`
-	Teams     []uuid.UUID `json:"teams"`
+	StartDate time.Time   `json:"start_date" validate:"required" example:"2025-01-01T00:00:00Z"`
+	EndDate   time.Time   `json:"end_date" validate:"required" example:"2025-12-31T23:59:59Z"`
+	Rounds    int32       `json:"rounds" validate:"required,min=1"`
+	Teams     []uuid.UUID `json:"teams" validate:"required" swaggertype:"array,string" example:"013952a5-87e1-4d26-a312-09b2aff54241,7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97"`
 }
 
 type SeasonResponse struct {

@@ -8,6 +8,7 @@ import (
 	"github.com/bradley-adams/gainline/http/response"
 	"github.com/bradley-adams/gainline/service"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 )
@@ -28,6 +29,7 @@ import (
 func handleCreateSeason(
 	logger zerolog.Logger,
 	db db_handler.DB,
+	validate *validator.Validate,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
@@ -40,6 +42,13 @@ func handleCreateSeason(
 		err = ctx.BindJSON(req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "bad request")
+			return
+		}
+
+		// Validate tags on SeasonRequest struct
+		err = validate.Struct(req)
+		if err != nil {
+			response.RespondError(ctx, logger, err, 400, "invalid request")
 			return
 		}
 

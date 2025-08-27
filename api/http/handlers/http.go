@@ -39,7 +39,7 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 		v1public.DELETE("/competitions/:competitionID", handleDeleteCompetition(logger, db))
 
 		//seasons
-		v1public.POST("/competitions/:competitionID/seasons", handleCreateSeason(logger, db))
+		v1public.POST("/competitions/:competitionID/seasons", handleCreateSeason(logger, db, validate))
 		v1public.GET("/competitions/:competitionID/seasons", handleGetSeasons(logger, db))
 		v1public.GET("/competitions/:competitionID/seasons/:seasonID", handleGetSeason(logger, db))
 		v1public.PUT("/competitions/:competitionID/seasons/:seasonID", handleUpdateSeason(logger, db))
