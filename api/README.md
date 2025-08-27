@@ -32,6 +32,7 @@ mockgen -destination=/home/bradley/Personal/gainline/api/db/db_handler/mock/db.g
 
 ## Todo:
 
-- Adding request validation.
-- Middleware checking ownership.
-- Metrics maybe
+- Middleware to enforce ownership (e.g., only owners/admins can edit/delete).
+- Request validation layer (schema validation for all endpoints).
+- Expand DB handler testing (unit + integration with mock DB).
+- Error response standardisation (consistent shape for errors).
