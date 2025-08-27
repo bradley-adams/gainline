@@ -10,7 +10,9 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/bradley-adams/gainline/db/db_handler"
+	"github.com/bradley-adams/gainline/http/api"
 	"github.com/bradley-adams/gainline/http/handlers"
+	"github.com/bradley-adams/gainline/http/validation"
 	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
@@ -95,6 +97,8 @@ func setUpValidator(logger zerolog.Logger) (*validator.Validate, error) {
 	logger.Info().Msg("setting up validator...")
 
 	validate := validator.New()
+
+	validate.RegisterStructValidation(validation.ValidateSeasonDates, api.SeasonRequest{})
 
 	return validate, nil
 }
