@@ -5,16 +5,11 @@ docker compose up -d
 
 ## Todo:
 
-- Pagination in endpoints and frontend tables.
+- Implement search across core entities (teams, games, seasons, competitions).
+- Add pagination to API responses and frontend tables.
+- Write a full migration seeder (seasons, teams, games, scores).
+- Authentication via Auth0 (basic login flow for admins).
+- Implement user setup (user + admin roles, role enforcement).
 - User setup. Just user and admin roles to start.
-- Authentication using AUth0
-- Deploy somewhere. Don't know where but would be cool to do.
-
-## Infra Attempts
-
-- Started with VPC's. One for EKS and a shared one for RDS.
-- Subnets
-- Route Tables
-- Transit gateways
-- Transit gateway attachments
-- EC2 (AWS dont like me on the free tier)
+- Decide on and implement deployment maybe?
+- Metrics and logs maybe?

@@ -28,9 +28,12 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## ToDos:
 
--   Use the Delete endpoints for Seasons, Games and Teams.
--   Breadcrumb to navigate out of the depths like games etc.
--   Better teams in season selector. Giant dropdown select is rough atm.
--   Better display of teams in season.
--   Better selecting of teams for games.
--   Do toolbar color the right way and get delete button color working.
+-   Hook up delete endpoints for Seasons, Games, and Teams.
+-   Fix breadcrumbs logic/functionality.
+-   Improve team selector in season form (e.g., multi-select with search instead of giant dropdown).
+-   Improve display of teams in season (chips, tables, or tags).
+-   Improve team selection for games (searchable select or autocomplete).
+-   Correct toolbar color setup + get delete button color working properly.
+-   Add date/time pickers in forms (ensure they map correctly to backend).
+-   Strengthen input validations (required, ranges, formats).
+-   Look at Cypress/Playwright for e2e testing setup.
