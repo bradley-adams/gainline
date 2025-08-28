@@ -22,3 +22,9 @@ func RespondSuccess(ctx *gin.Context, logger zerolog.Logger, status int, respons
 
 	ctx.JSON(status, response)
 }
+
+func RespondAbortError(ctx *gin.Context, logger zerolog.Logger, err error, status int, message string) {
+	logger.Error().Msg(err.Error())
+
+	ctx.AbortWithStatusJSON(status, gin.H{"error": message})
+}
