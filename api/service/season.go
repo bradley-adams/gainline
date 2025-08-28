@@ -269,7 +269,7 @@ func GetSeason(
 
 	err := db_handler.Run(ctx, dbHandler, func(queries db_handler.Queries) error {
 		var err error
-		season, err = getSeason(ctx, queries, competitionID, seasonID)
+		season, err = getSeasonWithTeams(ctx, queries, seasonID)
 		return err
 	})
 	if err != nil {
@@ -277,19 +277,6 @@ func GetSeason(
 	}
 
 	return season, nil
-}
-
-func getSeason(
-	ctx context.Context,
-	queries db_handler.Queries,
-	competitionID, seasonID uuid.UUID,
-) (SeasonWithTeams, error) {
-	_, err := validateSeasonOwnership(ctx, queries, seasonID, competitionID)
-	if err != nil {
-		return SeasonWithTeams{}, err
-	}
-
-	return getSeasonWithTeams(ctx, queries, seasonID)
 }
 
 func UpdateSeason(
@@ -320,14 +307,9 @@ func updateSeason(
 	competitionID uuid.UUID,
 	seasonID uuid.UUID,
 ) (SeasonWithTeams, error) {
-	_, err := validateSeasonOwnership(ctx, queries, seasonID, competitionID)
-	if err != nil {
-		return SeasonWithTeams{}, err
-	}
-
 	now := time.Now()
 
-	err = updateSeasonFields(ctx, queries, req, competitionID, seasonID, now)
+	err := updateSeasonFields(ctx, queries, req, competitionID, seasonID, now)
 	if err != nil {
 		return SeasonWithTeams{}, err
 	}
@@ -339,21 +321,6 @@ func updateSeason(
 	}
 
 	return getSeasonWithTeams(ctx, queries, seasonID)
-}
-
-func validateSeasonOwnership(
-	ctx context.Context,
-	queries db_handler.Queries,
-	seasonID, competitionID uuid.UUID,
-) (db.Season, error) {
-	season, err := queries.GetSeason(ctx, seasonID)
-	if err != nil {
-		return db.Season{}, errors.Wrap(err, "unable to get season")
-	}
-	if season.CompetitionID != competitionID {
-		return db.Season{}, errors.New("season does not belong to the specified competition")
-	}
-	return season, nil
 }
 
 func updateSeasonFields(
@@ -477,42 +444,19 @@ func deleteSeason(
 	competitionID uuid.UUID,
 	seasonID uuid.UUID,
 ) error {
-	season, err := validateSeason(ctx, queries, competitionID, seasonID)
-	if err != nil {
-		return err
-	}
-
 	now := time.Now()
 
-	err = softDeleteSeasonDependencies(ctx, queries, seasonID, now)
+	err := softDeleteSeasonDependencies(ctx, queries, seasonID, now)
 	if err != nil {
 		return err
 	}
 
-	err = softDeleteSeason(ctx, queries, season.ID, now)
+	err = softDeleteSeason(ctx, queries, seasonID, now)
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func validateSeason(
-	ctx context.Context,
-	queries db_handler.Queries,
-	competitionID uuid.UUID,
-	seasonID uuid.UUID,
-) (db.Season, error) {
-	season, err := queries.GetSeason(ctx, seasonID)
-	if err != nil {
-		return db.Season{}, errors.Wrap(err, "unable to get season for deletion")
-	}
-
-	if season.CompetitionID != competitionID {
-		return db.Season{}, errors.New("season does not belong to the specified competition")
-	}
-
-	return season, nil
 }
 
 func softDeleteSeasonDependencies(
