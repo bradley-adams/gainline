@@ -109,8 +109,9 @@ func UpdateCompetition(
 	competitionID uuid.UUID,
 	req *api.CompetitionRequest,
 ) (db.Competition, error) {
-	var competition db.Competition
+	req.Name = strings.TrimSpace(req.Name)
 
+	var competition db.Competition
 	err := db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
 		var txErr error
 		competition, txErr = updateCompetition(ctx, queries, competitionID, req)
