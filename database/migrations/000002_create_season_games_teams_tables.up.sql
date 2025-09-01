@@ -6,6 +6,10 @@ CREATE TABLE competitions (
     deleted_at TIMESTAMP WITH TIME ZONE
 );
 
+CREATE UNIQUE INDEX unique_competition_name_ci 
+ON competitions (LOWER(name)) 
+WHERE deleted_at IS NULL;
+
 CREATE TABLE seasons (
     id UUID PRIMARY KEY,
     competition_id UUID NOT NULL,

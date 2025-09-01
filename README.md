@@ -6,6 +6,12 @@ docker compose build
 docker compose up -d
 ```
 
+### Up just the DB & migrate:
+```
+docker compose up -d gainline-db
+docker compose run --rm gainline-migrate
+```
+
 ## Todo:
 
 - Implement search across core entities (teams, games, seasons, competitions).

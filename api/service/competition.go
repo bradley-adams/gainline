@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"strings"
 	"time"
 
 	"github.com/bradley-adams/gainline/db/db"
@@ -17,8 +18,9 @@ func CreateCompetition(
 	dbHandler db_handler.DB,
 	req *api.CompetitionRequest,
 ) (db.Competition, error) {
-	var competition db.Competition
+	req.Name = strings.TrimSpace(req.Name)
 
+	var competition db.Competition
 	err := db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
 		var err error
 		competition, err = createCompetition(ctx, queries, req)

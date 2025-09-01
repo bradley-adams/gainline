@@ -100,5 +100,7 @@ func setUpValidator(logger zerolog.Logger) (*validator.Validate, error) {
 
 	validate.RegisterStructValidation(validation.ValidateSeasonDates, api.SeasonRequest{})
 
+	validate.RegisterValidation("namevalid", validation.ValidateCompetitionName)
+
 	return validate, nil
 }
