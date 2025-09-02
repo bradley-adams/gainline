@@ -104,6 +104,28 @@ var _ = Describe("competition", func() {
 			Expect(competition.DeletedAt.Time).To(Equal(validCompetitionResponse.DeletedAt.Time))
 		})
 
+		It("should trim spaces from name when creating a competition", func() {
+			req := &api.CompetitionRequest{Name: "   Trimmed Name   "}
+			expectedCompetition := validCompetitionFromDB
+			expectedCompetition.Name = "Trimmed Name"
+
+			mockDB.EXPECT().BeginTx(gomock.Any(), gomock.Any())
+			mockDB.EXPECT().New(gomock.Any()).Return(mockQueries)
+			mockQueries.EXPECT().CreateCompetition(gomock.Any(), gomock.Any()).
+				DoAndReturn(func(_ context.Context, params db.CreateCompetitionParams) error {
+					Expect(params.Name).To(Equal("Trimmed Name"))
+					return nil
+				})
+			mockQueries.EXPECT().GetCompetition(gomock.Any(), gomock.Any()).
+				Return(expectedCompetition, nil)
+			mockDB.EXPECT().Commit(gomock.Any())
+			mockDB.EXPECT().Rollback(gomock.Any()).Times(0)
+
+			competition, err := CreateCompetition(context.Background(), mockDB, req)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(competition.Name).To(Equal("Trimmed Name"))
+		})
+
 		It("should return formatted error if transaction begin fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
@@ -310,6 +332,28 @@ var _ = Describe("competition", func() {
 			Expect(competition.CreatedAt).To(Equal(validCompetitionResponse.CreatedAt))
 			Expect(competition.UpdatedAt).To(Equal(validCompetitionResponse.UpdatedAt))
 			Expect(competition.DeletedAt.Time).To(Equal(validCompetitionResponse.DeletedAt.Time))
+		})
+
+		It("should trim spaces from name when updating a competition", func() {
+			req := &api.CompetitionRequest{Name: "   Updated Name   "}
+			expectedCompetition := validCompetitionFromDB
+			expectedCompetition.Name = "Updated Name"
+
+			mockDB.EXPECT().BeginTx(gomock.Any(), gomock.Any())
+			mockDB.EXPECT().New(gomock.Any()).Return(mockQueries)
+			mockQueries.EXPECT().UpdateCompetition(gomock.Any(), gomock.Any()).
+				DoAndReturn(func(_ context.Context, params db.UpdateCompetitionParams) error {
+					Expect(params.Name).To(Equal("Updated Name"))
+					return nil
+				})
+			mockQueries.EXPECT().GetCompetition(gomock.Any(), gomock.Any()).
+				Return(expectedCompetition, nil)
+			mockDB.EXPECT().Commit(gomock.Any())
+			mockDB.EXPECT().Rollback(gomock.Any()).Times(0)
+
+			competition, err := UpdateCompetition(context.Background(), mockDB, validCompetitionID, req)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(competition.Name).To(Equal("Updated Name"))
 		})
 
 		It("should return formatted error if transaction begin fails", func() {
