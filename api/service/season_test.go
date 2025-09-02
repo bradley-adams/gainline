@@ -31,7 +31,6 @@ var _ = Describe("season", func() {
 	validSeasonID2 := uuid.MustParse("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb")
 
 	validCompetitionID := uuid.MustParse("cccccccc-cccc-4ccc-8ccc-cccccccccccc")
-	invalidCompetitionID := uuid.MustParse("dddddddd-dddd-4ddd-8ddd-dddddddddddd")
 
 	validSeasonTeamID := uuid.MustParse("eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee")
 	validSeasonTeamID2 := uuid.MustParse("ffffffff-ffff-4fff-8fff-ffffffffffff")
@@ -517,10 +516,6 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validSeasonFromDB, nil)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().GetSeasonTeams(
 				gomock.Any(),
 				gomock.Any(),
@@ -562,10 +557,6 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validSeasonFromDB, nil)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().GetSeasonTeams(
 				gomock.Any(),
 				gomock.Any(),
@@ -587,10 +578,6 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().UpdateSeason(
 				gomock.Any(),
 				gomock.Any(),
@@ -678,62 +665,6 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed updating season: a valid testing error"))
 		})
 
-		It("should rollback and return a formatted error when getting the season fails", func() {
-			mockDB.EXPECT().BeginTx(
-				gomock.Any(),
-				gomock.Any(),
-			)
-			mockDB.EXPECT().New(
-				gomock.Any(),
-			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validNilSeason, validTestError)
-			mockDB.EXPECT().Rollback(
-				gomock.Any(),
-			).Times(1)
-
-			season, err := UpdateSeason(
-				context.Background(),
-				mockDB,
-				validSeasonRequest,
-				validCompetitionID,
-				validSeasonID,
-			)
-
-			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed updating season: unable to get season: a valid testing error"))
-		})
-
-		It("should rollback and return a formatted error if the season does not belong to the competition", func() {
-			mockDB.EXPECT().BeginTx(
-				gomock.Any(),
-				gomock.Any(),
-			)
-			mockDB.EXPECT().New(
-				gomock.Any(),
-			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
-			mockDB.EXPECT().Rollback(
-				gomock.Any(),
-			).Times(1)
-
-			season, err := UpdateSeason(
-				context.Background(),
-				mockDB,
-				validSeasonRequest,
-				invalidCompetitionID,
-				validSeasonID,
-			)
-
-			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed updating season: season does not belong to the specified competition"))
-		})
-
 		It("should rollback and return a formatted error when updating the season fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
@@ -742,10 +673,6 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().UpdateSeason(
 				gomock.Any(),
 				gomock.Any(),
@@ -774,10 +701,6 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().UpdateSeason(
 				gomock.Any(),
 				gomock.Any(),
@@ -814,10 +737,6 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().UpdateSeason(
 				gomock.Any(),
 				gomock.Any(),
@@ -858,10 +777,6 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().UpdateSeason(
 				gomock.Any(),
 				gomock.Any(),
@@ -910,10 +825,6 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().UpdateSeason(
 				gomock.Any(),
 				gomock.Any(),
@@ -966,10 +877,6 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().UpdateSeason(
 				gomock.Any(),
 				gomock.Any(),
@@ -1025,10 +932,6 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().UpdateSeason(
 				gomock.Any(),
 				gomock.Any(),
@@ -1093,10 +996,6 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().UpdateSeason(
 				gomock.Any(),
 				gomock.Any(),
@@ -1166,10 +1065,6 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().DeleteGamesBySeasonID(
 				gomock.Any(),
 				gomock.Any(),
@@ -1208,27 +1103,6 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("failed deleting season: a valid testing error"))
 		})
 
-		It("should rollback and return a formatted error when getting the season fails", func() {
-			mockDB.EXPECT().BeginTx(
-				gomock.Any(),
-				gomock.Any(),
-			)
-			mockDB.EXPECT().New(
-				gomock.Any(),
-			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validNilSeason, validTestError)
-			mockDB.EXPECT().Rollback(
-				gomock.Any(),
-			).Times(1)
-
-			err := DeleteSeason(context.Background(), mockDB, validCompetitionID, validSeasonID)
-
-			Expect(err.Error()).To(Equal("failed deleting season: unable to get season for deletion: a valid testing error"))
-		})
-
 		It("should rollback and return a formatted error when deleting games fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
@@ -1237,10 +1111,6 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().DeleteGamesBySeasonID(
 				gomock.Any(),
 				gomock.Any(),
@@ -1261,10 +1131,6 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().DeleteGamesBySeasonID(
 				gomock.Any(),
 				gomock.Any(),
@@ -1289,10 +1155,6 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().DeleteGamesBySeasonID(
 				gomock.Any(),
 				gomock.Any(),
@@ -1322,10 +1184,6 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeason(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonFromDB, nil)
 			mockQueries.EXPECT().DeleteGamesBySeasonID(
 				gomock.Any(),
 				gomock.Any(),
