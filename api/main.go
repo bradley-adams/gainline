@@ -10,7 +10,6 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/bradley-adams/gainline/db/db_handler"
-	"github.com/bradley-adams/gainline/http/api"
 	"github.com/bradley-adams/gainline/http/handlers"
 	"github.com/bradley-adams/gainline/http/validation"
 	"github.com/jmoiron/sqlx"
@@ -98,9 +97,9 @@ func setUpValidator(logger zerolog.Logger) (*validator.Validate, error) {
 
 	validate := validator.New()
 
-	validate.RegisterStructValidation(validation.ValidateSeasonDates, api.SeasonRequest{})
-
 	validate.RegisterValidation("namevalid", validation.ValidateCompetitionName)
+
+	validate.RegisterValidation("unique_uuids", validation.ValidateUniqueUUIDs)
 
 	return validate, nil
 }
