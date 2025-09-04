@@ -97,9 +97,9 @@ func setUpValidator(logger zerolog.Logger) (*validator.Validate, error) {
 
 	validate := validator.New()
 
-	validate.RegisterValidation("namevalid", validation.ValidateCompetitionName)
+	validate.RegisterValidation("competition_name", validation.ValidateCompetitionName)
 
-	validate.RegisterValidation("unique_uuids", validation.ValidateUniqueUUIDs)
+	validate.RegisterValidation("unique_team_uuids", validation.ValidateUniqueUUIDs)
 
 	return validate, nil
 }
