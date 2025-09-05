@@ -425,11 +425,10 @@ func removeExtraSeasonTeams(
 func DeleteSeason(
 	ctx context.Context,
 	dbHandler db_handler.DB,
-	competitionID uuid.UUID,
 	seasonID uuid.UUID,
 ) error {
 	err := db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
-		return deleteSeason(ctx, queries, competitionID, seasonID)
+		return deleteSeason(ctx, queries, seasonID)
 	})
 	if err != nil {
 		return errors.Wrap(err, "failed deleting season")
@@ -441,7 +440,6 @@ func DeleteSeason(
 func deleteSeason(
 	ctx context.Context,
 	queries db_handler.Queries,
-	competitionID uuid.UUID,
 	seasonID uuid.UUID,
 ) error {
 	now := time.Now()

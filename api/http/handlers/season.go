@@ -190,19 +190,13 @@ func handleUpdateSeason(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc
 //	@Router		/competitions/{competitionID}/seasons/{seasonID} [delete]
 func handleDeleteSeason(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid competition ID")
-			return
-		}
-
 		seasonID, err := uuid.Parse(ctx.Param("seasonID"))
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid season ID")
 			return
 		}
 
-		err = service.DeleteSeason(ctx, db, competitionID, seasonID)
+		err = service.DeleteSeason(ctx, db, seasonID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to delete season")
 			return
