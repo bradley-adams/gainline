@@ -46,6 +46,7 @@ mockgen -destination=/home/bradley/Personal/gainline/api/db/db_handler/mock/db.g
 
 - Validate teams.
 - Validate on create and update.
+- Split validation and its tests.
 - Middleware to enforce ownership (e.g., only owners/admins can edit/delete).
 - Request validation layer (schema validation for all endpoints).
 - Expand DB handler testing (unit + integration with mock DB).

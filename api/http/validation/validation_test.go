@@ -17,7 +17,15 @@ func TestValidation(t *testing.T) {
 }
 
 var _ = Describe("validation", func() {
-	var validate *validator.Validate
+	var (
+		validate *validator.Validate
+
+		team1 uuid.UUID
+		team2 uuid.UUID
+
+		date1 time.Time
+		date2 time.Time
+	)
 
 	BeforeEach(func() {
 		validate = validator.New()
@@ -25,8 +33,13 @@ var _ = Describe("validation", func() {
 		validate.RegisterValidation("unique_team_uuids", ValidateUniqueUUIDs)
 		validate.RegisterValidation("game_status", ValidateGameStatus)
 
-		validate.RegisterStructValidation(ValidateGameStruct, api.GameRequest{})
+		validate.RegisterStructValidation(ValidateGameRequest, api.GameRequest{})
 
+		team1 = uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
+		team2 = uuid.MustParse("7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97")
+
+		date1 = time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
+		date2 = time.Date(2025, 12, 31, 23, 59, 59, 0, time.UTC)
 	})
 
 	Describe("ValidateCompetitionRequest", func() {
@@ -46,13 +59,12 @@ var _ = Describe("validation", func() {
 			comp := &api.CompetitionRequest{Name: "Super Rugby!!!"}
 			err := validate.Struct(comp)
 			Expect(err).To(HaveOccurred())
-
 			validationErrors, ok := err.(validator.ValidationErrors)
 			Expect(ok).To(BeTrue())
 			Expect(validationErrors[0].Tag()).To(Equal("competition_name"))
 		})
 
-		It("should fail with empty name as its too short", func() {
+		It("should fail with empty name as it's too short", func() {
 			comp := &api.CompetitionRequest{Name: ""}
 			err := validate.Struct(comp)
 			Expect(err).To(HaveOccurred())
@@ -60,17 +72,10 @@ var _ = Describe("validation", func() {
 	})
 
 	Describe("ValidateSeasonRequest", func() {
-		var team1, team2 uuid.UUID
-
-		BeforeEach(func() {
-			team1 = uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
-			team2 = uuid.MustParse("7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97")
-		})
-
 		It("should pass with valid season data", func() {
 			season := &api.SeasonRequest{
-				StartDate: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
-				EndDate:   time.Date(2025, 12, 31, 23, 59, 59, 0, time.UTC),
+				StartDate: date1,
+				EndDate:   date2,
 				Rounds:    10,
 				Teams:     []uuid.UUID{team1, team2},
 			}
@@ -80,8 +85,8 @@ var _ = Describe("validation", func() {
 
 		It("should fail when end date is before start date", func() {
 			season := &api.SeasonRequest{
-				StartDate: time.Date(2025, 12, 31, 0, 0, 0, 0, time.UTC),
-				EndDate:   time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+				StartDate: date2,
+				EndDate:   date1,
 				Rounds:    10,
 				Teams:     []uuid.UUID{team1, team2},
 			}
@@ -94,8 +99,8 @@ var _ = Describe("validation", func() {
 
 		It("should fail when there are fewer than 2 teams", func() {
 			season := &api.SeasonRequest{
-				StartDate: time.Now(),
-				EndDate:   time.Now().Add(24 * time.Hour),
+				StartDate: date1,
+				EndDate:   date2,
 				Rounds:    5,
 				Teams:     []uuid.UUID{team1},
 			}
@@ -108,8 +113,8 @@ var _ = Describe("validation", func() {
 
 		It("should fail when rounds exceed 52", func() {
 			season := &api.SeasonRequest{
-				StartDate: time.Now(),
-				EndDate:   time.Now().Add(24 * time.Hour),
+				StartDate: date1,
+				EndDate:   date2,
 				Rounds:    53,
 				Teams:     []uuid.UUID{team1, team2},
 			}
@@ -122,8 +127,8 @@ var _ = Describe("validation", func() {
 
 		It("should fail when teams contain duplicates", func() {
 			season := &api.SeasonRequest{
-				StartDate: time.Now(),
-				EndDate:   time.Now().Add(24 * time.Hour),
+				StartDate: date1,
+				EndDate:   date2,
 				Rounds:    5,
 				Teams:     []uuid.UUID{team1, team1},
 			}
@@ -133,20 +138,27 @@ var _ = Describe("validation", func() {
 			Expect(ok).To(BeTrue())
 			Expect(validationErrors[0].Tag()).To(Equal("unique_team_uuids"))
 		})
+
+		It("should fail when teams contain an invalid UUID", func() {
+			season := &api.SeasonRequest{
+				StartDate: date1,
+				EndDate:   date2,
+				Rounds:    5,
+				Teams:     []uuid.UUID{team1, uuid.Nil},
+			}
+			err := validate.Struct(season)
+			Expect(err).To(HaveOccurred())
+			validationErrors, ok := err.(validator.ValidationErrors)
+			Expect(ok).To(BeTrue())
+			Expect(validationErrors[0].Tag()).To(Equal("uuid"))
+		})
 	})
 
 	Describe("ValidateGameRequest", func() {
-		var team1, team2 uuid.UUID
-
-		BeforeEach(func() {
-			team1 = uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
-			team2 = uuid.MustParse("7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97")
-		})
-
 		It("should pass with valid scheduled game", func() {
 			game := &api.GameRequest{
 				Round:      1,
-				Date:       time.Now(),
+				Date:       date1,
 				HomeTeamID: team1,
 				AwayTeamID: team2,
 				Status:     api.GameStatusScheduled,
@@ -160,7 +172,7 @@ var _ = Describe("validation", func() {
 			away := int32(2)
 			game := &api.GameRequest{
 				Round:      52,
-				Date:       time.Now(),
+				Date:       date1,
 				HomeTeamID: team1,
 				AwayTeamID: team2,
 				HomeScore:  &home,
@@ -171,10 +183,22 @@ var _ = Describe("validation", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
+		It("should pass when scheduled game has nil scores", func() {
+			game := &api.GameRequest{
+				Round:      1,
+				Date:       date1,
+				HomeTeamID: team1,
+				AwayTeamID: team2,
+				Status:     api.GameStatusScheduled,
+			}
+			err := validate.Struct(game)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
 		It("should fail if AwayTeamID equals HomeTeamID", func() {
 			game := &api.GameRequest{
 				Round:      1,
-				Date:       time.Now(),
+				Date:       date1,
 				HomeTeamID: team1,
 				AwayTeamID: team1,
 				Status:     api.GameStatusScheduled,
@@ -186,7 +210,7 @@ var _ = Describe("validation", func() {
 		It("should fail when HomeTeamID is invalid", func() {
 			game := &api.GameRequest{
 				Round:      1,
-				Date:       time.Now(),
+				Date:       date1,
 				HomeTeamID: uuid.Nil,
 				AwayTeamID: team2,
 				Status:     api.GameStatusScheduled,
@@ -198,7 +222,7 @@ var _ = Describe("validation", func() {
 		It("should fail when AwayTeamID is invalid", func() {
 			game := &api.GameRequest{
 				Round:      1,
-				Date:       time.Now(),
+				Date:       date1,
 				HomeTeamID: team1,
 				AwayTeamID: uuid.Nil,
 				Status:     api.GameStatusScheduled,
@@ -210,7 +234,7 @@ var _ = Describe("validation", func() {
 		It("should fail when round is out of range", func() {
 			game := &api.GameRequest{
 				Round:      53,
-				Date:       time.Now(),
+				Date:       date1,
 				HomeTeamID: team1,
 				AwayTeamID: team2,
 				Status:     api.GameStatusScheduled,
@@ -233,7 +257,7 @@ var _ = Describe("validation", func() {
 		It("should fail with invalid game status", func() {
 			game := &api.GameRequest{
 				Round:      1,
-				Date:       time.Now(),
+				Date:       date1,
 				HomeTeamID: team1,
 				AwayTeamID: team2,
 				Status:     "invalid_status",
@@ -242,24 +266,12 @@ var _ = Describe("validation", func() {
 			Expect(err).To(HaveOccurred())
 		})
 
-		It("should pass when scheduled game has nil scores", func() {
-			game := &api.GameRequest{
-				Round:      1,
-				Date:       time.Now(),
-				HomeTeamID: team1,
-				AwayTeamID: team2,
-				Status:     api.GameStatusScheduled,
-			}
-			err := validate.Struct(game)
-			Expect(err).NotTo(HaveOccurred())
-		})
-
 		It("should fail if scheduled game has non-nil scores", func() {
 			home := int32(1)
 			away := int32(2)
 			game := &api.GameRequest{
 				Round:      1,
-				Date:       time.Now(),
+				Date:       date1,
 				HomeTeamID: team1,
 				AwayTeamID: team2,
 				HomeScore:  &home,
@@ -273,7 +285,7 @@ var _ = Describe("validation", func() {
 		It("should fail if playing game has nil scores", func() {
 			game := &api.GameRequest{
 				Round:      1,
-				Date:       time.Now(),
+				Date:       date1,
 				HomeTeamID: team1,
 				AwayTeamID: team2,
 				Status:     api.GameStatusPlaying,
@@ -285,7 +297,7 @@ var _ = Describe("validation", func() {
 		It("should fail if finished game has nil scores", func() {
 			game := &api.GameRequest{
 				Round:      1,
-				Date:       time.Now(),
+				Date:       date1,
 				HomeTeamID: team1,
 				AwayTeamID: team2,
 				Status:     api.GameStatusFinished,
@@ -299,7 +311,7 @@ var _ = Describe("validation", func() {
 			away := int32(2)
 			game := &api.GameRequest{
 				Round:      1,
-				Date:       time.Now(),
+				Date:       date1,
 				HomeTeamID: team1,
 				AwayTeamID: team2,
 				HomeScore:  &home,

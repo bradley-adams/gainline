@@ -104,7 +104,7 @@ func setUpValidator(logger zerolog.Logger) (*validator.Validate, error) {
 	validate.RegisterValidation("game_status", validation.ValidateGameStatus)
 
 	// Struct-level validators
-	validate.RegisterStructValidation(validation.ValidateGameStruct, api.GameRequest{})
+	validate.RegisterStructValidation(validation.ValidateGameRequest, api.GameRequest{})
 
 	return validate, nil
 }
