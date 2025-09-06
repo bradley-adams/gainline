@@ -20,9 +20,6 @@ func (gs GameStatus) String() string {
 	return string(gs)
 }
 
-// 9230b5b2-9f2e-4af2-adea-13ed2cc8a167
-// a9009b3e-960e-4820-a15b-51135d4b754f
-
 type GameRequest struct {
 	Round      int32      `json:"round" validate:"required,min=1,max=52"`
 	Date       time.Time  `json:"date" validate:"required" example:"2025-01-01T00:00:00Z"`

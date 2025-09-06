@@ -21,14 +21,22 @@ func ValidateUniqueUUIDs(fl validator.FieldLevel) bool {
 		return false
 	}
 
-	seen := make(map[uuid.UUID]bool)
+	seen := make(map[uuid.UUID]struct{})
 	for _, t := range teams {
-		if seen[t] {
+		if _, exists := seen[t]; exists {
 			return false
 		}
-		seen[t] = true
+		seen[t] = struct{}{}
 	}
+
 	return true
+}
+
+var validStatuses = map[api.GameStatus]struct{}{
+	api.GameStatusScheduled: {},
+	api.GameStatusPlaying:   {},
+	api.GameStatusFinished:  {},
+	"":                      {},
 }
 
 func ValidateGameStatus(fl validator.FieldLevel) bool {
@@ -36,16 +44,11 @@ func ValidateGameStatus(fl validator.FieldLevel) bool {
 	if !ok {
 		return false
 	}
-
-	switch status {
-	case api.GameStatusScheduled, api.GameStatusPlaying, api.GameStatusFinished, "":
-		return true
-	default:
-		return false
-	}
+	_, valid := validStatuses[status]
+	return valid
 }
 
-func ValidateGameStruct(sl validator.StructLevel) {
+func ValidateGameRequest(sl validator.StructLevel) {
 	game := sl.Current().Interface().(api.GameRequest)
 
 	// Teams must be different
