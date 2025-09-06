@@ -2,6 +2,8 @@ definitions:
   api.CompetitionRequest:
     properties:
       name:
+        maxLength: 100
+        minLength: 3
         type: string
     required:
     - name
@@ -22,19 +24,33 @@ definitions:
   api.GameRequest:
     properties:
       away_score:
+        minimum: 0
         type: integer
       away_team_id:
+        example: 7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97
         type: string
       date:
+        example: "2025-01-01T00:00:00Z"
         type: string
       home_score:
+        minimum: 0
         type: integer
       home_team_id:
+        example: 013952a5-87e1-4d26-a312-09b2aff54241
         type: string
       round:
+        maximum: 52
+        minimum: 1
         type: integer
       status:
-        $ref: '#/definitions/api.GameStatus'
+        allOf:
+        - $ref: '#/definitions/api.GameStatus'
+        example: playing
+    required:
+    - away_team_id
+    - date
+    - home_team_id
+    - round
     type: object
   api.GameResponse:
     properties:
@@ -79,6 +95,7 @@ definitions:
         example: "2025-12-31T23:59:59Z"
         type: string
       rounds:
+        maximum: 52
         minimum: 1
         type: integer
       start_date:
@@ -90,6 +107,8 @@ definitions:
         - 7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97
         items:
           type: string
+        maxItems: 100
+        minItems: 2
         type: array
     required:
     - end_date

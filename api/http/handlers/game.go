@@ -8,6 +8,7 @@ import (
 	"github.com/bradley-adams/gainline/http/response"
 	"github.com/bradley-adams/gainline/service"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 )
@@ -26,7 +27,11 @@ import (
 //	@Failure	400				{object}	response.ErrorResponse	"Bad request"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID}/seasons/{seasonID}/games [post]
-func handleCreateGame(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleCreateGame(
+	logger zerolog.Logger,
+	db db_handler.DB,
+	validate *validator.Validate,
+) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		seasonID, err := uuid.Parse(ctx.Param("seasonID"))
 		if err != nil {
@@ -37,6 +42,13 @@ func handleCreateGame(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 		req := &api.GameRequest{}
 		if err := ctx.BindJSON(req); err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Bad request")
+			return
+		}
+
+		// Validate tags on GameRequest struct
+		err = validate.Struct(req)
+		if err != nil {
+			response.RespondError(ctx, logger, err, 400, "invalid request")
 			return
 		}
 

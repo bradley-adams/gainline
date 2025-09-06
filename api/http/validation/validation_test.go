@@ -23,9 +23,13 @@ var _ = Describe("validation", func() {
 		validate = validator.New()
 		validate.RegisterValidation("competition_name", ValidateCompetitionName)
 		validate.RegisterValidation("unique_team_uuids", ValidateUniqueUUIDs)
+		validate.RegisterValidation("game_status", ValidateGameStatus)
+
+		validate.RegisterStructValidation(ValidateGameStruct, api.GameRequest{})
+
 	})
 
-	Describe("ValidateCompetitionName", func() {
+	Describe("ValidateCompetitionRequest", func() {
 		It("should pass with a valid name", func() {
 			comp := &api.CompetitionRequest{Name: "Super Rugby Pacific"}
 			err := validate.Struct(comp)
@@ -128,6 +132,182 @@ var _ = Describe("validation", func() {
 			validationErrors, ok := err.(validator.ValidationErrors)
 			Expect(ok).To(BeTrue())
 			Expect(validationErrors[0].Tag()).To(Equal("unique_team_uuids"))
+		})
+	})
+
+	Describe("ValidateGameRequest", func() {
+		var team1, team2 uuid.UUID
+
+		BeforeEach(func() {
+			team1 = uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
+			team2 = uuid.MustParse("7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97")
+		})
+
+		It("should pass with valid scheduled game", func() {
+			game := &api.GameRequest{
+				Round:      1,
+				Date:       time.Now(),
+				HomeTeamID: team1,
+				AwayTeamID: team2,
+				Status:     api.GameStatusScheduled,
+			}
+			err := validate.Struct(game)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("should pass with valid playing game with scores", func() {
+			home := int32(3)
+			away := int32(2)
+			game := &api.GameRequest{
+				Round:      52,
+				Date:       time.Now(),
+				HomeTeamID: team1,
+				AwayTeamID: team2,
+				HomeScore:  &home,
+				AwayScore:  &away,
+				Status:     api.GameStatusPlaying,
+			}
+			err := validate.Struct(game)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("should fail if AwayTeamID equals HomeTeamID", func() {
+			game := &api.GameRequest{
+				Round:      1,
+				Date:       time.Now(),
+				HomeTeamID: team1,
+				AwayTeamID: team1,
+				Status:     api.GameStatusScheduled,
+			}
+			err := validate.Struct(game)
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("should fail when HomeTeamID is invalid", func() {
+			game := &api.GameRequest{
+				Round:      1,
+				Date:       time.Now(),
+				HomeTeamID: uuid.Nil,
+				AwayTeamID: team2,
+				Status:     api.GameStatusScheduled,
+			}
+			err := validate.Struct(game)
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("should fail when AwayTeamID is invalid", func() {
+			game := &api.GameRequest{
+				Round:      1,
+				Date:       time.Now(),
+				HomeTeamID: team1,
+				AwayTeamID: uuid.Nil,
+				Status:     api.GameStatusScheduled,
+			}
+			err := validate.Struct(game)
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("should fail when round is out of range", func() {
+			game := &api.GameRequest{
+				Round:      53,
+				Date:       time.Now(),
+				HomeTeamID: team1,
+				AwayTeamID: team2,
+				Status:     api.GameStatusScheduled,
+			}
+			err := validate.Struct(game)
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("should fail when date is missing", func() {
+			game := &api.GameRequest{
+				Round:      1,
+				HomeTeamID: team1,
+				AwayTeamID: team2,
+				Status:     api.GameStatusScheduled,
+			}
+			err := validate.Struct(game)
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("should fail with invalid game status", func() {
+			game := &api.GameRequest{
+				Round:      1,
+				Date:       time.Now(),
+				HomeTeamID: team1,
+				AwayTeamID: team2,
+				Status:     "invalid_status",
+			}
+			err := validate.Struct(game)
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("should pass when scheduled game has nil scores", func() {
+			game := &api.GameRequest{
+				Round:      1,
+				Date:       time.Now(),
+				HomeTeamID: team1,
+				AwayTeamID: team2,
+				Status:     api.GameStatusScheduled,
+			}
+			err := validate.Struct(game)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("should fail if scheduled game has non-nil scores", func() {
+			home := int32(1)
+			away := int32(2)
+			game := &api.GameRequest{
+				Round:      1,
+				Date:       time.Now(),
+				HomeTeamID: team1,
+				AwayTeamID: team2,
+				HomeScore:  &home,
+				AwayScore:  &away,
+				Status:     api.GameStatusScheduled,
+			}
+			err := validate.Struct(game)
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("should fail if playing game has nil scores", func() {
+			game := &api.GameRequest{
+				Round:      1,
+				Date:       time.Now(),
+				HomeTeamID: team1,
+				AwayTeamID: team2,
+				Status:     api.GameStatusPlaying,
+			}
+			err := validate.Struct(game)
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("should fail if finished game has nil scores", func() {
+			game := &api.GameRequest{
+				Round:      1,
+				Date:       time.Now(),
+				HomeTeamID: team1,
+				AwayTeamID: team2,
+				Status:     api.GameStatusFinished,
+			}
+			err := validate.Struct(game)
+			Expect(err).To(HaveOccurred())
+		})
+
+		It("should fail if scores are negative", func() {
+			home := int32(-1)
+			away := int32(2)
+			game := &api.GameRequest{
+				Round:      1,
+				Date:       time.Now(),
+				HomeTeamID: team1,
+				AwayTeamID: team2,
+				HomeScore:  &home,
+				AwayScore:  &away,
+				Status:     api.GameStatusFinished,
+			}
+			err := validate.Struct(game)
+			Expect(err).To(HaveOccurred())
 		})
 	})
 })
