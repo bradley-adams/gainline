@@ -29,7 +29,7 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
 
 ## ToDos:
-
+-   If game is played or finished scores should be at leaset 0.
 -   Hook up delete endpoints for Seasons, Games, and Teams.
 -   Fix breadcrumbs logic/functionality.
 -   Improve team selector in season form (e.g., multi-select with search instead of giant dropdown).

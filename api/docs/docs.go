@@ -952,7 +952,9 @@ const docTemplate = `{
             ],
             "properties": {
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 3
                 }
             }
         },
@@ -978,27 +980,45 @@ const docTemplate = `{
         },
         "api.GameRequest": {
             "type": "object",
+            "required": [
+                "away_team_id",
+                "date",
+                "home_team_id",
+                "round"
+            ],
             "properties": {
                 "away_score": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                 },
                 "away_team_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97"
                 },
                 "date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2025-01-01T00:00:00Z"
                 },
                 "home_score": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                 },
                 "home_team_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "013952a5-87e1-4d26-a312-09b2aff54241"
                 },
                 "round": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 52,
+                    "minimum": 1
                 },
                 "status": {
-                    "$ref": "#/definitions/api.GameStatus"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/api.GameStatus"
+                        }
+                    ],
+                    "example": "playing"
                 }
             }
         },
@@ -1071,6 +1091,7 @@ const docTemplate = `{
                 },
                 "rounds": {
                     "type": "integer",
+                    "maximum": 52,
                     "minimum": 1
                 },
                 "start_date": {
@@ -1079,6 +1100,8 @@ const docTemplate = `{
                 },
                 "teams": {
                     "type": "array",
+                    "maxItems": 100,
+                    "minItems": 2,
                     "items": {
                         "type": "string"
                     },

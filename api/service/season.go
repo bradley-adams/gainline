@@ -14,15 +14,15 @@ import (
 )
 
 type SeasonWithTeams struct {
-	ID            uuid.UUID `json:"id"`
-	CompetitionID uuid.UUID `json:"competition_id"`
-	StartDate     time.Time `json:"start_date"`
-	EndDate       time.Time `json:"end_date"`
-	Rounds        int32     `json:"rounds"`
-	Teams         []db.Team `json:"teams"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
-	DeletedAt     zero.Time `json:"deleted_at"`
+	ID            uuid.UUID
+	CompetitionID uuid.UUID
+	StartDate     time.Time
+	EndDate       time.Time
+	Rounds        int32
+	Teams         []db.Team
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	DeletedAt     zero.Time
 }
 
 func ToSeasonResponse(s SeasonWithTeams) api.SeasonResponse {
