@@ -29,7 +29,7 @@ var _ = Describe("validation", func() {
 
 	BeforeEach(func() {
 		validate = validator.New()
-		validate.RegisterValidation("competition_name", ValidateCompetitionName)
+		validate.RegisterValidation("entity_name", ValidateEntityName)
 		validate.RegisterValidation("unique_team_uuids", ValidateUniqueUUIDs)
 		validate.RegisterValidation("game_status", ValidateGameStatus)
 
@@ -61,7 +61,7 @@ var _ = Describe("validation", func() {
 			Expect(err).To(HaveOccurred())
 			validationErrors, ok := err.(validator.ValidationErrors)
 			Expect(ok).To(BeTrue())
-			Expect(validationErrors[0].Tag()).To(Equal("competition_name"))
+			Expect(validationErrors[0].Tag()).To(Equal("entity_name"))
 		})
 
 		It("should fail with empty name as it's too short", func() {
@@ -139,7 +139,7 @@ var _ = Describe("validation", func() {
 			Expect(validationErrors[0].Tag()).To(Equal("unique_team_uuids"))
 		})
 
-		It("should fail when teams contain an invalid UUID", func() {
+		It("should fail when teams contain a nil UUID", func() {
 			season := &api.SeasonRequest{
 				StartDate: date1,
 				EndDate:   date2,
@@ -150,7 +150,7 @@ var _ = Describe("validation", func() {
 			Expect(err).To(HaveOccurred())
 			validationErrors, ok := err.(validator.ValidationErrors)
 			Expect(ok).To(BeTrue())
-			Expect(validationErrors[0].Tag()).To(Equal("uuid"))
+			Expect(validationErrors[0].Tag()).To(Equal("required"))
 		})
 	})
 

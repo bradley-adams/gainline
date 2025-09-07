@@ -10,7 +10,7 @@ import (
 
 var competitionNameRegex = regexp.MustCompile(`^[A-Za-z0-9 .,'-]+$`)
 
-func ValidateCompetitionName(fl validator.FieldLevel) bool {
+func ValidateEntityName(fl validator.FieldLevel) bool {
 	name := fl.Field().String()
 	return competitionNameRegex.MatchString(name)
 }

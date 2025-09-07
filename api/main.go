@@ -99,7 +99,7 @@ func setUpValidator(logger zerolog.Logger) (*validator.Validate, error) {
 	validate := validator.New()
 
 	// Field-level validators
-	validate.RegisterValidation("competition_name", validation.ValidateCompetitionName)
+	validate.RegisterValidation("entity_name", validation.ValidateEntityName)
 	validate.RegisterValidation("unique_team_uuids", validation.ValidateUniqueUUIDs)
 	validate.RegisterValidation("game_status", validation.ValidateGameStatus)
 

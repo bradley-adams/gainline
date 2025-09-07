@@ -1149,15 +1149,26 @@ const docTemplate = `{
         },
         "api.TeamRequest": {
             "type": "object",
+            "required": [
+                "abbreviation",
+                "name"
+            ],
             "properties": {
                 "abbreviation": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 4,
+                    "minLength": 2,
+                    "example": "ABV"
                 },
                 "location": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 2
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 3
                 }
             }
         },
