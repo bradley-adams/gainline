@@ -9,9 +9,9 @@ import (
 )
 
 type TeamRequest struct {
-	Name         string `json:"name"`
-	Abbreviation string `json:"abbreviation"`
-	Location     string `json:"location"`
+	Name         string `json:"name" validate:"required,min=3,max=100,entity_name"`
+	Abbreviation string `json:"abbreviation" validate:"required,alpha,min=2,max=4" example:"ABV"`
+	Location     string `json:"location" validate:"omitempty,min=2,max=100"`
 }
 
 type TeamResponse struct {
