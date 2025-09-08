@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/bradley-adams/gainline/db/db"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/guregu/null/zero"
 )
@@ -73,5 +74,50 @@ func ToGameResponse(g db.Game) GameResponse {
 		CreatedAt:  g.CreatedAt,
 		UpdatedAt:  g.UpdatedAt,
 		DeletedAt:  zero.TimeFrom(g.DeletedAt.Time),
+	}
+}
+
+func ValidateGameStatus(fl validator.FieldLevel) bool {
+	status, ok := fl.Field().Interface().(GameStatus)
+	if !ok {
+		return false
+	}
+
+	switch status {
+	case GameStatusScheduled, GameStatusPlaying, GameStatusFinished:
+		return true
+	default:
+		return false
+	}
+}
+
+func ValidateGameRequest(sl validator.StructLevel) {
+	game := sl.Current().Interface().(GameRequest)
+
+	// Teams must be different
+	if game.HomeTeamID == game.AwayTeamID {
+		sl.ReportError(game.HomeTeamID, "HomeTeamID", "home_team_id", "home_and_away_teams_must_differ", "")
+		sl.ReportError(game.AwayTeamID, "AwayTeamID", "away_team_id", "home_and_away_teams_must_differ", "")
+	}
+
+	// Scheduled games must NOT have scores
+	if game.Status == GameStatusScheduled && (game.HomeScore != nil || game.AwayScore != nil) {
+		sl.ReportError(game.HomeScore, "HomeScore", "home_score", "no_scores_for_scheduled_games", "")
+		sl.ReportError(game.AwayScore, "AwayScore", "away_score", "no_scores_for_scheduled_games", "")
+	}
+
+	// Playing or Finished games must have scores
+	if (game.Status == GameStatusPlaying || game.Status == GameStatusFinished) &&
+		(game.HomeScore == nil || game.AwayScore == nil) {
+		sl.ReportError(game.HomeScore, "HomeScore", "home_score", "scores_required_for_playing_or_finished_games", "")
+		sl.ReportError(game.AwayScore, "AwayScore", "away_score", "scores_required_for_playing_or_finished_games", "")
+	}
+
+	// Scores cannot be negative
+	if game.HomeScore != nil && *game.HomeScore < 0 {
+		sl.ReportError(game.HomeScore, "HomeScore", "home_score", "scores_cannot_be_negative", "")
+	}
+	if game.AwayScore != nil && *game.AwayScore < 0 {
+		sl.ReportError(game.AwayScore, "AwayScore", "away_score", "scores_cannot_be_negative", "")
 	}
 }
