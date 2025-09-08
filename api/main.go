@@ -101,10 +101,10 @@ func setUpValidator(logger zerolog.Logger) (*validator.Validate, error) {
 	// Field-level validators
 	validate.RegisterValidation("entity_name", validation.ValidateEntityName)
 	validate.RegisterValidation("unique_team_uuids", validation.ValidateUniqueUUIDs)
-	validate.RegisterValidation("game_status", validation.ValidateGameStatus)
+	validate.RegisterValidation("game_status", api.ValidateGameStatus)
 
 	// Struct-level validators
-	validate.RegisterStructValidation(validation.ValidateGameRequest, api.GameRequest{})
+	validate.RegisterStructValidation(api.ValidateGameRequest, api.GameRequest{})
 
 	return validate, nil
 }
