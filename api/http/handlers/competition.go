@@ -124,12 +124,23 @@ func handleGetCompetition(logger zerolog.Logger, db db_handler.DB) gin.HandlerFu
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid request"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID} [put]
-func handleUpdateCompetition(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleUpdateCompetition(
+	logger zerolog.Logger,
+	db db_handler.DB,
+	validate *validator.Validate,
+) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		req := &api.CompetitionRequest{}
 		err := ctx.BindJSON(req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "bad request")
+			return
+		}
+
+		// Validate tags on CompetitionRequest struct
+		err = validate.Struct(req)
+		if err != nil {
+			response.RespondError(ctx, logger, err, 400, "invalid request")
 			return
 		}
 
