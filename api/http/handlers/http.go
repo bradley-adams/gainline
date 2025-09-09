@@ -38,30 +38,32 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 		v1public.POST("/competitions", handleCreateCompetition(logger, db, validate))
 		v1public.GET("/competitions", handleGetCompetitions(logger, db))
 		v1public.GET("/competitions/:competitionID", handleGetCompetition(logger, db))
-		v1public.PUT("/competitions/:competitionID", handleUpdateCompetition(logger, db))
+		v1public.PUT("/competitions/:competitionID", handleUpdateCompetition(logger, db, validate))
 		v1public.DELETE("/competitions/:competitionID", handleDeleteCompetition(logger, db))
 
 		// seasons
 		v1public.POST("/competitions/:competitionID/seasons", handleCreateSeason(logger, db, validate))
 		v1public.GET("/competitions/:competitionID/seasons", handleGetSeasons(logger, db))
 		v1public.GET("/competitions/:competitionID/seasons/:seasonID", handleGetSeason(logger, db))
-		v1public.PUT("/competitions/:competitionID/seasons/:seasonID", handleUpdateSeason(logger, db))
+		v1public.PUT("/competitions/:competitionID/seasons/:seasonID", handleUpdateSeason(logger, db, validate))
 		v1public.DELETE("/competitions/:competitionID/seasons/:seasonID", handleDeleteSeason(logger, db))
-
-		// teams
-		v1public.POST("/teams", handleCreateTeam(logger, db, validate))
-		v1public.GET("/teams", handleGetTeams(logger, db))
-		v1public.GET("/teams/:teamID", handleGetTeam(logger, db))
-		v1public.PUT("/teams/:teamID", handleUpdateTeam(logger, db))
-		v1public.DELETE("/teams/:teamID", handleDeleteTeam(logger, db))
 
 		// games
 		v1public.POST("/competitions/:competitionID/seasons/:seasonID/games", handleCreateGame(logger, db, validate))
 		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games", handleGetGames(logger, db))
 		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleGetGame(logger, db))
-		v1public.PUT("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleUpdateGame(logger, db))
+		v1public.PUT("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleUpdateGame(logger, db, validate))
 		v1public.DELETE("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleDeleteGame(logger, db))
+
+		// teams
+		v1public.POST("/teams", handleCreateTeam(logger, db, validate))
+		v1public.GET("/teams", handleGetTeams(logger, db))
+		v1public.GET("/teams/:teamID", handleGetTeam(logger, db))
+		v1public.PUT("/teams/:teamID", handleUpdateTeam(logger, db, validate))
+		v1public.DELETE("/teams/:teamID", handleDeleteTeam(logger, db))
+
 	}
+
 	return router
 }
 

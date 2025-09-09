@@ -44,7 +44,6 @@ mockgen -destination=/home/bradley/Personal/gainline/api/db/db_handler/mock/db.g
 
 ## Todo:
 
-- Validate teams tests.
 - Validate on create and update.
 - Split validation and its tests.
 - Swagger CompID, SeasonID, GameID, etc initally set.

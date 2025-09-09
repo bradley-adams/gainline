@@ -143,7 +143,11 @@ func handleGetGame(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@Failure	400				{object}	response.ErrorResponse	"Bad request"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID}/seasons/{seasonID}/games/{gameID} [put]
-func handleUpdateGame(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleUpdateGame(
+	logger zerolog.Logger,
+	db db_handler.DB,
+	validate *validator.Validate,
+) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		gameID, err := uuid.Parse(ctx.Param("gameID"))
 		if err != nil {
@@ -154,6 +158,13 @@ func handleUpdateGame(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 		req := &api.GameRequest{}
 		if err := ctx.BindJSON(req); err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Bad request")
+			return
+		}
+
+		// Validate tags on GameRequest struct
+		err = validate.Struct(req)
+		if err != nil {
+			response.RespondError(ctx, logger, err, 400, "invalid request")
 			return
 		}
 

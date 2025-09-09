@@ -145,7 +145,11 @@ func handleGetSeason(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@Failure	400				{object}	response.ErrorResponse	"Bad request"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID}/seasons/{seasonID} [put]
-func handleUpdateSeason(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleUpdateSeason(
+	logger zerolog.Logger,
+	db db_handler.DB,
+	validate *validator.Validate,
+) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
 		if err != nil {
@@ -163,6 +167,13 @@ func handleUpdateSeason(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc
 		err = ctx.BindJSON(req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "bad request")
+			return
+		}
+
+		// Validate tags on SeasonRequest struct
+		err = validate.Struct(req)
+		if err != nil {
+			response.RespondError(ctx, logger, err, 400, "invalid request")
 			return
 		}
 
