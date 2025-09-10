@@ -44,10 +44,10 @@ mockgen -destination=/home/bradley/Personal/gainline/api/db/db_handler/mock/db.g
 
 ## Todo:
 
-- Validate on create and update.
-- Split validation and its tests.
 - Swagger CompID, SeasonID, GameID, etc initally set.
+- Service level validation for Games in Seasons for rounds, teams, etc.
 - Middleware to enforce ownership (e.g., only owners/admins can edit/delete).
 - Request validation layer (schema validation for all endpoints).
+- Handler tests, maybe?
 - Expand DB handler testing (unit + integration with mock DB).
 - Error response standardisation (consistent shape for errors).

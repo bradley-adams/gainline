@@ -98,13 +98,8 @@ func setUpValidator(logger zerolog.Logger) (*validator.Validate, error) {
 
 	validate := validator.New()
 
-	// Field-level validators
-	validate.RegisterValidation("entity_name", validation.ValidateEntityName)
-	validate.RegisterValidation("unique_team_uuids", validation.ValidateUniqueUUIDs)
-	validate.RegisterValidation("game_status", api.ValidateGameStatus)
-
-	// Struct-level validators
-	validate.RegisterStructValidation(api.ValidateGameRequest, api.GameRequest{})
+	validation.Register(validate)
+	api.Register(validate)
 
 	return validate, nil
 }
