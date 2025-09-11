@@ -112,7 +112,6 @@ definitions:
         type: array
     required:
     - end_date
-    - rounds
     - start_date
     - teams
     type: object
@@ -242,7 +241,8 @@ paths:
     delete:
       operationId: delete-competition
       parameters:
-      - description: UUID of the competition
+      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+        description: UUID of the competition
         in: path
         name: competitionID
         required: true
@@ -268,7 +268,8 @@ paths:
     get:
       operationId: get-competition
       parameters:
-      - description: UUID of the competition
+      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+        description: UUID of the competition
         in: path
         name: competitionID
         required: true
@@ -296,7 +297,8 @@ paths:
       - application/json
       operationId: update-competition
       parameters:
-      - description: UUID of the competition
+      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+        description: UUID of the competition
         in: path
         name: competitionID
         required: true
@@ -329,7 +331,8 @@ paths:
     get:
       operationId: get-seasons
       parameters:
-      - description: Competition ID
+      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+        description: Competition ID
         in: path
         name: competitionID
         required: true
@@ -355,7 +358,8 @@ paths:
       - application/json
       operationId: create-season
       parameters:
-      - description: Competition ID
+      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+        description: Competition ID
         in: path
         name: competitionID
         required: true
@@ -388,12 +392,14 @@ paths:
     delete:
       operationId: delete-season
       parameters:
-      - description: Competition ID
+      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+        description: Competition ID
         in: path
         name: competitionID
         required: true
         type: string
-      - description: Season ID
+      - default: 9300778f-cce0-4efe-af6c-e399d8170315
+        description: Season ID
         in: path
         name: seasonID
         required: true
@@ -417,12 +423,14 @@ paths:
     get:
       operationId: get-season
       parameters:
-      - description: Competition ID
+      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+        description: Competition ID
         in: path
         name: competitionID
         required: true
         type: string
-      - description: Season ID
+      - default: 9300778f-cce0-4efe-af6c-e399d8170315
+        description: Season ID
         in: path
         name: seasonID
         required: true
@@ -450,12 +458,14 @@ paths:
       - application/json
       operationId: update-season
       parameters:
-      - description: Competition ID
+      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+        description: Competition ID
         in: path
         name: competitionID
         required: true
         type: string
-      - description: Season ID
+      - default: 9300778f-cce0-4efe-af6c-e399d8170315
+        description: Season ID
         in: path
         name: seasonID
         required: true
@@ -488,12 +498,14 @@ paths:
     get:
       operationId: get-games
       parameters:
-      - description: Competition ID
+      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+        description: Competition ID
         in: path
         name: competitionID
         required: true
         type: string
-      - description: Season ID
+      - default: 9300778f-cce0-4efe-af6c-e399d8170315
+        description: Season ID
         in: path
         name: seasonID
         required: true
@@ -523,12 +535,14 @@ paths:
       - application/json
       operationId: create-game
       parameters:
-      - description: Competition ID
+      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+        description: Competition ID
         in: path
         name: competitionID
         required: true
         type: string
-      - description: Season ID
+      - default: 9300778f-cce0-4efe-af6c-e399d8170315
+        description: Season ID
         in: path
         name: seasonID
         required: true
@@ -561,17 +575,20 @@ paths:
     delete:
       operationId: delete-game
       parameters:
-      - description: Competition ID
+      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+        description: Competition ID
         in: path
         name: competitionID
         required: true
         type: string
-      - description: Season ID
+      - default: 9300778f-cce0-4efe-af6c-e399d8170315
+        description: Season ID
         in: path
         name: seasonID
         required: true
         type: string
-      - description: Game ID
+      - default: 4019a7f3-7741-4d8f-b3e0-1c7f3a0a1a01
+        description: Game ID
         in: path
         name: gameID
         required: true
@@ -595,17 +612,20 @@ paths:
     get:
       operationId: get-game
       parameters:
-      - description: Competition ID
+      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+        description: Competition ID
         in: path
         name: competitionID
         required: true
         type: string
-      - description: Season ID
+      - default: 9300778f-cce0-4efe-af6c-e399d8170315
+        description: Season ID
         in: path
         name: seasonID
         required: true
         type: string
-      - description: Game ID
+      - default: 4019a7f3-7741-4d8f-b3e0-1c7f3a0a1a01
+        description: Game ID
         in: path
         name: gameID
         required: true
@@ -633,17 +653,20 @@ paths:
       - application/json
       operationId: update-game
       parameters:
-      - description: Competition ID
+      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+        description: Competition ID
         in: path
         name: competitionID
         required: true
         type: string
-      - description: Season ID
+      - default: 9300778f-cce0-4efe-af6c-e399d8170315
+        description: Season ID
         in: path
         name: seasonID
         required: true
         type: string
-      - description: Game ID
+      - default: 4019a7f3-7741-4d8f-b3e0-1c7f3a0a1a01
+        description: Game ID
         in: path
         name: gameID
         required: true
@@ -724,7 +747,8 @@ paths:
     delete:
       operationId: delete-team
       parameters:
-      - description: Team ID
+      - default: 013952a5-87e1-4d26-a312-09b2aff54241
+        description: Team ID
         in: path
         name: teamID
         required: true
@@ -748,7 +772,8 @@ paths:
     get:
       operationId: get-team
       parameters:
-      - description: Team ID
+      - default: 013952a5-87e1-4d26-a312-09b2aff54241
+        description: Team ID
         in: path
         name: teamID
         required: true
@@ -776,7 +801,8 @@ paths:
       - application/json
       operationId: update-team
       parameters:
-      - description: Team ID
+      - default: 013952a5-87e1-4d26-a312-09b2aff54241
+        description: Team ID
         in: path
         name: teamID
         required: true

@@ -107,6 +107,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
                         "description": "UUID of the competition",
                         "name": "competitionID",
                         "in": "path",
@@ -149,6 +150,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
                         "description": "UUID of the competition",
                         "name": "competitionID",
                         "in": "path",
@@ -197,6 +199,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
                         "description": "UUID of the competition",
                         "name": "competitionID",
                         "in": "path",
@@ -238,6 +241,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
                         "description": "Competition ID",
                         "name": "competitionID",
                         "in": "path",
@@ -277,6 +281,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
                         "description": "Competition ID",
                         "name": "competitionID",
                         "in": "path",
@@ -327,6 +332,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
                         "description": "Competition ID",
                         "name": "competitionID",
                         "in": "path",
@@ -334,6 +340,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "default": "9300778f-cce0-4efe-af6c-e399d8170315",
                         "description": "Season ID",
                         "name": "seasonID",
                         "in": "path",
@@ -376,6 +383,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
                         "description": "Competition ID",
                         "name": "competitionID",
                         "in": "path",
@@ -383,6 +391,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "default": "9300778f-cce0-4efe-af6c-e399d8170315",
                         "description": "Season ID",
                         "name": "seasonID",
                         "in": "path",
@@ -431,6 +440,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
                         "description": "Competition ID",
                         "name": "competitionID",
                         "in": "path",
@@ -438,6 +448,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "default": "9300778f-cce0-4efe-af6c-e399d8170315",
                         "description": "Season ID",
                         "name": "seasonID",
                         "in": "path",
@@ -476,6 +487,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
                         "description": "Competition ID",
                         "name": "competitionID",
                         "in": "path",
@@ -483,6 +495,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "default": "9300778f-cce0-4efe-af6c-e399d8170315",
                         "description": "Season ID",
                         "name": "seasonID",
                         "in": "path",
@@ -528,6 +541,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
                         "description": "Competition ID",
                         "name": "competitionID",
                         "in": "path",
@@ -535,6 +549,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "default": "9300778f-cce0-4efe-af6c-e399d8170315",
                         "description": "Season ID",
                         "name": "seasonID",
                         "in": "path",
@@ -585,6 +600,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
                         "description": "Competition ID",
                         "name": "competitionID",
                         "in": "path",
@@ -592,6 +608,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "default": "9300778f-cce0-4efe-af6c-e399d8170315",
                         "description": "Season ID",
                         "name": "seasonID",
                         "in": "path",
@@ -599,6 +616,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "default": "4019a7f3-7741-4d8f-b3e0-1c7f3a0a1a01",
                         "description": "Game ID",
                         "name": "gameID",
                         "in": "path",
@@ -641,6 +659,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
                         "description": "Competition ID",
                         "name": "competitionID",
                         "in": "path",
@@ -648,6 +667,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "default": "9300778f-cce0-4efe-af6c-e399d8170315",
                         "description": "Season ID",
                         "name": "seasonID",
                         "in": "path",
@@ -655,6 +675,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "default": "4019a7f3-7741-4d8f-b3e0-1c7f3a0a1a01",
                         "description": "Game ID",
                         "name": "gameID",
                         "in": "path",
@@ -703,6 +724,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
                         "description": "Competition ID",
                         "name": "competitionID",
                         "in": "path",
@@ -710,6 +732,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "default": "9300778f-cce0-4efe-af6c-e399d8170315",
                         "description": "Season ID",
                         "name": "seasonID",
                         "in": "path",
@@ -717,6 +740,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "default": "4019a7f3-7741-4d8f-b3e0-1c7f3a0a1a01",
                         "description": "Game ID",
                         "name": "gameID",
                         "in": "path",
@@ -828,6 +852,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "013952a5-87e1-4d26-a312-09b2aff54241",
                         "description": "Team ID",
                         "name": "teamID",
                         "in": "path",
@@ -870,6 +895,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "013952a5-87e1-4d26-a312-09b2aff54241",
                         "description": "Team ID",
                         "name": "teamID",
                         "in": "path",
@@ -918,6 +944,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "default": "013952a5-87e1-4d26-a312-09b2aff54241",
                         "description": "Team ID",
                         "name": "teamID",
                         "in": "path",
@@ -1080,7 +1107,6 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "end_date",
-                "rounds",
                 "start_date",
                 "teams"
             ],

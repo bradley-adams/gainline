@@ -12,6 +12,13 @@ docker compose up -d gainline-db
 docker compose run --rm gainline-migrate
 ```
 
+### Stop and Remove old data
+```
+docker stop gainline-db
+docker rm gainline-db
+docker volume rm gainline-data
+```
+
 ## Todo:
 
 - Implement search across core entities (teams, games, seasons, competitions).

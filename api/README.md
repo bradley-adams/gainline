@@ -44,7 +44,6 @@ mockgen -destination=/home/bradley/Personal/gainline/api/db/db_handler/mock/db.g
 
 ## Todo:
 
-- Swagger CompID, SeasonID, GameID, etc initally set.
 - Service level validation for Games in Seasons for rounds, teams, etc.
 - Middleware to enforce ownership (e.g., only owners/admins can edit/delete).
 - Request validation layer (schema validation for all endpoints).

@@ -88,7 +88,7 @@ func handleGetTeams(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@ID			get-team
 //	@Tags		Teams
 //	@Produce	json
-//	@Param		teamID	path		string					true	"Team ID"
+//	@Param		teamID	path		string					true	"Team ID"	default(013952a5-87e1-4d26-a312-09b2aff54241)
 //	@Success	200		{object}	api.TeamResponse		"Team found"
 //	@Failure	400		{object}	response.ErrorResponse	"Invalid team ID"
 //	@Failure	500		{object}	response.ErrorResponse	"Internal server error"
@@ -118,7 +118,7 @@ func handleGetTeam(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@Tags		Teams
 //	@Accept		json
 //	@Produce	json
-//	@Param		teamID	path		string					true	"Team ID"
+//	@Param		teamID	path		string					true	"Team ID"	default(013952a5-87e1-4d26-a312-09b2aff54241)
 //	@Param		team	body		api.TeamRequest			true	"Team details to update"
 //	@Success	200		{object}	api.TeamResponse		"Team updated"
 //	@Failure	400		{object}	response.ErrorResponse	"Bad request"
@@ -166,7 +166,7 @@ func handleUpdateTeam(
 //	@ID			delete-team
 //	@Tags		Teams
 //	@Produce	json
-//	@Param		teamID	path			string	true	"Team ID"
+//	@Param		teamID	path			string	true	"Team ID"	default(013952a5-87e1-4d26-a312-09b2aff54241)
 //	@Success	204		"No Content"	"Team deleted successfully"
 //	@Failure	400		{object}		response.ErrorResponse	"Invalid team ID"
 //	@Failure	500		{object}		response.ErrorResponse	"Internal server error"

@@ -20,7 +20,7 @@ import (
 //	@Tags		Seasons
 //	@Accept		json
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"Competition ID"
+//	@Param		competitionID	path		string					true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
 //	@Param		season			body		api.SeasonRequest		true	"Season details to create"
 //	@Success	201				{object}	api.SeasonResponse		"Successful operation"
 //	@Failure	400				{object}	response.ErrorResponse	"Bad request"
@@ -68,7 +68,7 @@ func handleCreateSeason(
 //	@ID			get-seasons
 //	@Tags		Seasons
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"Competition ID"
+//	@Param		competitionID	path		string					true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
 //	@Success	200				{array}		api.SeasonResponse		"List of seasons"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID}/seasons [get]
@@ -101,8 +101,8 @@ func handleGetSeasons(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@ID			get-season
 //	@Tags		Seasons
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"Competition ID"
-//	@Param		seasonID		path		string					true	"Season ID"
+//	@Param		competitionID	path		string					true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
+//	@Param		seasonID		path		string					true	"Season ID"			default(9300778f-cce0-4efe-af6c-e399d8170315)
 //	@Success	200				{object}	api.SeasonResponse		"Season found"
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid season ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
@@ -138,8 +138,8 @@ func handleGetSeason(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@Tags		Seasons
 //	@Accept		json
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"Competition ID"
-//	@Param		seasonID		path		string					true	"Season ID"
+//	@Param		competitionID	path		string					true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
+//	@Param		seasonID		path		string					true	"Season ID"			default(9300778f-cce0-4efe-af6c-e399d8170315)
 //	@Param		season			body		api.SeasonRequest		true	"Season details to update"
 //	@Success	200				{object}	api.SeasonResponse		"Season updated"
 //	@Failure	400				{object}	response.ErrorResponse	"Bad request"
@@ -193,8 +193,8 @@ func handleUpdateSeason(
 //	@ID			delete-season
 //	@Tags		Seasons
 //	@Produce	json
-//	@Param		competitionID	path			string	true	"Competition ID"
-//	@Param		seasonID		path			string	true	"Season ID"
+//	@Param		competitionID	path			string	true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
+//	@Param		seasonID		path			string	true	"Season ID"			default(9300778f-cce0-4efe-af6c-e399d8170315)
 //	@Success	204				"No Content"	"Season deleted successfully"
 //	@Failure	400				{object}		response.ErrorResponse	"Invalid season ID"
 //	@Failure	500				{object}		response.ErrorResponse	"Internal server error"

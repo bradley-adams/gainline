@@ -88,7 +88,7 @@ func handleGetCompetitions(logger zerolog.Logger, db db_handler.DB) gin.HandlerF
 //	@ID			get-competition
 //	@Tags		Competitions
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"UUID of the competition"
+//	@Param		competitionID	path		string					true	"UUID of the competition"	default(44dd315c-1abc-43aa-9843-642f920190d1)
 //	@Success	200				{object}	api.CompetitionResponse	"Competition found"
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid competition ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
@@ -118,7 +118,7 @@ func handleGetCompetition(logger zerolog.Logger, db db_handler.DB) gin.HandlerFu
 //	@Tags		Competitions
 //	@Accept		json
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"UUID of the competition"
+//	@Param		competitionID	path		string					true	"UUID of the competition"	default(44dd315c-1abc-43aa-9843-642f920190d1)
 //	@Param		competition		body		api.CompetitionRequest	true	"Competition details to update"
 //	@Success	200				{object}	api.CompetitionResponse	"Competition updated"
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid request"
@@ -166,7 +166,7 @@ func handleUpdateCompetition(
 //	@ID			delete-competition
 //	@Tags		Competitions
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"UUID of the competition"
+//	@Param		competitionID	path		string					true	"UUID of the competition"	default(44dd315c-1abc-43aa-9843-642f920190d1)
 //	@Success	204				{string}	string					"Successfully deleted"
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid competition ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
