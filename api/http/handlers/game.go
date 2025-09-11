@@ -20,8 +20,8 @@ import (
 //	@Tags		Games
 //	@Accept		json
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"Competition ID"
-//	@Param		seasonID		path		string					true	"Season ID"
+//	@Param		competitionID	path		string					true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
+//	@Param		seasonID		path		string					true	"Season ID"			default(9300778f-cce0-4efe-af6c-e399d8170315)
 //	@Param		game			body		api.GameRequest			true	"Game details to create"
 //	@Success	201				{object}	api.GameResponse		"Successful operation"
 //	@Failure	400				{object}	response.ErrorResponse	"Bad request"
@@ -68,8 +68,8 @@ func handleCreateGame(
 //	@ID			get-games
 //	@Tags		Games
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"Competition ID"
-//	@Param		seasonID		path		string					true	"Season ID"
+//	@Param		competitionID	path		string					true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
+//	@Param		seasonID		path		string					true	"Season ID"			default(9300778f-cce0-4efe-af6c-e399d8170315)
 //	@Success	200				{array}		api.GameResponse		"List of games"
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
@@ -103,9 +103,9 @@ func handleGetGames(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@ID			get-game
 //	@Tags		Games
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"Competition ID"
-//	@Param		seasonID		path		string					true	"Season ID"
-//	@Param		gameID			path		string					true	"Game ID"
+//	@Param		competitionID	path		string					true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
+//	@Param		seasonID		path		string					true	"Season ID"			default(9300778f-cce0-4efe-af6c-e399d8170315)
+//	@Param		gameID			path		string					true	"Game ID"			default(4019a7f3-7741-4d8f-b3e0-1c7f3a0a1a01)
 //	@Success	200				{object}	api.GameResponse		"Game found"
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
@@ -135,9 +135,9 @@ func handleGetGame(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@Tags		Games
 //	@Accept		json
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"Competition ID"
-//	@Param		seasonID		path		string					true	"Season ID"
-//	@Param		gameID			path		string					true	"Game ID"
+//	@Param		competitionID	path		string					true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
+//	@Param		seasonID		path		string					true	"Season ID"			default(9300778f-cce0-4efe-af6c-e399d8170315)
+//	@Param		gameID			path		string					true	"Game ID"			default(4019a7f3-7741-4d8f-b3e0-1c7f3a0a1a01)
 //	@Param		game			body		api.GameRequest			true	"Game details to update"
 //	@Success	200				{object}	api.GameResponse		"Game updated"
 //	@Failure	400				{object}	response.ErrorResponse	"Bad request"
@@ -184,9 +184,9 @@ func handleUpdateGame(
 //	@ID			delete-game
 //	@Tags		Games
 //	@Produce	json
-//	@Param		competitionID	path			string	true	"Competition ID"
-//	@Param		seasonID		path			string	true	"Season ID"
-//	@Param		gameID			path			string	true	"Game ID"
+//	@Param		competitionID	path			string	true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
+//	@Param		seasonID		path			string	true	"Season ID"			default(9300778f-cce0-4efe-af6c-e399d8170315)
+//	@Param		gameID			path			string	true	"Game ID"			default(4019a7f3-7741-4d8f-b3e0-1c7f3a0a1a01)
 //	@Success	204				"No Content"	"Game deleted successfully"
 //	@Failure	400				{object}		response.ErrorResponse	"Invalid game ID"
 //	@Failure	500				{object}		response.ErrorResponse	"Internal server error"
