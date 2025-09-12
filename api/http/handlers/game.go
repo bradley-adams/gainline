@@ -29,15 +29,11 @@ import (
 //	@Router		/competitions/{competitionID}/seasons/{seasonID}/games [post]
 func handleCreateGame(
 	logger zerolog.Logger,
-	db db_handler.DB,
+	dbHandler db_handler.DB,
 	validate *validator.Validate,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		seasonID, err := uuid.Parse(ctx.Param("seasonID"))
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid season ID")
-			return
-		}
+		season := ctx.MustGet("season").(service.SeasonWithTeams)
 
 		req := &api.GameRequest{}
 		if err := ctx.ShouldBindJSON(req); err != nil {
@@ -45,14 +41,13 @@ func handleCreateGame(
 			return
 		}
 
-		// Validate tags on GameRequest struct
-		err = validate.Struct(req)
+		err := validate.Struct(req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, 400, "invalid request")
 			return
 		}
 
-		game, err := service.CreateGame(ctx.Request.Context(), db, req, seasonID)
+		game, err := service.CreateGame(ctx.Request.Context(), dbHandler, req, season)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to create game")
 			return
