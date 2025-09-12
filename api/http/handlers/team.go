@@ -32,7 +32,7 @@ func handleCreateTeam(
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		req := &api.TeamRequest{}
-		err := ctx.BindJSON(req)
+		err := ctx.ShouldBindJSON(req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "bad request")
 			return
@@ -45,7 +45,7 @@ func handleCreateTeam(
 			return
 		}
 
-		team, err := service.CreateTeam(ctx, db, req)
+		team, err := service.CreateTeam(ctx.Request.Context(), db, req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to add team")
 			return
@@ -67,7 +67,7 @@ func handleCreateTeam(
 func handleGetTeams(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-		teams, err := service.GetTeams(ctx, db)
+		teams, err := service.GetTeams(ctx.Request.Context(), db)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get teams")
 			return
@@ -101,7 +101,7 @@ func handleGetTeam(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 			return
 		}
 
-		team, err := service.GetTeam(ctx, db, teamID)
+		team, err := service.GetTeam(ctx.Request.Context(), db, teamID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get team")
 			return
@@ -137,7 +137,7 @@ func handleUpdateTeam(
 		}
 
 		req := &api.TeamRequest{}
-		err = ctx.BindJSON(req)
+		err = ctx.ShouldBindJSON(req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "bad request")
 			return
@@ -150,7 +150,7 @@ func handleUpdateTeam(
 			return
 		}
 
-		team, err := service.UpdateTeam(ctx, db, req, teamID)
+		team, err := service.UpdateTeam(ctx.Request.Context(), db, req, teamID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to update team")
 			return
@@ -179,7 +179,7 @@ func handleDeleteTeam(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 			return
 		}
 
-		err = service.DeleteTeam(ctx, db, teamID)
+		err = service.DeleteTeam(ctx.Request.Context(), db, teamID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to delete team")
 			return

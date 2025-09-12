@@ -33,7 +33,7 @@ func handleCreateCompetition(
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		req := &api.CompetitionRequest{}
-		err := ctx.BindJSON(req)
+		err := ctx.ShouldBindJSON(req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "bad request")
 			return
@@ -46,7 +46,7 @@ func handleCreateCompetition(
 			return
 		}
 
-		competition, err := service.CreateCompetition(ctx, db, req)
+		competition, err := service.CreateCompetition(ctx.Request.Context(), db, req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to add competition")
 			return
@@ -67,7 +67,7 @@ func handleCreateCompetition(
 //	@Router		/competitions [get]
 func handleGetCompetitions(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		competitions, err := service.GetCompetitions(ctx, db)
+		competitions, err := service.GetCompetitions(ctx.Request.Context(), db)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get competitions")
 			return
@@ -101,7 +101,7 @@ func handleGetCompetition(logger zerolog.Logger, db db_handler.DB) gin.HandlerFu
 			return
 		}
 
-		competition, err := service.GetCompetition(ctx, db, competitionID)
+		competition, err := service.GetCompetition(ctx.Request.Context(), db, competitionID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get competition")
 			return
@@ -131,7 +131,7 @@ func handleUpdateCompetition(
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		req := &api.CompetitionRequest{}
-		err := ctx.BindJSON(req)
+		err := ctx.ShouldBindJSON(req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "bad request")
 			return
@@ -150,7 +150,7 @@ func handleUpdateCompetition(
 			return
 		}
 
-		competition, err := service.UpdateCompetition(ctx, db, competitionID, req)
+		competition, err := service.UpdateCompetition(ctx.Request.Context(), db, competitionID, req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to update competition")
 			return
@@ -179,7 +179,7 @@ func handleDeleteCompetition(logger zerolog.Logger, db db_handler.DB) gin.Handle
 			return
 		}
 
-		err = service.DeleteCompetition(ctx, db, competitionID)
+		err = service.DeleteCompetition(ctx.Request.Context(), db, competitionID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to delete competition")
 			return
