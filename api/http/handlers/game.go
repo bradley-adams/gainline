@@ -40,7 +40,7 @@ func handleCreateGame(
 		}
 
 		req := &api.GameRequest{}
-		if err := ctx.BindJSON(req); err != nil {
+		if err := ctx.ShouldBindJSON(req); err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Bad request")
 			return
 		}
@@ -52,7 +52,7 @@ func handleCreateGame(
 			return
 		}
 
-		game, err := service.CreateGame(ctx, db, req, seasonID)
+		game, err := service.CreateGame(ctx.Request.Context(), db, req, seasonID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to create game")
 			return
@@ -82,7 +82,7 @@ func handleGetGames(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 			return
 		}
 
-		games, err := service.GetGames(ctx, db, seasonID)
+		games, err := service.GetGames(ctx.Request.Context(), db, seasonID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get games")
 			return
@@ -118,7 +118,7 @@ func handleGetGame(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 			return
 		}
 
-		game, err := service.GetGame(ctx, db, gameID)
+		game, err := service.GetGame(ctx.Request.Context(), db, gameID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get game")
 			return
@@ -156,7 +156,7 @@ func handleUpdateGame(
 		}
 
 		req := &api.GameRequest{}
-		if err := ctx.BindJSON(req); err != nil {
+		if err := ctx.ShouldBindJSON(req); err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Bad request")
 			return
 		}
@@ -168,7 +168,7 @@ func handleUpdateGame(
 			return
 		}
 
-		game, err := service.UpdateGame(ctx, db, req, gameID)
+		game, err := service.UpdateGame(ctx.Request.Context(), db, req, gameID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to update game")
 			return
@@ -199,7 +199,7 @@ func handleDeleteGame(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 			return
 		}
 
-		err = service.DeleteGame(ctx, db, gameID)
+		err = service.DeleteGame(ctx.Request.Context(), db, gameID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to delete game")
 			return

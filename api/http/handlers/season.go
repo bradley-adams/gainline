@@ -39,7 +39,7 @@ func handleCreateSeason(
 		}
 
 		req := &api.SeasonRequest{}
-		err = ctx.BindJSON(req)
+		err = ctx.ShouldBindJSON(req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "bad request")
 			return
@@ -52,7 +52,7 @@ func handleCreateSeason(
 			return
 		}
 
-		season, err := service.CreateSeason(ctx, db, req, competitionID)
+		season, err := service.CreateSeason(ctx.Request.Context(), db, req, competitionID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to add season")
 			return
@@ -80,7 +80,7 @@ func handleGetSeasons(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 			return
 		}
 
-		seasons, err := service.GetSeasons(ctx, db, competitionID)
+		seasons, err := service.GetSeasons(ctx.Request.Context(), db, competitionID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get seasons")
 			return
@@ -121,7 +121,7 @@ func handleGetSeason(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 			return
 		}
 
-		season, err := service.GetSeason(ctx, db, competitionID, seasonID)
+		season, err := service.GetSeason(ctx.Request.Context(), db, competitionID, seasonID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get season")
 			return
@@ -164,7 +164,7 @@ func handleUpdateSeason(
 		}
 
 		req := &api.SeasonRequest{}
-		err = ctx.BindJSON(req)
+		err = ctx.ShouldBindJSON(req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "bad request")
 			return
@@ -177,7 +177,7 @@ func handleUpdateSeason(
 			return
 		}
 
-		season, err := service.UpdateSeason(ctx, db, req, competitionID, seasonID)
+		season, err := service.UpdateSeason(ctx.Request.Context(), db, req, competitionID, seasonID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to update season")
 			return
@@ -207,7 +207,7 @@ func handleDeleteSeason(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc
 			return
 		}
 
-		err = service.DeleteSeason(ctx, db, seasonID)
+		err = service.DeleteSeason(ctx.Request.Context(), db, seasonID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to delete season")
 			return
