@@ -38,7 +38,7 @@ func CompetitionStructureValidator(logger zerolog.Logger, db db_handler.DB) gin.
 				return
 			}
 
-			err := validateSeason(ctx.Request.Context(), db, seasonUUID, compUUID)
+			err := validateSeason(ctx, db, seasonUUID, compUUID)
 			if err != nil {
 				response.RespondAbortError(ctx, logger, err, http.StatusForbidden, "Season does not belong to competition")
 				return
@@ -74,13 +74,15 @@ func validateGame(ctx context.Context, db db_handler.DB, gameID, seasonID uuid.U
 	return nil
 }
 
-func validateSeason(ctx context.Context, db db_handler.DB, seasonID, competitionID uuid.UUID) error {
-	season, err := service.GetSeason(ctx, db, competitionID, seasonID)
+func validateSeason(ctx *gin.Context, db db_handler.DB, seasonID, competitionID uuid.UUID) error {
+	season, err := service.GetSeason(ctx.Request.Context(), db, competitionID, seasonID)
 	if err != nil {
 		return err
 	}
 	if season.CompetitionID != competitionID {
 		return errors.New("unauthorized: season does not belong to competition")
 	}
+
+	ctx.Set("season", season)
 	return nil
 }

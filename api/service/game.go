@@ -16,13 +16,13 @@ func CreateGame(
 	ctx context.Context,
 	dbHandler db_handler.DB,
 	req *api.GameRequest,
-	seasonID uuid.UUID,
+	season SeasonWithTeams,
 ) (db.Game, error) {
 	var game db.Game
 
 	err := db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
 		var txErr error
-		game, txErr = createGame(ctx, queries, req, seasonID)
+		game, txErr = createGame(ctx, queries, req, season)
 		return txErr
 	})
 	if err != nil {
@@ -36,8 +36,12 @@ func createGame(
 	ctx context.Context,
 	queries db_handler.Queries,
 	req *api.GameRequest,
-	seasonID uuid.UUID,
+	season SeasonWithTeams,
 ) (db.Game, error) {
+	if err := validateGameRequest(req, season); err != nil {
+		return db.Game{}, err
+	}
+
 	now := time.Now()
 
 	// default status if not provided
@@ -48,7 +52,7 @@ func createGame(
 
 	createParams := db.CreateGameParams{
 		ID:         uuid.New(),
-		SeasonID:   seasonID,
+		SeasonID:   season.ID,
 		Round:      req.Round,
 		Date:       req.Date,
 		HomeTeamID: req.HomeTeamID,
@@ -78,6 +82,33 @@ func toNullInt32(i *int32) sql.NullInt32 {
 		return sql.NullInt32{}
 	}
 	return sql.NullInt32{Int32: *i, Valid: true}
+}
+
+func validateGameRequest(req *api.GameRequest, season SeasonWithTeams) error {
+	teamIDs := make(map[uuid.UUID]struct{}, len(season.Teams))
+	for _, t := range season.Teams {
+		teamIDs[t.ID] = struct{}{}
+	}
+
+	// Round in season bounds
+	if req.Round < 1 || req.Round > season.Rounds {
+		return errors.Errorf("round %d is out of bounds (1-%d)", req.Round, season.Rounds)
+	}
+
+	// Team in season
+	if _, ok := teamIDs[req.HomeTeamID]; !ok {
+		return errors.New("home team not in season")
+	}
+	if _, ok := teamIDs[req.AwayTeamID]; !ok {
+		return errors.New("away team not in season")
+	}
+
+	// Date in season bounds
+	if req.Date.Before(season.StartDate) || req.Date.After(season.EndDate) {
+		return errors.Errorf("game date %s outside season bounds (%s - %s)", req.Date, season.StartDate, season.EndDate)
+	}
+
+	return nil
 }
 
 func GetGames(

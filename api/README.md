@@ -43,8 +43,8 @@ mockgen -destination=/home/bradley/Personal/gainline/api/db/db_handler/mock/db.g
 ```
 
 ## Todo:
-
-- Service level validation for Games in Seasons for rounds, teams, etc.
+- Service level validation tests for games.
+- Service level validation for Seasons.
 - Middleware to enforce ownership (e.g., only owners/admins can edit/delete).
 - Request validation layer (schema validation for all endpoints).
 - Handler tests, maybe?

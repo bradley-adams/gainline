@@ -30,7 +30,7 @@ definitions:
         example: 7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97
         type: string
       date:
-        example: "2025-01-01T00:00:00Z"
+        example: "2025-08-02T00:00:00Z"
         type: string
       home_score:
         minimum: 0
@@ -39,6 +39,7 @@ definitions:
         example: 013952a5-87e1-4d26-a312-09b2aff54241
         type: string
       round:
+        example: 10
         maximum: 52
         minimum: 1
         type: integer

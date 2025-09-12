@@ -22,8 +22,8 @@ func (gs GameStatus) String() string {
 }
 
 type GameRequest struct {
-	Round      int32      `json:"round" validate:"required,min=1,max=52"`
-	Date       time.Time  `json:"date" validate:"required" example:"2025-01-01T00:00:00Z"`
+	Round      int32      `json:"round" validate:"required,min=1,max=52" example:"10"`
+	Date       time.Time  `json:"date" validate:"required" example:"2025-08-02T00:00:00Z"`
 	HomeTeamID uuid.UUID  `json:"home_team_id" validate:"required,uuid" swaggertype:"string" example:"013952a5-87e1-4d26-a312-09b2aff54241"`
 	AwayTeamID uuid.UUID  `json:"away_team_id" validate:"required,uuid" swaggertype:"string" example:"7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97"`
 	HomeScore  *int32     `json:"home_score,omitempty" validate:"omitempty,min=0"`

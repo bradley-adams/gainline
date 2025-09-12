@@ -1024,7 +1024,7 @@ const docTemplate = `{
                 },
                 "date": {
                     "type": "string",
-                    "example": "2025-01-01T00:00:00Z"
+                    "example": "2025-08-02T00:00:00Z"
                 },
                 "home_score": {
                     "type": "integer",
@@ -1037,7 +1037,8 @@ const docTemplate = `{
                 "round": {
                     "type": "integer",
                     "maximum": 52,
-                    "minimum": 1
+                    "minimum": 1,
+                    "example": 10
                 },
                 "status": {
                     "allOf": [
