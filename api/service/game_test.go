@@ -605,4 +605,46 @@ var _ = Describe("game", func() {
 			Expect(err.Error()).To(Equal(validTestError.Error()))
 		})
 	})
+
+	Describe("validateGameRequest", func() {
+		It("should allow a valid game request", func() {
+			err := validateGameRequest(validGameRequest, validSeasonWithTeams)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("should reject if round is greater than season rounds", func() {
+			badReq := *validGameRequest
+			badReq.Round = 16
+			err := validateGameRequest(&badReq, validSeasonWithTeams)
+			Expect(err).To(MatchError("round 16 is out of bounds (1-15)"))
+		})
+
+		It("should reject if home team not in season", func() {
+			badReq := *validGameRequest
+			badReq.HomeTeamID = uuid.MustParse("33333333-3333-4333-8333-333333333333")
+			err := validateGameRequest(&badReq, validSeasonWithTeams)
+			Expect(err).To(MatchError("home team not in season"))
+		})
+
+		It("should reject if away team not in season", func() {
+			badReq := *validGameRequest
+			badReq.AwayTeamID = uuid.MustParse("44444444-4444-4444-8444-444444444444")
+			err := validateGameRequest(&badReq, validSeasonWithTeams)
+			Expect(err).To(MatchError("away team not in season"))
+		})
+
+		It("should reject if date is before season start", func() {
+			badReq := *validGameRequest
+			badReq.Date = validSeasonWithTeams.StartDate.Add(-24 * time.Hour)
+			err := validateGameRequest(&badReq, validSeasonWithTeams)
+			Expect(err.Error()).To(ContainSubstring("outside season bounds"))
+		})
+
+		It("should reject if date is after season end", func() {
+			badReq := *validGameRequest
+			badReq.Date = validSeasonWithTeams.EndDate.Add(24 * time.Hour)
+			err := validateGameRequest(&badReq, validSeasonWithTeams)
+			Expect(err.Error()).To(ContainSubstring("outside season bounds"))
+		})
+	})
 })
