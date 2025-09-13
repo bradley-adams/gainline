@@ -410,7 +410,7 @@ var _ = Describe("game", func() {
 				gomock.Any(),
 			).Times(0)
 
-			game, err := UpdateGame(context.Background(), mockDB, validGameRequest, validGameID)
+			game, err := UpdateGame(context.Background(), mockDB, validGameRequest, validGameID, validSeasonWithTeams)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(game.ID).To(Equal(validUpdatedGameResponse.ID))
@@ -440,7 +440,7 @@ var _ = Describe("game", func() {
 				gomock.Any(),
 			).Times(0)
 
-			game, err := UpdateGame(context.Background(), mockDB, validGameRequest, validGameID)
+			game, err := UpdateGame(context.Background(), mockDB, validGameRequest, validGameID, validSeasonWithTeams)
 
 			Expect(game).To(Equal(validNilGame))
 			Expect(err.Error()).To(Equal(validTestError.Error()))
@@ -462,7 +462,7 @@ var _ = Describe("game", func() {
 				gomock.Any(),
 			).AnyTimes()
 
-			game, err := UpdateGame(context.Background(), mockDB, validGameRequest, validGameID)
+			game, err := UpdateGame(context.Background(), mockDB, validGameRequest, validGameID, validSeasonWithTeams)
 
 			Expect(game).To(Equal(validNilGame))
 			Expect(err.Error()).To(Equal("unable to update game: a valid testing error"))
@@ -488,7 +488,7 @@ var _ = Describe("game", func() {
 				gomock.Any(),
 			).AnyTimes()
 
-			game, err := UpdateGame(context.Background(), mockDB, validGameRequest, validGameID)
+			game, err := UpdateGame(context.Background(), mockDB, validGameRequest, validGameID, validSeasonWithTeams)
 
 			Expect(game).To(Equal(validNilGame))
 			Expect(err.Error()).To(Equal("unable to get updated game: a valid testing error"))
@@ -517,7 +517,7 @@ var _ = Describe("game", func() {
 				gomock.Any(),
 			).Times(0)
 
-			game, err := UpdateGame(context.Background(), mockDB, validGameRequest, validGameID)
+			game, err := UpdateGame(context.Background(), mockDB, validGameRequest, validGameID, validSeasonWithTeams)
 
 			Expect(game).To(Equal(validNilGame))
 			Expect(err.Error()).To(Equal(validTestError.Error()))
