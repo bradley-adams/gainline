@@ -144,6 +144,8 @@ func handleUpdateGame(
 	validate *validator.Validate,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		season := ctx.MustGet("season").(service.SeasonWithTeams)
+
 		gameID, err := uuid.Parse(ctx.Param("gameID"))
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid game ID")
@@ -163,7 +165,7 @@ func handleUpdateGame(
 			return
 		}
 
-		game, err := service.UpdateGame(ctx.Request.Context(), db, req, gameID)
+		game, err := service.UpdateGame(ctx.Request.Context(), db, req, gameID, season)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to update game")
 			return
