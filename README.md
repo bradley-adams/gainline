@@ -20,7 +20,6 @@ docker volume rm gainline-data
 ```
 
 ## Todo:
-
 - Implement search across core entities (teams, games, seasons, competitions).
 - Add pagination to API responses and frontend tables.
 - Write a full migration seeder (seasons, teams, games, scores).
