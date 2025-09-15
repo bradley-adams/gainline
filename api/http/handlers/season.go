@@ -109,23 +109,7 @@ func handleGetSeasons(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@Router		/competitions/{competitionID}/seasons/{seasonID} [get]
 func handleGetSeason(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid competition ID")
-			return
-		}
-
-		seasonID, err := uuid.Parse(ctx.Param("seasonID"))
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid season ID")
-			return
-		}
-
-		season, err := service.GetSeason(ctx.Request.Context(), db, competitionID, seasonID)
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get season")
-			return
-		}
+		season := ctx.MustGet("season").(service.SeasonWithTeams)
 
 		response.RespondSuccess(ctx, logger, http.StatusOK, service.ToSeasonResponse(season))
 	}
