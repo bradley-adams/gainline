@@ -44,5 +44,5 @@ mockgen -destination=/home/bradley/Personal/gainline/api/db/db_handler/mock/db.g
 
 ## Todo:
 - Handler tests. (Looked into. Seems annoying to mock the db again. Need something simpler)
-- Expand DB handler testing (unit + integration with mock DB).
+- Expand DB handler testing (integration with mock DB).
 - Error response standardisation (consistent shape for errors).
