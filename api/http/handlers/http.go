@@ -4,6 +4,7 @@ import (
 	"github.com/bradley-adams/gainline/db/db_handler"
 	"github.com/bradley-adams/gainline/docs"
 	"github.com/bradley-adams/gainline/http/middleware"
+	"github.com/bradley-adams/gainline/service"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -35,7 +36,8 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 		v1public.Use(middleware.CompetitionStructureValidator(logger, db))
 
 		// competitions
-		v1public.POST("/competitions", handleCreateCompetition(logger, db, validate))
+		svc := service.DefaultCompetitionService{}
+		v1public.POST("/competitions", handleCreateCompetition(logger, db, validate, svc))
 		v1public.GET("/competitions", handleGetCompetitions(logger, db))
 		v1public.GET("/competitions/:competitionID", handleGetCompetition(logger, db))
 		v1public.PUT("/competitions/:competitionID", handleUpdateCompetition(logger, db, validate))
