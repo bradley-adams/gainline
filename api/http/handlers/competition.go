@@ -28,7 +28,6 @@ import (
 //	@Router		/competitions [post]
 func handleCreateCompetition(
 	logger zerolog.Logger,
-	db db_handler.DB,
 	validate *validator.Validate,
 	svc service.CompetitionService,
 ) gin.HandlerFunc {
@@ -47,7 +46,7 @@ func handleCreateCompetition(
 			return
 		}
 
-		competition, err := svc.Create(ctx.Request.Context(), db, req)
+		competition, err := svc.Create(ctx.Request.Context(), req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to add competition")
 			return

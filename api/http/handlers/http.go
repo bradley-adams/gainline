@@ -36,8 +36,8 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 		v1public.Use(middleware.CompetitionStructureValidator(logger, db))
 
 		// competitions
-		svc := service.DefaultCompetitionService{}
-		v1public.POST("/competitions", handleCreateCompetition(logger, db, validate, svc))
+		svc := service.NewCompetitionService(db)
+		v1public.POST("/competitions", handleCreateCompetition(logger, validate, svc))
 		v1public.GET("/competitions", handleGetCompetitions(logger, db))
 		v1public.GET("/competitions/:competitionID", handleGetCompetition(logger, db))
 		v1public.PUT("/competitions/:competitionID", handleUpdateCompetition(logger, db, validate))

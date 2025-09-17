@@ -14,11 +14,11 @@ import (
 )
 
 type CompetitionService interface {
-	Create(ctx context.Context, db db_handler.DB, req *api.CompetitionRequest) (db.Competition, error)
-	GetAll(ctx context.Context, db db_handler.DB) ([]db.Competition, error)
-	Get(ctx context.Context, db db_handler.DB, id uuid.UUID) (db.Competition, error)
-	Update(ctx context.Context, db db_handler.DB, id uuid.UUID, req *api.CompetitionRequest) (db.Competition, error)
-	Delete(ctx context.Context, db db_handler.DB, id uuid.UUID) error
+	Create(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error)
+	GetAll(ctx context.Context) ([]db.Competition, error)
+	Get(ctx context.Context, id uuid.UUID) (db.Competition, error)
+	Update(ctx context.Context, id uuid.UUID, req *api.CompetitionRequest) (db.Competition, error)
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 func CreateCompetition(
