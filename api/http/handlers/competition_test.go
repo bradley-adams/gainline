@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/bradley-adams/gainline/db/db"
-	"github.com/bradley-adams/gainline/db/db_handler"
 	"github.com/bradley-adams/gainline/http/api"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -18,29 +17,29 @@ import (
 
 // Manual mock for CompetitionService
 type mockCompetitionService struct {
-	CreateFn func(ctx context.Context, dbHandlerDB db_handler.DB, req *api.CompetitionRequest) (db.Competition, error)
+	CreateFn func(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error)
 }
 
-func (m *mockCompetitionService) Create(ctx context.Context, dbHandlerDB db_handler.DB, req *api.CompetitionRequest) (db.Competition, error) {
+func (m *mockCompetitionService) Create(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error) {
 	if m.CreateFn != nil {
-		return m.CreateFn(ctx, dbHandlerDB, req)
+		return m.CreateFn(ctx, req)
 	}
 	return db.Competition{}, nil
 }
 
-func (m *mockCompetitionService) GetAll(ctx context.Context, dbHandlerDB db_handler.DB) ([]db.Competition, error) {
+func (m *mockCompetitionService) GetAll(ctx context.Context) ([]db.Competition, error) {
 	return nil, nil
 }
 
-func (m *mockCompetitionService) Get(ctx context.Context, dbHandlerDB db_handler.DB, id uuid.UUID) (db.Competition, error) {
+func (m *mockCompetitionService) Get(ctx context.Context, id uuid.UUID) (db.Competition, error) {
 	return db.Competition{}, nil
 }
 
-func (m *mockCompetitionService) Update(ctx context.Context, dbHandlerDB db_handler.DB, id uuid.UUID, req *api.CompetitionRequest) (db.Competition, error) {
+func (m *mockCompetitionService) Update(ctx context.Context, id uuid.UUID, req *api.CompetitionRequest) (db.Competition, error) {
 	return db.Competition{}, nil
 }
 
-func (m *mockCompetitionService) Delete(ctx context.Context, dbHandlerDB db_handler.DB, id uuid.UUID) error {
+func (m *mockCompetitionService) Delete(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
@@ -57,7 +56,7 @@ func TestHandleCreateCompetition(t *testing.T) {
 
 	// Manual mock service
 	mockSvc := &mockCompetitionService{
-		CreateFn: func(ctx context.Context, dbHandlerDB db_handler.DB, req *api.CompetitionRequest) (db.Competition, error) {
+		CreateFn: func(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error) {
 			return db.Competition{
 				ID:   uuid.New(),
 				Name: req.Name,
@@ -67,7 +66,7 @@ func TestHandleCreateCompetition(t *testing.T) {
 
 	// Setup Gin router with the handler
 	router := gin.New()
-	router.POST("/competitions", handleCreateCompetition(logger, nil, validate, mockSvc))
+	router.POST("/competitions", handleCreateCompetition(logger, validate, mockSvc))
 
 	// Prepare a valid JSON request
 	reqBody := `{"name":"Test Competition"}`
