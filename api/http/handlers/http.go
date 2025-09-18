@@ -38,10 +38,10 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 		// competitions
 		svc := service.NewCompetitionService(db)
 		v1public.POST("/competitions", handleCreateCompetition(logger, validate, svc))
-		v1public.GET("/competitions", handleGetCompetitions(logger, db))
-		v1public.GET("/competitions/:competitionID", handleGetCompetition(logger, db))
-		v1public.PUT("/competitions/:competitionID", handleUpdateCompetition(logger, db, validate))
-		v1public.DELETE("/competitions/:competitionID", handleDeleteCompetition(logger, db))
+		v1public.GET("/competitions", handleGetCompetitions(logger, svc))
+		v1public.GET("/competitions/:competitionID", handleGetCompetition(logger, svc))
+		v1public.PUT("/competitions/:competitionID", handleUpdateCompetition(logger, validate, svc))
+		v1public.DELETE("/competitions/:competitionID", handleDeleteCompetition(logger, svc))
 
 		// seasons
 		v1public.POST("/competitions/:competitionID/seasons", handleCreateSeason(logger, db, validate))

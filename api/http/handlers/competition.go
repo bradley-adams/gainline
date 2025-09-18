@@ -3,7 +3,6 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/bradley-adams/gainline/db/db_handler"
 	"github.com/bradley-adams/gainline/http/api"
 	"github.com/bradley-adams/gainline/http/response"
 	"github.com/bradley-adams/gainline/service"
@@ -33,15 +32,12 @@ func handleCreateCompetition(
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		req := &api.CompetitionRequest{}
-		err := ctx.ShouldBindJSON(req)
-		if err != nil {
+		if err := ctx.ShouldBindJSON(req); err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "bad request")
 			return
 		}
 
-		// Validate tags on CompetitionRequest struct
-		err = validate.Struct(req)
-		if err != nil {
+		if err := validate.Struct(req); err != nil {
 			response.RespondError(ctx, logger, err, http.StatusBadRequest, "invalid request")
 			return
 		}
@@ -65,9 +61,9 @@ func handleCreateCompetition(
 //	@Success	200	{array}		api.CompetitionResponse	"List of competitions"
 //	@Failure	500	{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions [get]
-func handleGetCompetitions(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleGetCompetitions(logger zerolog.Logger, svc service.CompetitionService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		competitions, err := service.GetCompetitions(ctx.Request.Context(), db)
+		competitions, err := svc.GetAll(ctx.Request.Context())
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get competitions")
 			return
@@ -93,7 +89,7 @@ func handleGetCompetitions(logger zerolog.Logger, db db_handler.DB) gin.HandlerF
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid competition ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID} [get]
-func handleGetCompetition(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleGetCompetition(logger zerolog.Logger, svc service.CompetitionService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
 		if err != nil {
@@ -101,7 +97,7 @@ func handleGetCompetition(logger zerolog.Logger, db db_handler.DB) gin.HandlerFu
 			return
 		}
 
-		competition, err := service.GetCompetition(ctx.Request.Context(), db, competitionID)
+		competition, err := svc.Get(ctx.Request.Context(), competitionID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get competition")
 			return
@@ -126,8 +122,8 @@ func handleGetCompetition(logger zerolog.Logger, db db_handler.DB) gin.HandlerFu
 //	@Router		/competitions/{competitionID} [put]
 func handleUpdateCompetition(
 	logger zerolog.Logger,
-	db db_handler.DB,
 	validate *validator.Validate,
+	svc service.CompetitionService,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		req := &api.CompetitionRequest{}
@@ -150,7 +146,7 @@ func handleUpdateCompetition(
 			return
 		}
 
-		competition, err := service.UpdateCompetition(ctx.Request.Context(), db, competitionID, req)
+		competition, err := svc.Update(ctx.Request.Context(), competitionID, req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to update competition")
 			return
@@ -171,7 +167,7 @@ func handleUpdateCompetition(
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid competition ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID} [delete]
-func handleDeleteCompetition(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleDeleteCompetition(logger zerolog.Logger, svc service.CompetitionService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
 		if err != nil {
@@ -179,7 +175,7 @@ func handleDeleteCompetition(logger zerolog.Logger, db db_handler.DB) gin.Handle
 			return
 		}
 
-		err = service.DeleteCompetition(ctx.Request.Context(), db, competitionID)
+		err = svc.Delete(ctx.Request.Context(), competitionID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to delete competition")
 			return
