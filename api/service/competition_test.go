@@ -19,11 +19,13 @@ var _ = Describe("competition", func() {
 	var ctrl *gomock.Controller
 	var mockDB *mock_db.MockDB
 	var mockQueries *mock_db.MockQueries
+	var svc CompetitionService
 
 	BeforeEach(func() {
 		ctrl = gomock.NewController(GinkgoT())
 		mockDB = mock_db.NewMockDB(ctrl)
 		mockQueries = mock_db.NewMockQueries(ctrl)
+		svc = NewCompetitionService(mockDB)
 	})
 
 	validCompetitionID := uuid.MustParse("11111111-1111-1111-1111-111111111111")
@@ -94,7 +96,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Times(0)
 
-			competition, err := CreateCompetition(context.Background(), mockDB, validCompetitionRequest)
+			competition, err := svc.Create(context.Background(), validCompetitionRequest)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(competition.ID).To(Equal(validCompetitionResponse.ID))
@@ -121,7 +123,7 @@ var _ = Describe("competition", func() {
 			mockDB.EXPECT().Commit(gomock.Any())
 			mockDB.EXPECT().Rollback(gomock.Any()).Times(0)
 
-			competition, err := CreateCompetition(context.Background(), mockDB, req)
+			competition, err := svc.Create(context.Background(), req)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(competition.Name).To(Equal("Trimmed Name"))
 		})
@@ -135,7 +137,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Times(0)
 
-			competition, err := CreateCompetition(context.Background(), mockDB, validCompetitionRequest)
+			competition, err := svc.Create(context.Background(), validCompetitionRequest)
 
 			Expect(competition).To(Equal(validNilCompetition))
 			Expect(err.Error()).To(Equal(validTestError.Error()))
@@ -157,7 +159,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).AnyTimes()
 
-			competition, err := CreateCompetition(context.Background(), mockDB, validCompetitionRequest)
+			competition, err := svc.Create(context.Background(), validCompetitionRequest)
 
 			Expect(competition).To(Equal(validNilCompetition))
 			Expect(err.Error()).To(Equal("unable to create new competition: a valid testing error"))
@@ -183,7 +185,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).AnyTimes()
 
-			competition, err := CreateCompetition(context.Background(), mockDB, validCompetitionRequest)
+			competition, err := svc.Create(context.Background(), validCompetitionRequest)
 
 			Expect(competition).To(Equal(validNilCompetition))
 			Expect(err.Error()).To(Equal("unable to get new competition: a valid testing error"))
@@ -212,7 +214,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Times(0)
 
-			competition, err := CreateCompetition(context.Background(), mockDB, validCompetitionRequest)
+			competition, err := svc.Create(context.Background(), validCompetitionRequest)
 
 			Expect(competition).To(Equal(validNilCompetition))
 			Expect(err.Error()).To(Equal(validTestError.Error()))
@@ -228,7 +230,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Return(validCompetitionsFromDB, nil)
 
-			competitionsResult, err := GetCompetitions(context.Background(), mockDB)
+			competitionsResult, err := svc.GetAll(context.Background())
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(competitionsResult[0].ID).To(Equal(validCompetitionsResponse[0].ID))
@@ -252,7 +254,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Return(nil, validTestError)
 
-			competitions, err := GetCompetitions(context.Background(), mockDB)
+			competitions, err := svc.GetAll(context.Background())
 
 			Expect(competitions).To(Equal(validNilCompetitions))
 			Expect(err.Error()).To(Equal("unable to get competitions: a valid testing error"))
@@ -269,7 +271,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Return(validCompetitionFromDB, nil)
 
-			competition, err := GetCompetition(context.Background(), mockDB, validCompetitionID)
+			competition, err := svc.Get(context.Background(), validCompetitionID)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(competition.ID).To(Equal(validCompetitionResponse.ID))
@@ -288,7 +290,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Return(db.Competition{}, validTestError)
 
-			competition, err := GetCompetition(context.Background(), mockDB, validCompetitionID)
+			competition, err := svc.Get(context.Background(), validCompetitionID)
 
 			Expect(competition).To(Equal(validNilCompetition))
 			Expect(err.Error()).To(Equal("unable to get competition: a valid testing error"))
@@ -319,9 +321,8 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Times(0)
 
-			competition, err := UpdateCompetition(
+			competition, err := svc.Update(
 				context.Background(),
-				mockDB,
 				validCompetitionID,
 				validCompetitionRequest,
 			)
@@ -351,7 +352,7 @@ var _ = Describe("competition", func() {
 			mockDB.EXPECT().Commit(gomock.Any())
 			mockDB.EXPECT().Rollback(gomock.Any()).Times(0)
 
-			competition, err := UpdateCompetition(context.Background(), mockDB, validCompetitionID, req)
+			competition, err := svc.Update(context.Background(), validCompetitionID, req)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(competition.Name).To(Equal("Updated Name"))
 		})
@@ -365,9 +366,8 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Times(0)
 
-			competition, err := UpdateCompetition(
+			competition, err := svc.Update(
 				context.Background(),
-				mockDB,
 				validCompetitionID,
 				validCompetitionRequest,
 			)
@@ -392,7 +392,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).AnyTimes()
 
-			competition, err := UpdateCompetition(context.Background(), mockDB, validCompetitionID, validCompetitionRequest)
+			competition, err := svc.Update(context.Background(), validCompetitionID, validCompetitionRequest)
 
 			Expect(competition).To(Equal(validNilCompetition))
 			Expect(err.Error()).To(Equal("unable to update competition: a valid testing error"))
@@ -418,7 +418,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).AnyTimes()
 
-			competition, err := UpdateCompetition(context.Background(), mockDB, validCompetitionID, validCompetitionRequest)
+			competition, err := svc.Update(context.Background(), validCompetitionID, validCompetitionRequest)
 
 			Expect(competition).To(Equal(validNilCompetition))
 			Expect(err.Error()).To(Equal("unable to get updated competition: a valid testing error"))
@@ -447,7 +447,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Times(0)
 
-			competition, err := UpdateCompetition(context.Background(), mockDB, validCompetitionID, validCompetitionRequest)
+			competition, err := svc.Update(context.Background(), validCompetitionID, validCompetitionRequest)
 
 			Expect(competition).To(Equal(validNilCompetition))
 			Expect(err.Error()).To(Equal(validTestError.Error()))
@@ -483,7 +483,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Times(0)
 
-			err := DeleteCompetition(context.Background(), mockDB, validCompetitionID)
+			err := svc.Delete(context.Background(), validCompetitionID)
 			Expect(err).NotTo(HaveOccurred())
 		})
 
@@ -496,7 +496,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Times(0)
 
-			err := DeleteCompetition(context.Background(), mockDB, validCompetitionID)
+			err := svc.Delete(context.Background(), validCompetitionID)
 
 			Expect(err.Error()).To(Equal(validTestError.Error()))
 		})
@@ -517,7 +517,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).AnyTimes()
 
-			err := DeleteCompetition(context.Background(), mockDB, validCompetitionID)
+			err := svc.Delete(context.Background(), validCompetitionID)
 			Expect(err.Error()).To(Equal("unable to delete games for competition: a valid testing error"))
 		})
 
@@ -541,7 +541,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).AnyTimes()
 
-			err := DeleteCompetition(context.Background(), mockDB, validCompetitionID)
+			err := svc.Delete(context.Background(), validCompetitionID)
 			Expect(err.Error()).To(Equal("unable to delete seasons for competition: a valid testing error"))
 		})
 
@@ -569,7 +569,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).AnyTimes()
 
-			err := DeleteCompetition(context.Background(), mockDB, validCompetitionID)
+			err := svc.Delete(context.Background(), validCompetitionID)
 
 			Expect(err.Error()).To(Equal("unable to delete competition: a valid testing error"))
 		})
@@ -601,7 +601,7 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Times(0)
 
-			err := DeleteCompetition(context.Background(), mockDB, validCompetitionID)
+			err := svc.Delete(context.Background(), validCompetitionID)
 
 			Expect(err.Error()).To(Equal(validTestError.Error()))
 		})
