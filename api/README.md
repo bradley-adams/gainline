@@ -43,6 +43,9 @@ mockgen -destination=/home/bradley/Personal/gainline/api/db/db_handler/mock/db.g
 ```
 
 ## Todo:
-- Handler tests. (Looked into. Seems annoying to mock the db again. Need something simpler)
+- Service/Handler refactor for tests. (Broke service tests)
+- Handler tests.
+- Swagger spec default dont delete actual competition seeded data. Maybe seed a second one to delete
+- Create/Update competition swagger default violates unique constraint.
 - Expand DB handler testing (integration with mock DB).
 - Error response standardisation (consistent shape for errors).
