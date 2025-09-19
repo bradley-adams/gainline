@@ -22,19 +22,16 @@ type CompetitionService interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
-// DefaultCompetitionService is the concrete implementation backed by db_handler.DB.
-type DefaultCompetitionService struct {
+// competitionService is the concrete implementation backed by db_handler.DB.
+type competitionService struct {
 	db db_handler.DB
 }
 
-// NewCompetitionService constructs a new CompetitionService.
 func NewCompetitionService(db db_handler.DB) CompetitionService {
-	return &DefaultCompetitionService{db: db}
+	return &competitionService{db: db}
 }
 
-// --- Service methods ---
-
-func (s *DefaultCompetitionService) Create(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error) {
+func (s *competitionService) Create(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error) {
 	req.Name = strings.TrimSpace(req.Name)
 
 	var competition db.Competition
@@ -50,7 +47,7 @@ func (s *DefaultCompetitionService) Create(ctx context.Context, req *api.Competi
 	return competition, nil
 }
 
-func (s *DefaultCompetitionService) GetAll(ctx context.Context) ([]db.Competition, error) {
+func (s *competitionService) GetAll(ctx context.Context) ([]db.Competition, error) {
 	var competitions []db.Competition
 
 	err := db_handler.Run(ctx, s.db, func(queries db_handler.Queries) error {
@@ -68,7 +65,7 @@ func (s *DefaultCompetitionService) GetAll(ctx context.Context) ([]db.Competitio
 	return competitions, nil
 }
 
-func (s *DefaultCompetitionService) Get(ctx context.Context, competitionID uuid.UUID) (db.Competition, error) {
+func (s *competitionService) Get(ctx context.Context, competitionID uuid.UUID) (db.Competition, error) {
 	var competition db.Competition
 
 	err := db_handler.Run(ctx, s.db, func(queries db_handler.Queries) error {
@@ -86,7 +83,7 @@ func (s *DefaultCompetitionService) Get(ctx context.Context, competitionID uuid.
 	return competition, nil
 }
 
-func (s *DefaultCompetitionService) Update(ctx context.Context, competitionID uuid.UUID, req *api.CompetitionRequest) (db.Competition, error) {
+func (s *competitionService) Update(ctx context.Context, competitionID uuid.UUID, req *api.CompetitionRequest) (db.Competition, error) {
 	req.Name = strings.TrimSpace(req.Name)
 
 	var competition db.Competition
@@ -102,13 +99,11 @@ func (s *DefaultCompetitionService) Update(ctx context.Context, competitionID uu
 	return competition, nil
 }
 
-func (s *DefaultCompetitionService) Delete(ctx context.Context, competitionID uuid.UUID) error {
+func (s *competitionService) Delete(ctx context.Context, competitionID uuid.UUID) error {
 	return db_handler.RunInTransaction(ctx, s.db, func(q db_handler.Queries) error {
 		return deleteCompetition(ctx, q, competitionID)
 	})
 }
-
-// --- Private helpers ---
 
 func createCompetition(ctx context.Context, queries db_handler.Queries, req *api.CompetitionRequest) (db.Competition, error) {
 	now := time.Now()
