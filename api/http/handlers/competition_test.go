@@ -3,9 +3,9 @@ package handlers
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"testing"
 
 	"github.com/bradley-adams/gainline/db/db"
 	"github.com/bradley-adams/gainline/http/api"
@@ -13,6 +13,9 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 )
 
 // Manual mock for CompetitionService
@@ -39,46 +42,86 @@ func (m *mockCompetitionService) Update(ctx context.Context, id uuid.UUID, req *
 	return db.Competition{}, nil
 }
 
-func (m *mockCompetitionService) Delete(ctx context.Context, id uuid.UUID) error {
-	return nil
-}
+func (m *mockCompetitionService) Delete(ctx context.Context, id uuid.UUID) error { return nil }
 
-func TestHandleCreateCompetition(t *testing.T) {
-	// Setup Gin in test mode
-	gin.SetMode(gin.TestMode)
+var _ = Describe("competition", func() {
+	var (
+		router   *gin.Engine
+		validate *validator.Validate
+		logger   zerolog.Logger
+		mockSvc  *mockCompetitionService
+	)
 
-	// Validator and logger
-	validate := validator.New()
-	_ = validate.RegisterValidation("entity_name", func(fl validator.FieldLevel) bool {
-		return fl.Field().String() != ""
+	BeforeEach(func() {
+		gin.SetMode(gin.TestMode)
+
+		validate = validator.New()
+		_ = validate.RegisterValidation("entity_name", func(fl validator.FieldLevel) bool {
+			return fl.Field().String() != ""
+		})
+		logger = zerolog.Nop()
+
+		mockSvc = &mockCompetitionService{
+			CreateFn: func(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error) {
+				return db.Competition{
+					ID:   uuid.New(),
+					Name: req.Name,
+				}, nil
+			},
+		}
+
+		router = gin.New()
+		router.POST("/competitions", handleCreateCompetition(logger, validate, mockSvc))
 	})
-	logger := zerolog.Nop()
 
-	// Manual mock service
-	mockSvc := &mockCompetitionService{
-		CreateFn: func(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error) {
-			return db.Competition{
-				ID:   uuid.New(),
-				Name: req.Name,
-			}, nil
-		},
-	}
+	Describe("create", func() {
+		It("should return 201 when creating a valid competition", func() {
+			reqBody := `{"name":"Test Competition"}`
+			req := httptest.NewRequest(http.MethodPost, "/competitions", bytes.NewBufferString(reqBody))
+			req.Header.Set("Content-Type", "application/json")
 
-	// Setup Gin router with the handler
-	router := gin.New()
-	router.POST("/competitions", handleCreateCompetition(logger, validate, mockSvc))
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
 
-	// Prepare a valid JSON request
-	reqBody := `{"name":"Test Competition"}`
-	req := httptest.NewRequest(http.MethodPost, "/competitions", bytes.NewBufferString(reqBody))
-	req.Header.Set("Content-Type", "application/json")
+			Expect(w.Code).To(Equal(http.StatusCreated))
+		})
 
-	// Record the response
-	w := httptest.NewRecorder()
-	router.ServeHTTP(w, req)
+		It("should return 400 for invalid JSON", func() {
+			reqBody := `{"name":` // malformed JSON
+			req := httptest.NewRequest(http.MethodPost, "/competitions", bytes.NewBufferString(reqBody))
+			req.Header.Set("Content-Type", "application/json")
 
-	// Assert the response code
-	if w.Code != http.StatusCreated {
-		t.Fatalf("expected status 201, got %d", w.Code)
-	}
-}
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+
+			Expect(w.Code).To(Equal(http.StatusBadRequest))
+		})
+
+		It("should return 400 for validation failure", func() {
+			reqBody := `{"name":""}` // fails entity_name validation
+			req := httptest.NewRequest(http.MethodPost, "/competitions", bytes.NewBufferString(reqBody))
+			req.Header.Set("Content-Type", "application/json")
+
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+
+			Expect(w.Code).To(Equal(http.StatusBadRequest))
+		})
+
+		It("should return 500 when service fails", func() {
+			// simulate error
+			mockSvc.CreateFn = func(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error) {
+				return db.Competition{}, fmt.Errorf("db failure")
+			}
+
+			reqBody := `{"name":"Test Competition"}`
+			req := httptest.NewRequest(http.MethodPost, "/competitions", bytes.NewBufferString(reqBody))
+			req.Header.Set("Content-Type", "application/json")
+
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+
+			Expect(w.Code).To(Equal(http.StatusInternalServerError))
+		})
+	})
+})
