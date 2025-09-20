@@ -20,11 +20,13 @@ var _ = Describe("season", func() {
 	var ctrl *gomock.Controller
 	var mockDB *mock_db.MockDB
 	var mockQueries *mock_db.MockQueries
+	var svc SeasonService
 
 	BeforeEach(func() {
 		ctrl = gomock.NewController(GinkgoT())
 		mockDB = mock_db.NewMockDB(ctrl)
 		mockQueries = mock_db.NewMockQueries(ctrl)
+		svc = NewSeasonService(mockDB)
 	})
 
 	validSeasonID := uuid.MustParse("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
@@ -227,7 +229,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(0)
 
-			season, err := CreateSeason(context.Background(), mockDB, validSeasonRequest, validCompetitionID)
+			season, err := svc.Create(context.Background(), validSeasonRequest, validCompetitionID)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(season.ID).To(Equal(validSeasonResponse.ID))
@@ -249,7 +251,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(0)
 
-			season, err := CreateSeason(context.Background(), mockDB, validSeasonRequest, validCompetitionID)
+			season, err := svc.Create(context.Background(), validSeasonRequest, validCompetitionID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
 			Expect(err.Error()).To(Equal("failed creating season: a valid testing error"))
@@ -271,7 +273,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(1)
 
-			season, err := CreateSeason(context.Background(), mockDB, validSeasonRequest, validCompetitionID)
+			season, err := svc.Create(context.Background(), validSeasonRequest, validCompetitionID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
 			Expect(err.Error()).To(Equal("failed creating season: unable to create season: a valid testing error"))
@@ -297,7 +299,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(1)
 
-			season, err := CreateSeason(context.Background(), mockDB, validSeasonRequest, validCompetitionID)
+			season, err := svc.Create(context.Background(), validSeasonRequest, validCompetitionID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
 			Expect(err).To(MatchError(ContainSubstring("failed creating season: unable to get team ")))
@@ -332,7 +334,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(1)
 
-			season, err := CreateSeason(context.Background(), mockDB, validSeasonRequest, validCompetitionID)
+			season, err := svc.Create(context.Background(), validSeasonRequest, validCompetitionID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
 			Expect(err).To(MatchError(ContainSubstring("failed creating season: unable to add team ")))
@@ -375,7 +377,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(1)
 
-			season, err := CreateSeason(context.Background(), mockDB, validSeasonRequest, validCompetitionID)
+			season, err := svc.Create(context.Background(), validSeasonRequest, validCompetitionID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
 			Expect(err.Error()).To(Equal("failed creating season: unable to get season: a valid testing error"))
@@ -424,7 +426,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(0)
 
-			season, err := CreateSeason(context.Background(), mockDB, validSeasonRequest, validCompetitionID)
+			season, err := svc.Create(context.Background(), validSeasonRequest, validCompetitionID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
 			Expect(err.Error()).To(Equal("failed creating season: a valid testing error"))
@@ -449,7 +451,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Return(nil, nil)
 
-			seasons, err := GetSeasons(context.Background(), mockDB, validCompetitionID)
+			seasons, err := svc.GetAll(context.Background(), validCompetitionID)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(seasons[0].ID).To(Equal(validSeasonsResponse[0].ID))
@@ -480,7 +482,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Return(nil, validTestError)
 
-			seasons, err := GetSeasons(context.Background(), mockDB, validCompetitionID)
+			seasons, err := svc.GetAll(context.Background(), validCompetitionID)
 
 			Expect(seasons).To(Equal(validNilSeasonsWithTeams))
 			Expect(err.Error()).To(Equal("failed getting seasons: unable to get seasons: a valid testing error"))
@@ -499,7 +501,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Return(nil, validTestError)
 
-			seasons, err := GetSeasons(context.Background(), mockDB, validCompetitionID)
+			seasons, err := svc.GetAll(context.Background(), validCompetitionID)
 
 			Expect(seasons).To(Equal(validNilSeasonsWithTeams))
 			Expect(err.Error()).To(Equal("failed getting seasons: unable to get season teams: a valid testing error"))
@@ -521,7 +523,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Return([]db.GetSeasonTeamsRow{}, nil)
 
-			season, err := GetSeason(context.Background(), mockDB, validCompetitionID, validSeasonID)
+			season, err := svc.Get(context.Background(), validCompetitionID, validSeasonID)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(season.ID).To(Equal(validSeasonResponse.ID))
@@ -543,7 +545,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Return(db.Season{}, validTestError)
 
-			season, err := GetSeason(context.Background(), mockDB, validCompetitionID, validSeasonID)
+			season, err := svc.Get(context.Background(), validCompetitionID, validSeasonID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
 			Expect(err.Error()).To(Equal("failed getting season: unable to get season: a valid testing error"))
@@ -562,7 +564,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Return([]db.GetSeasonTeamsRow{}, validTestError)
 
-			season, err := GetSeason(context.Background(), mockDB, validCompetitionID, validSeasonID)
+			season, err := svc.Get(context.Background(), validCompetitionID, validSeasonID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
 			Expect(err.Error()).To(Equal("failed getting season: unable to get season teams: a valid testing error"))
@@ -625,9 +627,8 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(0)
 
-			season, err := UpdateSeason(
+			season, err := svc.Update(
 				context.Background(),
-				mockDB,
 				validSeasonRequest,
 				validCompetitionID,
 				validSeasonID,
@@ -653,9 +654,8 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(0)
 
-			season, err := UpdateSeason(
+			season, err := svc.Update(
 				context.Background(),
-				mockDB,
 				validSeasonRequest,
 				validCompetitionID,
 				validSeasonID,
@@ -681,9 +681,8 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(1)
 
-			season, err := UpdateSeason(
+			season, err := svc.Update(
 				context.Background(),
-				mockDB,
 				validSeasonRequest,
 				validCompetitionID,
 				validSeasonID,
@@ -717,9 +716,8 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(1)
 
-			season, err := UpdateSeason(
+			season, err := svc.Update(
 				context.Background(),
-				mockDB,
 				validSeasonRequest,
 				validCompetitionID,
 				validSeasonID,
@@ -757,9 +755,8 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(1)
 
-			season, err := UpdateSeason(
+			season, err := svc.Update(
 				context.Background(),
-				mockDB,
 				validSeasonRequest,
 				validCompetitionID,
 				validSeasonID,
@@ -805,9 +802,8 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(1)
 
-			season, err := UpdateSeason(
+			season, err := svc.Update(
 				context.Background(),
-				mockDB,
 				validSeasonRequest,
 				validCompetitionID,
 				validSeasonID,
@@ -857,9 +853,8 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(1)
 
-			season, err := UpdateSeason(
+			season, err := svc.Update(
 				context.Background(),
-				mockDB,
 				validSeasonRequest,
 				validCompetitionID,
 				validSeasonID,
@@ -913,9 +908,8 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(1)
 
-			season, err := UpdateSeason(
+			season, err := svc.Update(
 				context.Background(),
-				mockDB,
 				validSeasonRequest,
 				validCompetitionID,
 				validSeasonID,
@@ -976,9 +970,8 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(1)
 
-			season, err := UpdateSeason(
+			season, err := svc.Update(
 				context.Background(),
-				mockDB,
 				validSeasonRequest,
 				validCompetitionID,
 				validSeasonID,
@@ -1043,9 +1036,8 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(0)
 
-			season, err := UpdateSeason(
+			season, err := svc.Update(
 				context.Background(),
-				mockDB,
 				validSeasonRequest,
 				validCompetitionID,
 				validSeasonID,
@@ -1084,7 +1076,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(0)
 
-			err := DeleteSeason(context.Background(), mockDB, validCompetitionID)
+			err := svc.Delete(context.Background(), validCompetitionID)
 
 			Expect(err).NotTo(HaveOccurred())
 		})
@@ -1098,7 +1090,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(0)
 
-			err := DeleteSeason(context.Background(), mockDB, validCompetitionID)
+			err := svc.Delete(context.Background(), validCompetitionID)
 
 			Expect(err.Error()).To(Equal("failed deleting season: a valid testing error"))
 		})
@@ -1119,7 +1111,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(1)
 
-			err := DeleteSeason(context.Background(), mockDB, validCompetitionID)
+			err := svc.Delete(context.Background(), validCompetitionID)
 			Expect(err.Error()).To(Equal("failed deleting season: unable to delete games for season: a valid testing error"))
 		})
 
@@ -1143,7 +1135,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(1)
 
-			err := DeleteSeason(context.Background(), mockDB, validCompetitionID)
+			err := svc.Delete(context.Background(), validCompetitionID)
 			Expect(err.Error()).To(Equal("failed deleting season: unable to delete season teams for season: a valid testing error"))
 		})
 
@@ -1171,7 +1163,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(1)
 
-			err := DeleteSeason(context.Background(), mockDB, validCompetitionID)
+			err := svc.Delete(context.Background(), validCompetitionID)
 
 			Expect(err.Error()).To(Equal("failed deleting season: unable to delete season: a valid testing error"))
 		})
@@ -1203,7 +1195,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Times(0)
 
-			err := DeleteSeason(context.Background(), mockDB, validCompetitionID)
+			err := svc.Delete(context.Background(), validCompetitionID)
 
 			Expect(err.Error()).To(Equal("failed deleting season: a valid testing error"))
 		})

@@ -3,7 +3,6 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/bradley-adams/gainline/db/db_handler"
 	"github.com/bradley-adams/gainline/http/api"
 	"github.com/bradley-adams/gainline/http/response"
 	"github.com/bradley-adams/gainline/service"
@@ -28,8 +27,8 @@ import (
 //	@Router		/competitions/{competitionID}/seasons [post]
 func handleCreateSeason(
 	logger zerolog.Logger,
-	db db_handler.DB,
 	validate *validator.Validate,
+	seasonService service.SeasonService,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
@@ -52,7 +51,7 @@ func handleCreateSeason(
 			return
 		}
 
-		season, err := service.CreateSeason(ctx.Request.Context(), db, req, competitionID)
+		season, err := seasonService.Create(ctx.Request.Context(), req, competitionID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to add season")
 			return
@@ -72,7 +71,7 @@ func handleCreateSeason(
 //	@Success	200				{array}		api.SeasonResponse		"List of seasons"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID}/seasons [get]
-func handleGetSeasons(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleGetSeasons(logger zerolog.Logger, seasonService service.SeasonService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
 		if err != nil {
@@ -80,7 +79,7 @@ func handleGetSeasons(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 			return
 		}
 
-		seasons, err := service.GetSeasons(ctx.Request.Context(), db, competitionID)
+		seasons, err := seasonService.GetAll(ctx.Request.Context(), competitionID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get seasons")
 			return
@@ -107,7 +106,7 @@ func handleGetSeasons(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid season ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID}/seasons/{seasonID} [get]
-func handleGetSeason(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleGetSeason(logger zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		season := ctx.MustGet("season").(service.SeasonWithTeams)
 
@@ -131,8 +130,8 @@ func handleGetSeason(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@Router		/competitions/{competitionID}/seasons/{seasonID} [put]
 func handleUpdateSeason(
 	logger zerolog.Logger,
-	db db_handler.DB,
 	validate *validator.Validate,
+	seasonService service.SeasonService,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
@@ -161,7 +160,7 @@ func handleUpdateSeason(
 			return
 		}
 
-		season, err := service.UpdateSeason(ctx.Request.Context(), db, req, competitionID, seasonID)
+		season, err := seasonService.Update(ctx.Request.Context(), req, competitionID, seasonID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to update season")
 			return
@@ -183,7 +182,7 @@ func handleUpdateSeason(
 //	@Failure	400				{object}		response.ErrorResponse	"Invalid season ID"
 //	@Failure	500				{object}		response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID}/seasons/{seasonID} [delete]
-func handleDeleteSeason(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleDeleteSeason(logger zerolog.Logger, seasonService service.SeasonService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		seasonID, err := uuid.Parse(ctx.Param("seasonID"))
 		if err != nil {
@@ -191,7 +190,7 @@ func handleDeleteSeason(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc
 			return
 		}
 
-		err = service.DeleteSeason(ctx.Request.Context(), db, seasonID)
+		err = seasonService.Delete(ctx.Request.Context(), seasonID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to delete season")
 			return

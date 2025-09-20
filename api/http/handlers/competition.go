@@ -28,7 +28,7 @@ import (
 func handleCreateCompetition(
 	logger zerolog.Logger,
 	validate *validator.Validate,
-	svc service.CompetitionService,
+	competitionService service.CompetitionService,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		req := &api.CompetitionRequest{}
@@ -42,7 +42,7 @@ func handleCreateCompetition(
 			return
 		}
 
-		competition, err := svc.Create(ctx.Request.Context(), req)
+		competition, err := competitionService.Create(ctx.Request.Context(), req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to add competition")
 			return
@@ -61,9 +61,9 @@ func handleCreateCompetition(
 //	@Success	200	{array}		api.CompetitionResponse	"List of competitions"
 //	@Failure	500	{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions [get]
-func handleGetCompetitions(logger zerolog.Logger, svc service.CompetitionService) gin.HandlerFunc {
+func handleGetCompetitions(logger zerolog.Logger, competitionService service.CompetitionService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		competitions, err := svc.GetAll(ctx.Request.Context())
+		competitions, err := competitionService.GetAll(ctx.Request.Context())
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get competitions")
 			return
@@ -89,7 +89,7 @@ func handleGetCompetitions(logger zerolog.Logger, svc service.CompetitionService
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid competition ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID} [get]
-func handleGetCompetition(logger zerolog.Logger, svc service.CompetitionService) gin.HandlerFunc {
+func handleGetCompetition(logger zerolog.Logger, competitionService service.CompetitionService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
 		if err != nil {
@@ -97,7 +97,7 @@ func handleGetCompetition(logger zerolog.Logger, svc service.CompetitionService)
 			return
 		}
 
-		competition, err := svc.Get(ctx.Request.Context(), competitionID)
+		competition, err := competitionService.Get(ctx.Request.Context(), competitionID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get competition")
 			return
@@ -123,7 +123,7 @@ func handleGetCompetition(logger zerolog.Logger, svc service.CompetitionService)
 func handleUpdateCompetition(
 	logger zerolog.Logger,
 	validate *validator.Validate,
-	svc service.CompetitionService,
+	competitionService service.CompetitionService,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		req := &api.CompetitionRequest{}
@@ -146,7 +146,7 @@ func handleUpdateCompetition(
 			return
 		}
 
-		competition, err := svc.Update(ctx.Request.Context(), competitionID, req)
+		competition, err := competitionService.Update(ctx.Request.Context(), competitionID, req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to update competition")
 			return
@@ -167,7 +167,7 @@ func handleUpdateCompetition(
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid competition ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID} [delete]
-func handleDeleteCompetition(logger zerolog.Logger, svc service.CompetitionService) gin.HandlerFunc {
+func handleDeleteCompetition(logger zerolog.Logger, competitionService service.CompetitionService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
 		if err != nil {
@@ -175,7 +175,7 @@ func handleDeleteCompetition(logger zerolog.Logger, svc service.CompetitionServi
 			return
 		}
 
-		err = svc.Delete(ctx.Request.Context(), competitionID)
+		err = competitionService.Delete(ctx.Request.Context(), competitionID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to delete competition")
 			return
