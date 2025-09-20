@@ -33,22 +33,24 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 	{
 		v1public.OPTIONS("/*path")
 
-		v1public.Use(middleware.CompetitionStructureValidator(logger, db))
+		// middleware
+		seasonService := service.NewSeasonService(db)
+		v1public.Use(middleware.CompetitionStructureValidator(logger, db, seasonService))
 
 		// competitions
-		svc := service.NewCompetitionService(db)
-		v1public.POST("/competitions", handleCreateCompetition(logger, validate, svc))
-		v1public.GET("/competitions", handleGetCompetitions(logger, svc))
-		v1public.GET("/competitions/:competitionID", handleGetCompetition(logger, svc))
-		v1public.PUT("/competitions/:competitionID", handleUpdateCompetition(logger, validate, svc))
-		v1public.DELETE("/competitions/:competitionID", handleDeleteCompetition(logger, svc))
+		competitionService := service.NewCompetitionService(db)
+		v1public.POST("/competitions", handleCreateCompetition(logger, validate, competitionService))
+		v1public.GET("/competitions", handleGetCompetitions(logger, competitionService))
+		v1public.GET("/competitions/:competitionID", handleGetCompetition(logger, competitionService))
+		v1public.PUT("/competitions/:competitionID", handleUpdateCompetition(logger, validate, competitionService))
+		v1public.DELETE("/competitions/:competitionID", handleDeleteCompetition(logger, competitionService))
 
 		// seasons
-		v1public.POST("/competitions/:competitionID/seasons", handleCreateSeason(logger, db, validate))
-		v1public.GET("/competitions/:competitionID/seasons", handleGetSeasons(logger, db))
-		v1public.GET("/competitions/:competitionID/seasons/:seasonID", handleGetSeason(logger, db))
-		v1public.PUT("/competitions/:competitionID/seasons/:seasonID", handleUpdateSeason(logger, db, validate))
-		v1public.DELETE("/competitions/:competitionID/seasons/:seasonID", handleDeleteSeason(logger, db))
+		v1public.POST("/competitions/:competitionID/seasons", handleCreateSeason(logger, validate, seasonService))
+		v1public.GET("/competitions/:competitionID/seasons", handleGetSeasons(logger, seasonService))
+		v1public.GET("/competitions/:competitionID/seasons/:seasonID", handleGetSeason(logger))
+		v1public.PUT("/competitions/:competitionID/seasons/:seasonID", handleUpdateSeason(logger, validate, seasonService))
+		v1public.DELETE("/competitions/:competitionID/seasons/:seasonID", handleDeleteSeason(logger, seasonService))
 
 		// games
 		v1public.POST("/competitions/:competitionID/seasons/:seasonID/games", handleCreateGame(logger, db, validate))

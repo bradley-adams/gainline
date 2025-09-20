@@ -20,6 +20,7 @@ import (
 	"github.com/bradley-adams/gainline/db/db"
 	mock_db "github.com/bradley-adams/gainline/db/db_handler/mock"
 	"github.com/bradley-adams/gainline/http/api"
+	"github.com/bradley-adams/gainline/service"
 )
 
 func TestMiddleware(t *testing.T) {
@@ -37,6 +38,8 @@ var _ = Describe("middleware", func() {
 		logger         zerolog.Logger
 		router         *gin.Engine
 		createRecorder func() *httptest.ResponseRecorder
+
+		svc service.SeasonService
 	)
 
 	BeforeEach(func() {
@@ -48,11 +51,13 @@ var _ = Describe("middleware", func() {
 		logger = zerolog.New(io.MultiWriter(GinkgoWriter, logBuffer)).With().Str("testing", "testing").Logger()
 		router = gin.Default()
 
+		svc = service.NewSeasonService(mockDB)
+
 		createRecorder = func() *httptest.ResponseRecorder {
 			return httptest.NewRecorder()
 		}
 
-		router.Use(CompetitionStructureValidator(logger, mockDB))
+		router.Use(CompetitionStructureValidator(logger, mockDB, svc))
 
 		router.GET("/test/competitions/:competitionID/seasons/:seasonID/games/:gameID", func(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, gin.H{"message": "success"})

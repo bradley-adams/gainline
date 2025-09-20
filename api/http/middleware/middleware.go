@@ -14,7 +14,7 @@ import (
 	"github.com/bradley-adams/gainline/service"
 )
 
-func CompetitionStructureValidator(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func CompetitionStructureValidator(logger zerolog.Logger, db db_handler.DB, seasonService service.SeasonService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		competitionID := ctx.Param("competitionID")
 		seasonID := ctx.Param("seasonID")
@@ -38,7 +38,7 @@ func CompetitionStructureValidator(logger zerolog.Logger, db db_handler.DB) gin.
 				return
 			}
 
-			err := validateSeason(ctx, db, seasonUUID, compUUID)
+			err := validateSeason(ctx, seasonUUID, compUUID, seasonService)
 			if err != nil {
 				response.RespondAbortError(ctx, logger, err, http.StatusForbidden, "Season does not belong to competition")
 				return
@@ -74,8 +74,8 @@ func validateGame(ctx context.Context, db db_handler.DB, gameID, seasonID uuid.U
 	return nil
 }
 
-func validateSeason(ctx *gin.Context, db db_handler.DB, seasonID, competitionID uuid.UUID) error {
-	season, err := service.GetSeason(ctx.Request.Context(), db, competitionID, seasonID)
+func validateSeason(ctx *gin.Context, seasonID, competitionID uuid.UUID, seasonService service.SeasonService) error {
+	season, err := seasonService.Get(ctx.Request.Context(), seasonID, competitionID)
 	if err != nil {
 		return err
 	}
