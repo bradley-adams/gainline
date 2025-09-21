@@ -39,7 +39,8 @@ var _ = Describe("middleware", func() {
 		router         *gin.Engine
 		createRecorder func() *httptest.ResponseRecorder
 
-		svc service.SeasonService
+		seasonService service.SeasonService
+		gameService   service.GameService
 	)
 
 	BeforeEach(func() {
@@ -51,13 +52,14 @@ var _ = Describe("middleware", func() {
 		logger = zerolog.New(io.MultiWriter(GinkgoWriter, logBuffer)).With().Str("testing", "testing").Logger()
 		router = gin.Default()
 
-		svc = service.NewSeasonService(mockDB)
+		seasonService = service.NewSeasonService(mockDB)
+		gameService = service.NewGameService(mockDB)
 
 		createRecorder = func() *httptest.ResponseRecorder {
 			return httptest.NewRecorder()
 		}
 
-		router.Use(CompetitionStructureValidator(logger, mockDB, svc))
+		router.Use(CompetitionStructureValidator(logger, seasonService, gameService))
 
 		router.GET("/test/competitions/:competitionID/seasons/:seasonID/games/:gameID", func(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, gin.H{"message": "success"})
@@ -250,7 +252,7 @@ var _ = Describe("middleware", func() {
 
 			logContent := logBuffer.String()
 			Expect(logContent).To(ContainSubstring(
-				"unable to get game: a valid testing error",
+				"failed to get game: a valid testing error",
 			))
 
 			Expect(recorder.Code).To(Equal(http.StatusForbidden))

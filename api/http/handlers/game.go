@@ -3,7 +3,6 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/bradley-adams/gainline/db/db_handler"
 	"github.com/bradley-adams/gainline/http/api"
 	"github.com/bradley-adams/gainline/http/response"
 	"github.com/bradley-adams/gainline/service"
@@ -29,8 +28,8 @@ import (
 //	@Router		/competitions/{competitionID}/seasons/{seasonID}/games [post]
 func handleCreateGame(
 	logger zerolog.Logger,
-	dbHandler db_handler.DB,
 	validate *validator.Validate,
+	gameService service.GameService,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		season := ctx.MustGet("season").(service.SeasonWithTeams)
@@ -47,7 +46,7 @@ func handleCreateGame(
 			return
 		}
 
-		game, err := service.CreateGame(ctx.Request.Context(), dbHandler, req, season)
+		game, err := gameService.Create(ctx.Request.Context(), req, season)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to create game")
 			return
@@ -69,7 +68,7 @@ func handleCreateGame(
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID}/seasons/{seasonID}/games [get]
-func handleGetGames(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleGetGames(logger zerolog.Logger, gameService service.GameService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		seasonID, err := uuid.Parse(ctx.Param("seasonID"))
 		if err != nil {
@@ -77,7 +76,7 @@ func handleGetGames(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 			return
 		}
 
-		games, err := service.GetGames(ctx.Request.Context(), db, seasonID)
+		games, err := gameService.GetAll(ctx.Request.Context(), seasonID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get games")
 			return
@@ -105,7 +104,7 @@ func handleGetGames(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID}/seasons/{seasonID}/games/{gameID} [get]
-func handleGetGame(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleGetGame(logger zerolog.Logger, gameService service.GameService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		gameID, err := uuid.Parse(ctx.Param("gameID"))
 		if err != nil {
@@ -113,7 +112,7 @@ func handleGetGame(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 			return
 		}
 
-		game, err := service.GetGame(ctx.Request.Context(), db, gameID)
+		game, err := gameService.Get(ctx.Request.Context(), gameID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get game")
 			return
@@ -140,7 +139,7 @@ func handleGetGame(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@Router		/competitions/{competitionID}/seasons/{seasonID}/games/{gameID} [put]
 func handleUpdateGame(
 	logger zerolog.Logger,
-	db db_handler.DB,
+	gameService service.GameService,
 	validate *validator.Validate,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -165,7 +164,7 @@ func handleUpdateGame(
 			return
 		}
 
-		game, err := service.UpdateGame(ctx.Request.Context(), db, req, gameID, season)
+		game, err := gameService.Update(ctx.Request.Context(), req, gameID, season)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to update game")
 			return
@@ -188,7 +187,7 @@ func handleUpdateGame(
 //	@Failure	400				{object}		response.ErrorResponse	"Invalid game ID"
 //	@Failure	500				{object}		response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID}/seasons/{seasonID}/games/{gameID} [delete]
-func handleDeleteGame(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleDeleteGame(logger zerolog.Logger, gameService service.GameService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		gameID, err := uuid.Parse(ctx.Param("gameID"))
 		if err != nil {
@@ -196,7 +195,7 @@ func handleDeleteGame(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 			return
 		}
 
-		err = service.DeleteGame(ctx.Request.Context(), db, gameID)
+		err = gameService.Delete(ctx.Request.Context(), gameID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to delete game")
 			return

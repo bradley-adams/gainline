@@ -35,7 +35,8 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 
 		// middleware
 		seasonService := service.NewSeasonService(db)
-		v1public.Use(middleware.CompetitionStructureValidator(logger, db, seasonService))
+		gameService := service.NewGameService(db)
+		v1public.Use(middleware.CompetitionStructureValidator(logger, seasonService, gameService))
 
 		// competitions
 		competitionService := service.NewCompetitionService(db)
@@ -53,11 +54,11 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 		v1public.DELETE("/competitions/:competitionID/seasons/:seasonID", handleDeleteSeason(logger, seasonService))
 
 		// games
-		v1public.POST("/competitions/:competitionID/seasons/:seasonID/games", handleCreateGame(logger, db, validate))
-		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games", handleGetGames(logger, db))
-		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleGetGame(logger, db))
-		v1public.PUT("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleUpdateGame(logger, db, validate))
-		v1public.DELETE("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleDeleteGame(logger, db))
+		v1public.POST("/competitions/:competitionID/seasons/:seasonID/games", handleCreateGame(logger, validate, gameService))
+		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games", handleGetGames(logger, gameService))
+		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleGetGame(logger, gameService))
+		v1public.PUT("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleUpdateGame(logger, gameService, validate))
+		v1public.DELETE("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleDeleteGame(logger, gameService))
 
 		// teams
 		v1public.POST("/teams", handleCreateTeam(logger, db, validate))

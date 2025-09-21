@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/bradley-adams/gainline/db/db_handler"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
@@ -14,7 +13,11 @@ import (
 	"github.com/bradley-adams/gainline/service"
 )
 
-func CompetitionStructureValidator(logger zerolog.Logger, db db_handler.DB, seasonService service.SeasonService) gin.HandlerFunc {
+func CompetitionStructureValidator(
+	logger zerolog.Logger,
+	seasonService service.SeasonService,
+	gameService service.GameService,
+) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		competitionID := ctx.Param("competitionID")
 		seasonID := ctx.Param("seasonID")
@@ -52,7 +55,7 @@ func CompetitionStructureValidator(logger zerolog.Logger, db db_handler.DB, seas
 				return
 			}
 
-			err := validateGame(ctx.Request.Context(), db, gameUUID, seasonUUID)
+			err := validateGame(ctx.Request.Context(), gameUUID, seasonUUID, gameService)
 			if err != nil {
 				response.RespondAbortError(ctx, logger, err, http.StatusForbidden, "Game does not belong to season")
 				return
@@ -63,8 +66,8 @@ func CompetitionStructureValidator(logger zerolog.Logger, db db_handler.DB, seas
 	}
 }
 
-func validateGame(ctx context.Context, db db_handler.DB, gameID, seasonID uuid.UUID) error {
-	game, err := service.GetGame(ctx, db, gameID)
+func validateGame(ctx context.Context, gameID, seasonID uuid.UUID, gameService service.GameService) error {
+	game, err := gameService.Get(ctx, gameID)
 	if err != nil {
 		return err
 	}
