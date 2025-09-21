@@ -12,15 +12,28 @@ import (
 	"github.com/pkg/errors"
 )
 
-func CreateGame(
-	ctx context.Context,
-	dbHandler db_handler.DB,
-	req *api.GameRequest,
-	season SeasonWithTeams,
-) (db.Game, error) {
+// GameService defines the contract for game-related operations.
+type GameService interface {
+	Create(ctx context.Context, req *api.GameRequest, season SeasonWithTeams) (db.Game, error)
+	GetAll(ctx context.Context, seasonID uuid.UUID) ([]db.Game, error)
+	Get(ctx context.Context, gameID uuid.UUID) (db.Game, error)
+	Update(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season SeasonWithTeams) (db.Game, error)
+	Delete(ctx context.Context, gameID uuid.UUID) error
+}
+
+// gameService is the concrete implementation backed by db_handler.DB.
+type gameService struct {
+	db db_handler.DB
+}
+
+func NewGameService(db db_handler.DB) GameService {
+	return &gameService{db: db}
+}
+
+func (s *gameService) Create(ctx context.Context, req *api.GameRequest, season SeasonWithTeams) (db.Game, error) {
 	var game db.Game
 
-	err := db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
+	err := db_handler.RunInTransaction(ctx, s.db, func(queries db_handler.Queries) error {
 		var txErr error
 		game, txErr = createGame(ctx, queries, req, season)
 		return txErr
@@ -30,6 +43,61 @@ func CreateGame(
 	}
 
 	return game, nil
+}
+
+func (s *gameService) GetAll(ctx context.Context, seasonID uuid.UUID) ([]db.Game, error) {
+	var games []db.Game
+
+	err := db_handler.Run(ctx, s.db, func(queries db_handler.Queries) error {
+		var err error
+		games, err = queries.GetGames(ctx, seasonID)
+		return err
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed getting games")
+	}
+
+	return games, nil
+}
+
+func (s *gameService) Get(ctx context.Context, gameID uuid.UUID) (db.Game, error) {
+	var game db.Game
+
+	err := db_handler.Run(ctx, s.db, func(queries db_handler.Queries) error {
+		var err error
+		game, err = queries.GetGame(ctx, gameID)
+		return err
+	})
+	if err != nil {
+		return db.Game{}, errors.Wrap(err, "failed to get game")
+	}
+
+	return game, nil
+}
+
+func (s *gameService) Update(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season SeasonWithTeams) (db.Game, error) {
+	var game db.Game
+
+	err := db_handler.RunInTransaction(ctx, s.db, func(queries db_handler.Queries) error {
+		var txErr error
+		game, txErr = updateGame(ctx, queries, req, gameID, season)
+		return txErr
+	})
+	if err != nil {
+		return db.Game{}, err
+	}
+
+	return game, nil
+}
+
+func (s *gameService) Delete(ctx context.Context, gameID uuid.UUID) error {
+	err := db_handler.RunInTransaction(ctx, s.db, func(queries db_handler.Queries) error {
+		return deleteGame(ctx, queries, gameID)
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func createGame(
@@ -77,71 +145,6 @@ func createGame(
 	return game, nil
 }
 
-func GetGames(
-	ctx context.Context,
-	dbHandler db_handler.DB,
-	seasonID uuid.UUID,
-) ([]db.Game, error) {
-	var games []db.Game
-
-	err := db_handler.Run(ctx, dbHandler, func(queries db_handler.Queries) error {
-		var err error
-		games, err = queries.GetGames(ctx, seasonID)
-		if err != nil {
-			return errors.Wrap(err, "unable to get games")
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return games, nil
-}
-
-func GetGame(
-	ctx context.Context,
-	dbHandler db_handler.DB,
-	gameID uuid.UUID,
-) (db.Game, error) {
-	var game db.Game
-
-	err := db_handler.Run(ctx, dbHandler, func(queries db_handler.Queries) error {
-		var err error
-		game, err = queries.GetGame(ctx, gameID)
-		if err != nil {
-			return errors.Wrap(err, "unable to get game")
-		}
-		return nil
-	})
-	if err != nil {
-		return db.Game{}, err
-	}
-
-	return game, nil
-}
-
-func UpdateGame(
-	ctx context.Context,
-	dbHandler db_handler.DB,
-	req *api.GameRequest,
-	gameID uuid.UUID,
-	season SeasonWithTeams,
-) (db.Game, error) {
-	var game db.Game
-
-	err := db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
-		var txErr error
-		game, txErr = updateGame(ctx, queries, req, gameID, season)
-		return txErr
-	})
-	if err != nil {
-		return db.Game{}, err
-	}
-
-	return game, nil
-}
-
 func updateGame(
 	ctx context.Context,
 	queries db_handler.Queries,
@@ -183,16 +186,6 @@ func updateGame(
 	}
 
 	return updatedGame, nil
-}
-
-func DeleteGame(
-	ctx context.Context,
-	dbHandler db_handler.DB,
-	gameID uuid.UUID,
-) error {
-	return db_handler.RunInTransaction(ctx, dbHandler, func(queries db_handler.Queries) error {
-		return deleteGame(ctx, queries, gameID)
-	})
 }
 
 func deleteGame(
