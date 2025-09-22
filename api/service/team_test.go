@@ -19,11 +19,13 @@ var _ = Describe("team", func() {
 	var ctrl *gomock.Controller
 	var mockDB *mock_db.MockDB
 	var mockQueries *mock_db.MockQueries
+	var svc TeamService
 
 	BeforeEach(func() {
 		ctrl = gomock.NewController(GinkgoT())
 		mockDB = mock_db.NewMockDB(ctrl)
 		mockQueries = mock_db.NewMockQueries(ctrl)
+		svc = NewTeamService(mockDB)
 	})
 
 	validTeamID := uuid.MustParse("11111111-1111-4111-8111-111111111111")
@@ -106,7 +108,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).Times(0)
 
-			team, err := CreateTeam(context.Background(), mockDB, validTeamRequest)
+			team, err := svc.Create(context.Background(), validTeamRequest)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(team.ID).To(Equal(validTeamResponse.ID))
@@ -127,7 +129,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).Times(0)
 
-			team, err := CreateTeam(context.Background(), mockDB, validTeamRequest)
+			team, err := svc.Create(context.Background(), validTeamRequest)
 
 			Expect(team).To(Equal(validNilTeam))
 			Expect(err.Error()).To(Equal(validTestError.Error()))
@@ -149,7 +151,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).AnyTimes()
 
-			team, err := CreateTeam(context.Background(), mockDB, validTeamRequest)
+			team, err := svc.Create(context.Background(), validTeamRequest)
 
 			Expect(team).To(Equal(validNilTeam))
 			Expect(err.Error()).To(Equal("unable to create new team: a valid testing error"))
@@ -175,7 +177,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).AnyTimes()
 
-			team, err := CreateTeam(context.Background(), mockDB, validTeamRequest)
+			team, err := svc.Create(context.Background(), validTeamRequest)
 
 			Expect(team).To(Equal(validNilTeam))
 			Expect(err.Error()).To(Equal("unable to get new team: a valid testing error"))
@@ -204,7 +206,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).Times(0)
 
-			team, err := CreateTeam(context.Background(), mockDB, validTeamRequest)
+			team, err := svc.Create(context.Background(), validTeamRequest)
 
 			Expect(team).To(Equal(validNilTeam))
 			Expect(err.Error()).To(Equal(validTestError.Error()))
@@ -220,7 +222,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).Return(validTeamsFromDB, nil)
 
-			teams, err := GetTeams(context.Background(), mockDB)
+			teams, err := svc.GetAll(context.Background())
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(teams[0].ID).To(Equal(validTeamsResponse[0].ID))
@@ -248,10 +250,10 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).Return(nil, validTestError)
 
-			teams, err := GetTeams(context.Background(), mockDB)
+			teams, err := svc.GetAll(context.Background())
 
 			Expect(teams).To(Equal(validNilTeams))
-			Expect(err.Error()).To(Equal("unable to get teams: a valid testing error"))
+			Expect(err.Error()).To(Equal("failed getting teams: a valid testing error"))
 		})
 	})
 
@@ -265,7 +267,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).Return(validTeamFromDB, nil)
 
-			team, err := GetTeam(context.Background(), mockDB, validTeamID)
+			team, err := svc.Get(context.Background(), validTeamID)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(team.ID).To(Equal(validTeamResponse.ID))
@@ -286,10 +288,10 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).Return(db.Team{}, validTestError)
 
-			team, err := GetTeam(context.Background(), mockDB, validTeamID)
+			team, err := svc.Get(context.Background(), validTeamID)
 
 			Expect(team).To(Equal(validNilTeam))
-			Expect(err.Error()).To(Equal("unable to get team: a valid testing error"))
+			Expect(err.Error()).To(Equal("failed to get team: a valid testing error"))
 		})
 	})
 
@@ -317,7 +319,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).Times(0)
 
-			team, err := UpdateTeam(context.Background(), mockDB, validTeamRequest, validTeamID)
+			team, err := svc.Update(context.Background(), validTeamRequest, validTeamID)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(team.ID).To(Equal(validUpdatedTeamResponse.ID))
@@ -338,7 +340,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).Times(0)
 
-			team, err := UpdateTeam(context.Background(), mockDB, validTeamRequest, validTeamID)
+			team, err := svc.Update(context.Background(), validTeamRequest, validTeamID)
 
 			Expect(team).To(Equal(validNilTeam))
 			Expect(err.Error()).To(Equal(validTestError.Error()))
@@ -360,7 +362,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).AnyTimes()
 
-			team, err := UpdateTeam(context.Background(), mockDB, validTeamRequest, validTeamID)
+			team, err := svc.Update(context.Background(), validTeamRequest, validTeamID)
 
 			Expect(team).To(Equal(validNilTeam))
 			Expect(err.Error()).To(Equal("unable to update team: a valid testing error"))
@@ -386,7 +388,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).AnyTimes()
 
-			team, err := UpdateTeam(context.Background(), mockDB, validTeamRequest, validTeamID)
+			team, err := svc.Update(context.Background(), validTeamRequest, validTeamID)
 
 			Expect(team).To(Equal(validNilTeam))
 			Expect(err.Error()).To(Equal("unable to get updated team: a valid testing error"))
@@ -415,7 +417,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).Times(0)
 
-			team, err := UpdateTeam(context.Background(), mockDB, validTeamRequest, validTeamID)
+			team, err := svc.Update(context.Background(), validTeamRequest, validTeamID)
 
 			Expect(team).To(Equal(validNilTeam))
 			Expect(err.Error()).To(Equal(validTestError.Error()))
@@ -442,7 +444,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).Times(0)
 
-			err := DeleteTeam(context.Background(), mockDB, validTeamID)
+			err := svc.Delete(context.Background(), validTeamID)
 			Expect(err).NotTo(HaveOccurred())
 		})
 
@@ -455,7 +457,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).Times(0)
 
-			err := DeleteTeam(context.Background(), mockDB, validTeamID)
+			err := svc.Delete(context.Background(), validTeamID)
 
 			Expect(err.Error()).To(Equal(validTestError.Error()))
 		})
@@ -476,7 +478,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).AnyTimes()
 
-			err := DeleteTeam(context.Background(), mockDB, validTeamID)
+			err := svc.Delete(context.Background(), validTeamID)
 
 			Expect(err.Error()).To(Equal("unable to delete team: a valid testing error"))
 		})
@@ -500,7 +502,7 @@ var _ = Describe("team", func() {
 				gomock.Any(),
 			).Times(0)
 
-			err := DeleteTeam(context.Background(), mockDB, validTeamID)
+			err := svc.Delete(context.Background(), validTeamID)
 
 			Expect(err.Error()).To(Equal(validTestError.Error()))
 		})

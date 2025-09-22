@@ -61,11 +61,12 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 		v1public.DELETE("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleDeleteGame(logger, gameService))
 
 		// teams
-		v1public.POST("/teams", handleCreateTeam(logger, db, validate))
-		v1public.GET("/teams", handleGetTeams(logger, db))
-		v1public.GET("/teams/:teamID", handleGetTeam(logger, db))
-		v1public.PUT("/teams/:teamID", handleUpdateTeam(logger, db, validate))
-		v1public.DELETE("/teams/:teamID", handleDeleteTeam(logger, db))
+		teamService := service.NewTeamService(db)
+		v1public.POST("/teams", handleCreateTeam(logger, validate, teamService))
+		v1public.GET("/teams", handleGetTeams(logger, teamService))
+		v1public.GET("/teams/:teamID", handleGetTeam(logger, teamService))
+		v1public.PUT("/teams/:teamID", handleUpdateTeam(logger, validate, teamService))
+		v1public.DELETE("/teams/:teamID", handleDeleteTeam(logger, teamService))
 
 	}
 
