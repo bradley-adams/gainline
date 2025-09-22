@@ -3,7 +3,6 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/bradley-adams/gainline/db/db_handler"
 	"github.com/bradley-adams/gainline/http/api"
 	"github.com/bradley-adams/gainline/http/response"
 	"github.com/bradley-adams/gainline/service"
@@ -27,8 +26,8 @@ import (
 //	@Router		/teams [post]
 func handleCreateTeam(
 	logger zerolog.Logger,
-	db db_handler.DB,
 	validate *validator.Validate,
+	teamService service.TeamService,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		req := &api.TeamRequest{}
@@ -45,7 +44,7 @@ func handleCreateTeam(
 			return
 		}
 
-		team, err := service.CreateTeam(ctx.Request.Context(), db, req)
+		team, err := teamService.Create(ctx.Request.Context(), req)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to add team")
 			return
@@ -64,10 +63,10 @@ func handleCreateTeam(
 //	@Success	200	{array}		api.TeamResponse		"List of teams"
 //	@Failure	500	{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/teams [get]
-func handleGetTeams(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleGetTeams(logger zerolog.Logger, teamService service.TeamService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
-		teams, err := service.GetTeams(ctx.Request.Context(), db)
+		teams, err := teamService.GetAll(ctx.Request.Context())
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get teams")
 			return
@@ -93,7 +92,7 @@ func handleGetTeams(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@Failure	400		{object}	response.ErrorResponse	"Invalid team ID"
 //	@Failure	500		{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/teams/{teamID} [get]
-func handleGetTeam(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleGetTeam(logger zerolog.Logger, teamService service.TeamService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		teamID, err := uuid.Parse(ctx.Param("teamID"))
 		if err != nil {
@@ -101,7 +100,7 @@ func handleGetTeam(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 			return
 		}
 
-		team, err := service.GetTeam(ctx.Request.Context(), db, teamID)
+		team, err := teamService.Get(ctx.Request.Context(), teamID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get team")
 			return
@@ -126,8 +125,8 @@ func handleGetTeam(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 //	@Router		/teams/{teamID} [put]
 func handleUpdateTeam(
 	logger zerolog.Logger,
-	db db_handler.DB,
 	validate *validator.Validate,
+	teamService service.TeamService,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		teamID, err := uuid.Parse(ctx.Param("teamID"))
@@ -150,7 +149,7 @@ func handleUpdateTeam(
 			return
 		}
 
-		team, err := service.UpdateTeam(ctx.Request.Context(), db, req, teamID)
+		team, err := teamService.Update(ctx.Request.Context(), req, teamID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to update team")
 			return
@@ -171,7 +170,7 @@ func handleUpdateTeam(
 //	@Failure	400		{object}		response.ErrorResponse	"Invalid team ID"
 //	@Failure	500		{object}		response.ErrorResponse	"Internal server error"
 //	@Router		/teams/{teamID} [delete]
-func handleDeleteTeam(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
+func handleDeleteTeam(logger zerolog.Logger, teamService service.TeamService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		teamID, err := uuid.Parse(ctx.Param("teamID"))
 		if err != nil {
@@ -179,7 +178,7 @@ func handleDeleteTeam(logger zerolog.Logger, db db_handler.DB) gin.HandlerFunc {
 			return
 		}
 
-		err = service.DeleteTeam(ctx.Request.Context(), db, teamID)
+		err = teamService.Delete(ctx.Request.Context(), teamID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to delete team")
 			return
