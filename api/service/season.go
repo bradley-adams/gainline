@@ -39,7 +39,7 @@ func (s *seasonService) Create(ctx context.Context, req *api.SeasonRequest, comp
 		return err
 	})
 	if err != nil {
-		return SeasonWithTeams{}, errors.Wrap(err, "failed creating season")
+		return SeasonWithTeams{}, err
 	}
 	return season, nil
 }
@@ -52,7 +52,7 @@ func (s *seasonService) GetAll(ctx context.Context, competitionID uuid.UUID) ([]
 		return err
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "failed getting seasons")
+		return nil, err
 	}
 	return seasons, nil
 }
@@ -78,7 +78,7 @@ func (s *seasonService) Update(ctx context.Context, req *api.SeasonRequest, comp
 		return txErr
 	})
 	if err != nil {
-		return SeasonWithTeams{}, errors.Wrap(err, "failed updating season")
+		return SeasonWithTeams{}, err
 	}
 	return season, nil
 }
@@ -88,7 +88,7 @@ func (s *seasonService) Delete(ctx context.Context, seasonID uuid.UUID) error {
 		return deleteSeason(ctx, queries, seasonID)
 	})
 	if err != nil {
-		return errors.Wrap(err, "failed deleting season")
+		return err
 	}
 	return nil
 }
@@ -124,8 +124,6 @@ func ToSeasonResponse(s SeasonWithTeams) api.SeasonResponse {
 	}
 }
 
-// --- Internal functions ---
-
 func createSeason(ctx context.Context, queries db_handler.Queries, req *api.SeasonRequest, competitionID uuid.UUID) (SeasonWithTeams, error) {
 	now := time.Now()
 	seasonID := uuid.New()
@@ -136,7 +134,7 @@ func createSeason(ctx context.Context, queries db_handler.Queries, req *api.Seas
 
 	teamIDs := dedupeUUIDs(req.Teams)
 	if err := ensureTeamsExist(ctx, queries, teamIDs); err != nil {
-		return SeasonWithTeams{}, err
+		return SeasonWithTeams{}, errors.Wrap(err, "teams do not all exist")
 	}
 
 	if err := ensureSeasonHasTeams(ctx, queries, seasonID, teamIDs, now, nil); err != nil {
@@ -267,7 +265,7 @@ func updateSeason(ctx context.Context, queries db_handler.Queries, req *api.Seas
 		return SeasonWithTeams{}, err
 	}
 	if err := syncSeasonTeams(ctx, queries, seasonID, req.Teams, now); err != nil {
-		return SeasonWithTeams{}, err
+		return SeasonWithTeams{}, errors.Wrap(err, "unable to sync season teams")
 	}
 	return getSeasonWithTeams(ctx, queries, seasonID)
 }
