@@ -65,7 +65,7 @@ func (s *seasonService) Get(ctx context.Context, competitionID, seasonID uuid.UU
 		return err
 	})
 	if err != nil {
-		return SeasonWithTeams{}, errors.Wrap(err, "failed getting season")
+		return SeasonWithTeams{}, err
 	}
 	return season, nil
 }

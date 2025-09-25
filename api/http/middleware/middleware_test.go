@@ -210,7 +210,7 @@ var _ = Describe("middleware", func() {
 
 			logContent := logBuffer.String()
 			Expect(logContent).To(ContainSubstring(
-				"failed getting season: unable to get season: a valid testing error",
+				"unable to get season: a valid testing error",
 			))
 
 			Expect(recorder.Code).To(Equal(http.StatusForbidden))

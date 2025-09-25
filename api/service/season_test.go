@@ -254,7 +254,7 @@ var _ = Describe("season", func() {
 			season, err := svc.Create(context.Background(), validSeasonRequest, validCompetitionID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed creating season: a valid testing error"))
+			Expect(err.Error()).To(Equal("a valid testing error"))
 		})
 
 		It("should rollback and return a formatted error when inserting season fails", func() {
@@ -276,7 +276,7 @@ var _ = Describe("season", func() {
 			season, err := svc.Create(context.Background(), validSeasonRequest, validCompetitionID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed creating season: unable to create season: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to create season: a valid testing error"))
 		})
 
 		It("should rollback and return a formatted error when fetching a team fails", func() {
@@ -302,7 +302,7 @@ var _ = Describe("season", func() {
 			season, err := svc.Create(context.Background(), validSeasonRequest, validCompetitionID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err).To(MatchError(ContainSubstring("failed creating season: unable to get team ")))
+			Expect(err).To(MatchError(ContainSubstring("teams do not all exist: unable to get team ")))
 			Expect(err.Error()).To(ContainSubstring(": a valid testing error"))
 		})
 
@@ -337,7 +337,7 @@ var _ = Describe("season", func() {
 			season, err := svc.Create(context.Background(), validSeasonRequest, validCompetitionID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err).To(MatchError(ContainSubstring("failed creating season: unable to add team ")))
+			Expect(err).To(MatchError(ContainSubstring("unable to add team ")))
 			Expect(err.Error()).To(ContainSubstring(": a valid testing error"))
 		})
 
@@ -380,7 +380,7 @@ var _ = Describe("season", func() {
 			season, err := svc.Create(context.Background(), validSeasonRequest, validCompetitionID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed creating season: unable to get season: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to get season: a valid testing error"))
 		})
 
 		It("should return a formatted error when commit fails", func() {
@@ -429,7 +429,7 @@ var _ = Describe("season", func() {
 			season, err := svc.Create(context.Background(), validSeasonRequest, validCompetitionID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed creating season: a valid testing error"))
+			Expect(err.Error()).To(Equal("a valid testing error"))
 		})
 	})
 
@@ -485,7 +485,7 @@ var _ = Describe("season", func() {
 			seasons, err := svc.GetAll(context.Background(), validCompetitionID)
 
 			Expect(seasons).To(Equal(validNilSeasonsWithTeams))
-			Expect(err.Error()).To(Equal("failed getting seasons: unable to get seasons: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to get seasons: a valid testing error"))
 		})
 
 		It("should return a formatted error when getting season teams fails", func() {
@@ -504,7 +504,7 @@ var _ = Describe("season", func() {
 			seasons, err := svc.GetAll(context.Background(), validCompetitionID)
 
 			Expect(seasons).To(Equal(validNilSeasonsWithTeams))
-			Expect(err.Error()).To(Equal("failed getting seasons: unable to get season teams: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to get season teams: a valid testing error"))
 
 		})
 	})
@@ -548,7 +548,7 @@ var _ = Describe("season", func() {
 			season, err := svc.Get(context.Background(), validCompetitionID, validSeasonID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed getting season: unable to get season: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to get season: a valid testing error"))
 		})
 
 		It("should return a formatted error when getting season teams fails", func() {
@@ -567,7 +567,7 @@ var _ = Describe("season", func() {
 			season, err := svc.Get(context.Background(), validCompetitionID, validSeasonID)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed getting season: unable to get season teams: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to get season teams: a valid testing error"))
 		})
 	})
 
@@ -662,7 +662,7 @@ var _ = Describe("season", func() {
 			)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed updating season: a valid testing error"))
+			Expect(err.Error()).To(Equal("a valid testing error"))
 		})
 
 		It("should rollback and return a formatted error when updating the season fails", func() {
@@ -689,7 +689,7 @@ var _ = Describe("season", func() {
 			)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed updating season: unable to update season: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to update season: a valid testing error"))
 		})
 
 		It("should rollback and return a formatted error when getting a team fails", func() {
@@ -724,7 +724,7 @@ var _ = Describe("season", func() {
 			)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed updating season: unable to get team 22222222-2222-4222-8222-222222222222: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to sync season teams: unable to get team 22222222-2222-4222-8222-222222222222: a valid testing error"))
 		})
 
 		It("should rollback and return a formatted error when getting existing season teams fails", func() {
@@ -763,7 +763,7 @@ var _ = Describe("season", func() {
 			)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed updating season: unable to get season's existing teams: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to sync season teams: unable to get season's existing teams: a valid testing error"))
 		})
 
 		It("should rollback and return a formatted error when deleting a season team fails", func() {
@@ -810,7 +810,7 @@ var _ = Describe("season", func() {
 			)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed updating season: unable to remove team 33333333-3333-4333-8333-333333333333 from season aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to sync season teams: unable to remove team 33333333-3333-4333-8333-333333333333 from season aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa: a valid testing error"))
 		})
 
 		It("should rollback and return a formatted error when getting the season after update fails", func() {
@@ -861,7 +861,7 @@ var _ = Describe("season", func() {
 			)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed updating season: unable to get season: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to get season: a valid testing error"))
 		})
 
 		It("should rollback and return a formatted error when getting season teams after update fails", func() {
@@ -915,7 +915,7 @@ var _ = Describe("season", func() {
 				validSeasonID,
 			)
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed updating season: unable to get season teams: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to get season teams: a valid testing error"))
 		})
 
 		It("should rollback and return a formatted error when getting a team after update fails", func() {
@@ -978,7 +978,7 @@ var _ = Describe("season", func() {
 			)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed updating season: unable to get team: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to get team: a valid testing error"))
 		})
 
 		It("should return a formatted error when commit fails", func() {
@@ -1044,7 +1044,7 @@ var _ = Describe("season", func() {
 			)
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
-			Expect(err.Error()).To(Equal("failed updating season: a valid testing error"))
+			Expect(err.Error()).To(Equal("a valid testing error"))
 		})
 	})
 
@@ -1092,7 +1092,7 @@ var _ = Describe("season", func() {
 
 			err := svc.Delete(context.Background(), validCompetitionID)
 
-			Expect(err.Error()).To(Equal("failed deleting season: a valid testing error"))
+			Expect(err.Error()).To(Equal("a valid testing error"))
 		})
 
 		It("should rollback and return a formatted error when deleting games fails", func() {
@@ -1112,7 +1112,7 @@ var _ = Describe("season", func() {
 			).Times(1)
 
 			err := svc.Delete(context.Background(), validCompetitionID)
-			Expect(err.Error()).To(Equal("failed deleting season: unable to delete games for season: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to delete games for season: a valid testing error"))
 		})
 
 		It("should rollback and return a formatted error when deleting season teams fails", func() {
@@ -1136,7 +1136,7 @@ var _ = Describe("season", func() {
 			).Times(1)
 
 			err := svc.Delete(context.Background(), validCompetitionID)
-			Expect(err.Error()).To(Equal("failed deleting season: unable to delete season teams for season: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to delete season teams for season: a valid testing error"))
 		})
 
 		It("should rollback and return a formatted error when deleting the season fails", func() {
@@ -1165,7 +1165,7 @@ var _ = Describe("season", func() {
 
 			err := svc.Delete(context.Background(), validCompetitionID)
 
-			Expect(err.Error()).To(Equal("failed deleting season: unable to delete season: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to delete season: a valid testing error"))
 		})
 
 		It("should return a formatted error when commit fails", func() {
@@ -1197,7 +1197,7 @@ var _ = Describe("season", func() {
 
 			err := svc.Delete(context.Background(), validCompetitionID)
 
-			Expect(err.Error()).To(Equal("failed deleting season: a valid testing error"))
+			Expect(err.Error()).To(Equal("a valid testing error"))
 		})
 	})
 })
