@@ -54,7 +54,7 @@ func (s *gameService) GetAll(ctx context.Context, seasonID uuid.UUID) ([]db.Game
 		return err
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "failed getting games")
+		return nil, errors.Wrap(err, "unable to get games")
 	}
 
 	return games, nil
@@ -69,7 +69,7 @@ func (s *gameService) Get(ctx context.Context, gameID uuid.UUID) (db.Game, error
 		return err
 	})
 	if err != nil {
-		return db.Game{}, errors.Wrap(err, "failed to get game")
+		return db.Game{}, errors.Wrap(err, "unable to get game")
 	}
 
 	return game, nil

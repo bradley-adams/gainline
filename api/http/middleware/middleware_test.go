@@ -252,7 +252,7 @@ var _ = Describe("middleware", func() {
 
 			logContent := logBuffer.String()
 			Expect(logContent).To(ContainSubstring(
-				"failed to get game: a valid testing error",
+				"unable to get game: a valid testing error",
 			))
 
 			Expect(recorder.Code).To(Equal(http.StatusForbidden))
