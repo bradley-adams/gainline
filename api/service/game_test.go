@@ -337,7 +337,7 @@ var _ = Describe("game", func() {
 			games, err := svc.GetAll(context.Background(), validSeasonID)
 
 			Expect(games).To(Equal(validNilGames))
-			Expect(err.Error()).To(Equal("failed getting games: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to get games: a valid testing error"))
 		})
 	})
 
@@ -384,7 +384,7 @@ var _ = Describe("game", func() {
 			game, err := svc.Get(context.Background(), validGameID)
 
 			Expect(game).To(Equal(validNilGame))
-			Expect(err.Error()).To(Equal("failed to get game: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to get game: a valid testing error"))
 		})
 	})
 
