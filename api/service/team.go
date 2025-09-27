@@ -58,7 +58,7 @@ func (s *teamService) GetAll(ctx context.Context) ([]db.Team, error) {
 		return nil
 	})
 	if err != nil {
-		return nil, errors.Wrap(err, "failed getting teams")
+		return nil, errors.Wrap(err, "unable to get teams")
 	}
 
 	return teams, nil
@@ -76,7 +76,7 @@ func (s *teamService) Get(ctx context.Context, teamID uuid.UUID) (db.Team, error
 		return nil
 	})
 	if err != nil {
-		return db.Team{}, errors.Wrap(err, "failed to get team")
+		return db.Team{}, errors.Wrap(err, "unable to get team")
 	}
 
 	return team, nil
@@ -106,8 +106,6 @@ func (s *teamService) Delete(ctx context.Context, teamID uuid.UUID) error {
 	}
 	return nil
 }
-
-// --- Internal helpers ---
 
 func createTeam(
 	ctx context.Context,
