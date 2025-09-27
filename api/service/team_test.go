@@ -253,7 +253,7 @@ var _ = Describe("team", func() {
 			teams, err := svc.GetAll(context.Background())
 
 			Expect(teams).To(Equal(validNilTeams))
-			Expect(err.Error()).To(Equal("failed getting teams: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to get teams: a valid testing error"))
 		})
 	})
 
@@ -291,7 +291,7 @@ var _ = Describe("team", func() {
 			team, err := svc.Get(context.Background(), validTeamID)
 
 			Expect(team).To(Equal(validNilTeam))
-			Expect(err.Error()).To(Equal("failed to get team: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to get team: a valid testing error"))
 		})
 	})
 
