@@ -78,7 +78,7 @@ func validateGame(ctx context.Context, gameID, seasonID uuid.UUID, gameService s
 }
 
 func validateSeason(ctx *gin.Context, seasonID, competitionID uuid.UUID, seasonService service.SeasonService) error {
-	season, err := seasonService.Get(ctx.Request.Context(), seasonID, competitionID)
+	season, err := seasonService.Get(ctx.Request.Context(), competitionID, seasonID)
 	if err != nil {
 		return err
 	}
