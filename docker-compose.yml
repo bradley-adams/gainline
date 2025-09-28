@@ -21,13 +21,18 @@ services:
     networks:
       - backend
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "gainline"]
+      interval: 5s
+      retries: 10
 
   gainline-migrate:
     image: migrate/migrate
     volumes:
       - ./database/migrations:/migrations
     depends_on:
-      - gainline-db
+      gainline-db:
+        condition: service_healthy
     restart: "no"
     entrypoint: [
       "sh", "-c",
@@ -41,7 +46,8 @@ services:
     build:
       context: ./api
     depends_on:
-      - gainline-db
+      gainline-db:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
