@@ -5,6 +5,7 @@ import { Competition, Team } from '../../types/api'
 import { CommonModule } from '@angular/common'
 import { MaterialModule } from '../../shared/material/material.module'
 import { TeamsService } from '../../services/teams/teams.service'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 @Component({
     selector: 'app-team-detail',
@@ -18,6 +19,7 @@ export class TeamDetailComponent {
     private readonly route = inject(ActivatedRoute)
     private readonly router = inject(Router)
     private readonly teamsService = inject(TeamsService)
+    private readonly notificationService = inject(NotificationService)
 
     public teamForm!: FormGroup
     private teamId: string | null = null
@@ -61,16 +63,22 @@ export class TeamDetailComponent {
                     location: team.location
                 })
             },
-            error: (err) => console.error('Error loading team:', err)
+            error: (err) => {
+                console.error('Error loading team:', err)
+                this.notificationService.showError('Load Error', 'Failed to load team')
+            }
         })
     }
 
     private createTeam(newTeam: Team): void {
         this.teamsService.createTeam(newTeam).subscribe({
-            next: (team) => {
+            next: () => {
                 this.router.navigate(['/admin/teams'])
             },
-            error: (err) => console.error('Error creating team:', err)
+            error: (err) => {
+                console.error('Error creating team:', err)
+                this.notificationService.showError('Create Error', 'Failed to create team')
+            }
         })
     }
 
@@ -79,7 +87,10 @@ export class TeamDetailComponent {
             next: () => {
                 this.router.navigate(['/admin/teams'])
             },
-            error: (err) => console.error('Error updating team:', err)
+            error: (err) => {
+                console.error('Error updating team:', err)
+                this.notificationService.showError('Update Error', 'Failed to update team')
+            }
         })
     }
 }

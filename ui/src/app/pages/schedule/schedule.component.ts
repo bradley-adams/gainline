@@ -8,6 +8,7 @@ import { GamesService } from '../../services/games/games.service'
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { SeasonsService } from '../../services/seasons/seasons.service'
 import { CompetitionsService } from '../../services/competitions/competitions.service'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 @Component({
     selector: 'app-schedule',
@@ -21,6 +22,7 @@ export class ScheduleComponent implements OnInit {
     private readonly seasonsService = inject(SeasonsService)
     private readonly gamesService = inject(GamesService)
     private readonly formBuilder = inject(FormBuilder)
+    private readonly notificationService = inject(NotificationService)
 
     public dataSource = new MatTableDataSource<Game>([])
     public games: Game[] = []
@@ -103,7 +105,10 @@ export class ScheduleComponent implements OnInit {
                     )
                 }
             },
-            error: (err) => console.error('Error loading competitions:', err)
+            error: (err) => {
+                console.error('Error loading competitions:', err)
+                this.notificationService.showError('Load Error', 'Failed to load competitions')
+            }
         })
     }
 
@@ -115,7 +120,10 @@ export class ScheduleComponent implements OnInit {
                     this.scheduleForm.patchValue({ season: seasons[0].id }, { emitEvent: true })
                 }
             },
-            error: (err) => console.error('Error loading seasons:', err)
+            error: (err) => {
+                console.error('Error loading seasons:', err)
+                this.notificationService.showError('Load Error', 'Failed to load seasons')
+            }
         })
     }
 
@@ -125,7 +133,10 @@ export class ScheduleComponent implements OnInit {
                 this.games = games.filter((g) => g.round === round)
                 this.dataSource.data = this.games
             },
-            error: (err) => console.error('Error loading games:', err)
+            error: (err) => {
+                console.error('Error loading games:', err)
+                this.notificationService.showError('Load Error', 'Failed to load games')
+            }
         })
     }
 }

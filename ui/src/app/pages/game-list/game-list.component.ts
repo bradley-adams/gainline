@@ -7,6 +7,7 @@ import { MaterialModule } from '../../shared/material/material.module'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
 import { SeasonsService } from '../../services/seasons/seasons.service'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 @Component({
     selector: 'app-game-list',
@@ -19,6 +20,7 @@ export class GameListComponent implements OnInit {
     private readonly route = inject(ActivatedRoute)
     private readonly gamesService = inject(GamesService)
     private readonly seasonsService = inject(SeasonsService)
+    private readonly notificationService = inject(NotificationService)
 
     dataSource = new MatTableDataSource<Game>()
     public competitionId: string | null = null
@@ -43,7 +45,10 @@ export class GameListComponent implements OnInit {
                 )
                 this.loadGames(competitionId, seasonId)
             },
-            error: (err) => console.error('Error loading season:', err)
+            error: (err) => {
+                console.error('Error loading season:', err)
+                this.notificationService.showError('Load Error', 'Failed to load season')
+            }
         })
     }
 
