@@ -6,6 +6,7 @@ import { MatTableDataSource } from '@angular/material/table'
 import { Season } from '../../types/api'
 import { SeasonsService } from '../../services/seasons/seasons.service'
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 @Component({
     selector: 'app-season-list',
@@ -17,6 +18,7 @@ import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.comp
 export class SeasonListComponent {
     private readonly route = inject(ActivatedRoute)
     private readonly seasonsService = inject(SeasonsService)
+    private readonly notificationService = inject(NotificationService)
 
     public dataSource = new MatTableDataSource<Season>([])
 
@@ -35,7 +37,10 @@ export class SeasonListComponent {
             next: (seasons) => {
                 this.dataSource.data = seasons
             },
-            error: (err) => console.error('Error loading seasons:', err)
+            error: (err) => {
+                console.error('Error loading seasons:', err)
+                this.notificationService.showError('Load Error', 'Failed to load seasons')
+            }
         })
     }
 }

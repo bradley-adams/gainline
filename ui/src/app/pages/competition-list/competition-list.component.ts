@@ -5,6 +5,7 @@ import { Competition } from '../../types/api'
 import { CommonModule } from '@angular/common'
 import { MaterialModule } from '../../shared/material/material.module'
 import { RouterModule } from '@angular/router'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 @Component({
     selector: 'app-competition-list',
@@ -15,6 +16,7 @@ import { RouterModule } from '@angular/router'
 })
 export class CompetitionListComponent {
     private readonly competitionsService = inject(CompetitionsService)
+    private readonly notificationService = inject(NotificationService)
 
     public dataSource = new MatTableDataSource<Competition>([])
 
@@ -27,7 +29,10 @@ export class CompetitionListComponent {
             next: (competitions) => {
                 this.dataSource.data = competitions
             },
-            error: (err) => console.error('Error loading competitions:', err)
+            error: (err) => {
+                console.error('Error loading competitions:', err)
+                this.notificationService.showError('Load Error', 'Failed to load competitions')
+            }
         })
     }
 }

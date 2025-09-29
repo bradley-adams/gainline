@@ -12,6 +12,7 @@ import { GamesService } from '../../services/games/games.service'
 import { SeasonsService } from '../../services/seasons/seasons.service'
 import { Season, Team, Game } from '../../types/api'
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 @Component({
     selector: 'app-game-detail',
@@ -36,6 +37,7 @@ export class GameDetailComponent {
     private readonly router = inject(Router)
     private readonly gamesService = inject(GamesService)
     private readonly seasonsService = inject(SeasonsService)
+    private readonly notificationService = inject(NotificationService)
 
     public gameForm!: FormGroup
     public isEditMode = false
@@ -99,7 +101,10 @@ export class GameDetailComponent {
                 )
                 this.rounds = Array.from({ length: season.rounds }, (_, i) => i + 1)
             },
-            error: (err) => console.error('Error loading season:', err)
+            error: (err) => {
+                console.error('Error loading season:', err)
+                this.notificationService.showError('Load Error', 'Failed to load season')
+            }
         })
     }
 
@@ -108,7 +113,10 @@ export class GameDetailComponent {
             next: (game) => {
                 this.gameForm.patchValue(game)
             },
-            error: (err) => console.error('Error loading game:', err)
+            error: (err) => {
+                console.error('Error loading game:', err)
+                this.notificationService.showError('Load Error', 'Failed to load game')
+            }
         })
     }
 
@@ -117,7 +125,10 @@ export class GameDetailComponent {
             next: () => {
                 this.router.navigate(['/admin/competitions', competitionId, 'seasons', seasonId, 'games'])
             },
-            error: (err) => console.error('Error creating game:', err)
+            error: (err) => {
+                console.error('Error creating game:', err)
+                this.notificationService.showError('Create Error', 'Failed to create game')
+            }
         })
     }
 
@@ -126,7 +137,10 @@ export class GameDetailComponent {
             next: () => {
                 this.router.navigate(['/admin/competitions', competitionId, 'seasons', seasonId, 'games'])
             },
-            error: (err) => console.error('Error updating game:', err)
+            error: (err) => {
+                console.error('Error updating game:', err)
+                this.notificationService.showError('Update Error', 'Failed to update game')
+            }
         })
     }
 }

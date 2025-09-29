@@ -3,7 +3,6 @@ import { Component, inject } from '@angular/core'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { MaterialModule } from '../../shared/material/material.module'
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { CompetitionsService } from '../../services/competitions/competitions.service'
 import { SeasonsService } from '../../services/seasons/seasons.service'
 import { TeamsService } from '../../services/teams/teams.service'
 import { Season, Team } from '../../types/api'
@@ -12,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MatNativeDateModule } from '@angular/material/core'
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 @Component({
     selector: 'app-season-detail',
@@ -36,6 +36,7 @@ export class SeasonDetailComponent {
     private readonly router = inject(Router)
     private readonly seasonsService = inject(SeasonsService)
     private readonly teamsService = inject(TeamsService)
+    private readonly notificationService = inject(NotificationService)
 
     public seasonForm!: FormGroup
     public competitionId: string | null = null
@@ -82,7 +83,10 @@ export class SeasonDetailComponent {
             next: (teams) => {
                 this.teams = teams
             },
-            error: (err) => console.error('Error loading teams:', err)
+            error: (err) => {
+                console.error('Error loading teams:', err)
+                this.notificationService.showError('Load Error', 'Failed to load teams')
+            }
         })
     }
 
@@ -96,7 +100,10 @@ export class SeasonDetailComponent {
                     teams: (season.teams as Team[]).map((t) => t.id)
                 })
             },
-            error: (err) => console.error('Error loading season:', err)
+            error: (err) => {
+                console.error('Error loading season:', err)
+                this.notificationService.showError('Load Error', 'Failed to load season')
+            }
         })
     }
 
@@ -105,7 +112,10 @@ export class SeasonDetailComponent {
             next: () => {
                 this.router.navigate(['/admin/competitions', this.competitionId, 'seasons'])
             },
-            error: (err) => console.error('Error creating season:', err)
+            error: (err) => {
+                console.error('Error creating season:', err)
+                this.notificationService.showError('Create Error', 'Failed to create season')
+            }
         })
     }
 
@@ -114,7 +124,10 @@ export class SeasonDetailComponent {
             next: () => {
                 this.router.navigate(['/admin/competitions', this.competitionId, 'seasons'])
             },
-            error: (err) => console.error('Error updating season:', err)
+            error: (err) => {
+                console.error('Error updating season:', err)
+                this.notificationService.showError('Update Error', 'Failed to update season')
+            }
         })
     }
 }
