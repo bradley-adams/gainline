@@ -75,8 +75,19 @@ export class GameDetailComponent {
             away_score: [0],
             status: ['scheduled', Validators.required]
         })
-    }
 
+        this.gameForm.get('status')?.valueChanges.subscribe((status) => {
+            if (status === 'playing' || status === 'finished') {
+                this.gameForm.get('home_score')?.setValidators([Validators.required])
+                this.gameForm.get('away_score')?.setValidators([Validators.required])
+            } else {
+                this.gameForm.get('home_score')?.clearValidators()
+                this.gameForm.get('away_score')?.clearValidators()
+            }
+            this.gameForm.get('home_score')?.updateValueAndValidity()
+            this.gameForm.get('away_score')?.updateValueAndValidity()
+        })
+    }
     submitForm(): void {
         if (this.gameForm.invalid || !this.competitionId || !this.seasonId) {
             console.error('game form is invalid')
