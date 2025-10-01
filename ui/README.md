@@ -28,14 +28,25 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
 
+## Actual commands:
+
+### Run
+
+`npm start`
+
+### Test
+
+`npm test`
+
 ## ToDos:
--   If game is played or finished scores should be at leaset 0.
--   Hook up delete endpoints for Seasons, Games, and Teams.
--   Fix breadcrumbs logic/functionality.
--   Improve team selector in season form (e.g., multi-select with search instead of giant dropdown).
--   Improve display of teams in season (chips, tables, or tags).
--   Improve team selection for games (searchable select or autocomplete).
--   Correct toolbar color setup + get delete button color working properly.
--   Add date/time pickers in forms (ensure they map correctly to backend).
--   Strengthen input validations (required, ranges, formats).
--   Look at Cypress/Playwright for e2e testing setup.
+
+- Theme isn't really working
+- Hook up delete endpoints for Seasons, Games, and Teams.
+- Fix breadcrumbs logic/functionality.
+- Improve team selector in season form (e.g., multi-select with search instead of giant dropdown).
+- Improve display of teams in season (chips, tables, or tags).
+- Improve team selection for games (searchable select or autocomplete).
+- Correct toolbar color setup + get delete button color working properly.
+- Add date/time pickers in forms (ensure they map correctly to backend).
+- Strengthen input validations (required, ranges, formats).
+- Look at Cypress/Playwright for e2e testing setup.
