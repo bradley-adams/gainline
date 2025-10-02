@@ -7,8 +7,9 @@ import { HeaderComponent } from './components/header/header.component'
     selector: 'app-root',
     standalone: true,
     imports: [CommonModule, RouterOutlet, HeaderComponent],
+    styleUrls: ['./app.component.scss'],
     template: `
-        <div class="mat-typography app-frame mat-app-background">
+        <div class="content">
             <app-header></app-header>
             <router-outlet></router-outlet>
         </div>

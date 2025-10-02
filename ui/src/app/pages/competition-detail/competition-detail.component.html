@@ -11,16 +11,18 @@
             <mat-error *ngIf="competitionForm.get('name')?.hasError('required')">Name is required</mat-error>
         </mat-form-field>
 
-        <button type="submit" mat-raised-button color="primary">SAVE</button>
-        <button mat-stroked-button [routerLink]="['/admin/competitions']">CANCEL</button>
-        <button
-            data-testid="delete-button"
-            *ngIf="isEditMode"
-            type="button"
-            mat-raised-button
-            color="warn"
-            (click)="confirmDelete()">
-            DELETE
-        </button>
+        <div class="flex-row">
+            <button type="submit" mat-flat-button>SAVE</button>
+            <button class="accent" mat-stroked-button [routerLink]="['/admin/competitions']">CANCEL</button>
+            <button
+                data-testid="delete-button"
+                *ngIf="isEditMode"
+                type="button"
+                class="warn"
+                mat-flat-button
+                (click)="confirmDelete()">
+                DELETE
+            </button>
+        </div>
     </form>
 </div>

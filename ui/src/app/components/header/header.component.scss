@@ -1,3 +1,18 @@
+@use '@angular/material' as mat;
+
+mat-toolbar {
+    @include mat.toolbar-overrides(
+        (
+            container-background-color: var(--mat-sys-primary),
+            container-text-color: var(--mat-sys-on-primary)
+        )
+    );
+}
+
+mat-icon {
+    color: var(--mat-sys-on-primary);
+}
+
 .spacer {
     flex: 1 1 auto;
 }

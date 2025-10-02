@@ -1,22 +1,29 @@
-@use "@angular/material" as mat;
-@use "./m3-theme" as m3-theme;
+@use '@angular/material' as mat;
+@use './_theme-colors' as palettes;
 
-@include mat.core();
+html {
+    @include mat.theme(
+        (
+            color: (
+                theme-type: dark,
+                primary: palettes.$primary-palette
+            ),
+            typography: Roboto,
+            density: 0
+        )
+    );
+}
 
-:root {
-  @include mat.core-theme(m3-theme.$dark-theme);
-  @include mat.all-component-themes(m3-theme.$dark-theme);
-  @include mat.system-level-colors(m3-theme.$dark-theme);
-
-  mat-toolbar {
-    background: mat.get-theme-color(m3-theme.$dark-theme, primary-container);
-  }
+.warn {
+    @include mat.theme(
+        (
+            color: mat.$red-palette
+        )
+    );
 }
 
 html,
-body,
-app-root,
-.app-frame {
-  margin: 0;
-  height: 100%;
+body {
+    height: 100%;
+    margin: 0;
 }
