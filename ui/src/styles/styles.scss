@@ -15,9 +15,10 @@ html {
 }
 
 .warn {
-    @include mat.theme(
+    @include mat.button-overrides(
         (
-            color: mat.$red-palette
+            filled-container-color: var(--mat-sys-error),
+            filled-label-text-color: var(--mat-sys-on-error)
         )
     );
 }
