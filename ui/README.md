@@ -40,7 +40,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## ToDos:
 
-- Theme isn't really working
 - Hook up delete endpoints for Seasons, Games, and Teams.
 - Fix breadcrumbs logic/functionality.
 - Improve team selector in season form (e.g., multi-select with search instead of giant dropdown).
