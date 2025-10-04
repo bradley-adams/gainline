@@ -3,21 +3,25 @@
 ## Getting Started
 
 ### Run the App Locally:
+
 ```bash
 go run .
 ```
 
 ### Curl health:
+
 ```
 curl http://localhost:8080/health
 ```
 
 ### Open Swagger UI:
+
 ```
 http://localhost:8080/swagger/index.html#/
 ```
 
 ### Database Migrations:
+
 ```
 docker run --rm -v $(pwd)/migrations:/migrations \
   --network gainline_default migrate/migrate \
@@ -25,24 +29,30 @@ docker run --rm -v $(pwd)/migrations:/migrations \
 ```
 
 ### SQL Code Generation
+
 ```
 sqlc generate
 ```
 
 ### Swagger Documentation
+
 ```
 swag init -g http/handlers/http.go
 ```
+
 ```
 swag fmt
 ```
 
 ### DB Mock Generation
+
 ```
 mockgen -destination=/home/bradley/Personal/gainline/api/db/db_handler/mock/db.go -package=mock_db github.com/bradley-adams/gainline/db/db_handler DB,Queries
 ```
 
 ## Todo:
+
+- Season start and end date should be able to be the same.
 - Game handler tests.
 - Check the errors returned by all services.
 - Swagger spec default dont delete actual competition seeded data. Maybe seed a second one to delete

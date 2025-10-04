@@ -55,9 +55,20 @@
             </mat-select>
         </mat-form-field>
 
-        <button type="submit" mat-raised-button color="primary">SAVE</button>
-        <button mat-stroked-button [routerLink]="['/admin/competitions', competitionId, 'seasons']">
-            CANCEL
-        </button>
+        <div class="flex-row">
+            <button type="submit" mat-flat-button color="primary">SAVE</button>
+            <button mat-stroked-button [routerLink]="['/admin/competitions', competitionId, 'seasons']">
+                CANCEL
+            </button>
+            <button
+                data-testid="delete-button"
+                *ngIf="isEditMode"
+                type="button"
+                class="warn"
+                mat-flat-button
+                (click)="confirmDelete()">
+                DELETE
+            </button>
+        </div>
     </form>
 </div>

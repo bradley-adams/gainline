@@ -78,6 +78,19 @@ export class SeasonDetailComponent {
         }
     }
 
+    confirmDelete(): void {
+        const confirmationMessage = `Are you sure you want to delete this season?`
+
+        this.notificationService
+            .showConfirm('Confirm Delete', confirmationMessage)
+            .afterClosed()
+            .subscribe((confirmed) => {
+                if (confirmed && this.competitionId && this.seasonId) {
+                    this.removeSeason(this.competitionId, this.seasonId)
+                }
+            })
+    }
+
     private loadTeams(): void {
         this.teamsService.getTeams().subscribe({
             next: (teams) => {
@@ -127,6 +140,21 @@ export class SeasonDetailComponent {
             error: (err) => {
                 console.error('Error updating season:', err)
                 this.notificationService.showError('Update Error', 'Failed to update season')
+            }
+        })
+    }
+
+    private removeSeason(competitionId: string, id: string): void {
+        if (!competitionId || !id) return
+
+        this.seasonsService.deleteSeason(competitionId, id).subscribe({
+            next: () => {
+                this.notificationService.showSnackbar('Season deleted successfully', 'OK')
+                this.router.navigate(['/admin/competitions', this.competitionId, 'seasons'])
+            },
+            error: (err) => {
+                console.error('Error deleting season:', err)
+                this.notificationService.showError('Delete Error', 'Failed to delete season')
             }
         })
     }
