@@ -9,13 +9,27 @@
             <mat-label>Start Date</mat-label>
             <input
                 matInput
-                [matDatepicker]="startPicker"
+                [matDatepicker]="startDatePicker"
                 formControlName="start_date"
                 placeholder="Choose start date" />
-            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-            <mat-datepicker #startPicker></mat-datepicker>
+            <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #startDatePicker></mat-datepicker>
             <mat-error *ngIf="seasonForm.get('start_date')?.hasError('required')">
                 Start date is required
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Start Time</mat-label>
+            <input
+                matInput
+                [matTimepicker]="startTimePicker"
+                formControlName="start_time"
+                placeholder="Choose start time" />
+            <mat-timepicker-toggle matSuffix [for]="startTimePicker"></mat-timepicker-toggle>
+            <mat-timepicker #startTimePicker [interval]="'1h'"></mat-timepicker>
+            <mat-error *ngIf="seasonForm.get('start_time')?.hasError('required')">
+                Start time is required
             </mat-error>
         </mat-form-field>
 
@@ -23,13 +37,27 @@
             <mat-label>End Date</mat-label>
             <input
                 matInput
-                [matDatepicker]="endPicker"
+                [matDatepicker]="endDatePicker"
                 formControlName="end_date"
                 placeholder="Choose end date" />
-            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-            <mat-datepicker #endPicker></mat-datepicker>
+            <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #endDatePicker></mat-datepicker>
             <mat-error *ngIf="seasonForm.get('end_date')?.hasError('required')">
                 End date is required
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>End Time</mat-label>
+            <input
+                matInput
+                [matTimepicker]="endTimePicker"
+                formControlName="end_time"
+                placeholder="Choose end time" />
+            <mat-timepicker-toggle matSuffix [for]="endTimePicker"></mat-timepicker-toggle>
+            <mat-timepicker #endTimePicker [interval]="'1h'"></mat-timepicker>
+            <mat-error *ngIf="seasonForm.get('end_time')?.hasError('required')">
+                End time is required
             </mat-error>
         </mat-form-field>
 

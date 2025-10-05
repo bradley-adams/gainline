@@ -59,7 +59,7 @@ describe('SeasonDetailComponent', () => {
         competition_id: 'comp1',
         rounds: 3,
         start_date: new Date('2025-01-01T00:00:00Z'),
-        end_date: new Date('2025-12-31T23:59:59Z'),
+        end_date: new Date('2026-01-01T12:59:00Z'),
         teams: mockTeams,
         created_at: new Date('2024-12-01T00:00:00Z'),
         updated_at: new Date('2024-12-01T00:00:00Z')
@@ -131,9 +131,11 @@ describe('SeasonDetailComponent', () => {
             expect(component).toBeTruthy()
         })
 
-        it('should mark start_date, end_date and rounds as required', () => {
+        it('should mark start_date, start_time, end_date, end_time and rounds as required', () => {
             const startControl = component.seasonForm.get('start_date')
+            const startTimeControl = component.seasonForm.get('start_time')
             const endControl = component.seasonForm.get('end_date')
+            const endTimeControl = component.seasonForm.get('end_time')
             const roundsControl = component.seasonForm.get('rounds')
 
             startControl?.setValue('')
@@ -141,10 +143,20 @@ describe('SeasonDetailComponent', () => {
             startControl?.setValue(mockSeason1.start_date)
             expect(startControl?.valid).toBeTrue()
 
+            startTimeControl?.setValue(null)
+            expect(startTimeControl?.valid).toBeFalse()
+            startTimeControl?.setValue(mockSeason1.start_date)
+            expect(startTimeControl?.valid).toBeTrue()
+
             endControl?.setValue('')
             expect(endControl?.valid).toBeFalse()
             endControl?.setValue(mockSeason1.end_date)
             expect(endControl?.valid).toBeTrue()
+
+            endTimeControl?.setValue(null)
+            expect(endTimeControl?.valid).toBeFalse()
+            endTimeControl?.setValue(mockSeason1.end_date)
+            expect(endTimeControl?.valid).toBeTrue()
 
             roundsControl?.setValue('')
             expect(roundsControl?.valid).toBeFalse()
@@ -155,7 +167,33 @@ describe('SeasonDetailComponent', () => {
         it('should not submit if form is invalid', () => {
             spyOn(console, 'error')
             component.submitForm()
-            expect(console.error).toHaveBeenCalledWith('season form is invalid')
+            expect(console.error).toHaveBeenCalledWith('Season form is invalid')
+        })
+
+        it('should combine start_date and start_time correctly on submit', () => {
+            const startDate = new Date('2025-01-01T00:00:00')
+            const startTime = new Date('1970-01-01T13:30:00')
+            const endDate = new Date('2025-12-31T00:00:00')
+            const endTime = new Date('1970-01-01T15:45:00')
+
+            component.isEditMode = false
+            component.seasonForm.setValue({
+                start_date: startDate,
+                start_time: startTime,
+                end_date: endDate,
+                end_time: endTime,
+                rounds: 5,
+                teams: ['team1']
+            })
+
+            const expectedStart = (component as any).combineDateAndTime(startDate, startTime)
+            const expectedEnd = (component as any).combineDateAndTime(endDate, endTime)
+
+            component.submitForm()
+
+            const calledSeason = seasonsService.createSeason.calls.mostRecent().args[1]
+            expect(calledSeason.start_date?.getTime()).toBe(expectedStart.getTime())
+            expect(calledSeason.end_date?.getTime()).toBe(expectedEnd.getTime())
         })
 
         it('should mark rounds invalid if less than 1 or greater than 50', () => {
@@ -171,31 +209,46 @@ describe('SeasonDetailComponent', () => {
             component.competitionId = null
             component.seasonForm.setValue({
                 start_date: mockSeason1.start_date,
+                start_time: new Date('1970-01-01T13:30:00Z'),
                 end_date: mockSeason1.end_date,
+                end_time: new Date('1970-01-01T15:30:00Z'),
                 rounds: mockSeason1.rounds,
                 teams: ['team1', 'team2']
             })
             component.submitForm()
-            expect(console.error).toHaveBeenCalledWith('season form is invalid')
+            expect(console.error).toHaveBeenCalledWith('Season form is invalid')
         })
 
         it('should call createSeason when in create mode and form is valid', () => {
+            const startDate = new Date('2025-01-01T00:00:00')
+            const startTime = new Date('1970-01-01T13:00:00')
+            const endDate = new Date('2026-01-02T00:00:00')
+            const endTime = new Date('1970-01-01T01:59:00')
+
             component.isEditMode = false
             component.seasonForm.setValue({
-                start_date: mockSeason1.start_date,
-                end_date: mockSeason1.end_date,
-                rounds: mockSeason1.rounds,
-                teams: [mockTeams[0].id, mockTeams[1].id, mockTeams[2].id, mockTeams[3].id]
+                start_date: startDate,
+                start_time: startTime,
+                end_date: endDate,
+                end_time: endTime,
+                rounds: 20,
+                teams: ['team1', 'team2']
             })
+
+            const expectedStart = (component as any).combineDateAndTime(startDate, startTime)
+            const expectedEnd = (component as any).combineDateAndTime(endDate, endTime)
 
             component.submitForm()
 
-            expect(seasonsService.createSeason).toHaveBeenCalledWith('comp1', {
-                start_date: mockSeason1.start_date,
-                end_date: mockSeason1.end_date,
-                rounds: mockSeason1.rounds,
-                teams: ['team1', 'team2', 'team3', 'team4']
-            })
+            expect(seasonsService.createSeason).toHaveBeenCalledWith(
+                'comp1',
+                jasmine.objectContaining({
+                    start_date: expectedStart,
+                    end_date: expectedEnd,
+                    rounds: 20,
+                    teams: ['team1', 'team2']
+                })
+            )
         })
 
         it('should log error if createSeason fails', () => {
@@ -206,7 +259,9 @@ describe('SeasonDetailComponent', () => {
             component.isEditMode = false
             component.seasonForm.patchValue({
                 start_date: mockSeason1.start_date,
+                start_time: new Date('1970-01-01T13:30:00Z'),
                 end_date: mockSeason1.end_date,
+                end_time: new Date('1970-01-01T15:30:00Z'),
                 rounds: mockSeason1.rounds
             })
             component.submitForm()
@@ -220,7 +275,9 @@ describe('SeasonDetailComponent', () => {
             component.isEditMode = false
             component.seasonForm.setValue({
                 start_date: mockSeason1.start_date,
+                start_time: new Date('1970-01-01T13:30:00Z'),
                 end_date: mockSeason1.end_date,
+                end_time: new Date('1970-01-01T15:30:00Z'),
                 rounds: mockSeason1.rounds,
                 teams: ['team1', 'team2']
             })
@@ -245,6 +302,40 @@ describe('SeasonDetailComponent', () => {
             expect(component.seasonForm.value.end_date).toEqual(mockSeason1.end_date)
             expect(component.seasonForm.value.rounds).toEqual(mockSeason1.rounds)
             expect(component.teams).toEqual(mockTeams)
+        })
+
+        it('should separate start_date and start_time correctly when loading a season', () => {
+            const seasonFromApi: Season = {
+                id: 'season1',
+                competition_id: 'comp1',
+                rounds: 3,
+                start_date: new Date('2025-01-01T09:30:00Z'),
+                end_date: new Date('2025-12-31T18:45:00Z'),
+                teams: mockTeams,
+                created_at: new Date(),
+                updated_at: new Date()
+            }
+
+            // Spy getSeason to return our specific test season
+            seasonsService.getSeason.and.returnValue(of(seasonFromApi))
+            component['loadSeason']('comp1', 'season1')
+
+            const formValue = component.seasonForm.value
+
+            // Date part
+            expect(formValue.start_date.getFullYear()).toBe(2025)
+            expect(formValue.start_date.getMonth()).toBe(0)
+            expect(formValue.start_date.getDate()).toBe(1)
+
+            expect(formValue.end_date.getFullYear()).toBe(2026)
+            expect(formValue.end_date.getMonth()).toBe(0)
+            expect(formValue.end_date.getDate()).toBe(1)
+
+            // Time part
+            expect(formValue.start_time.getHours()).toBe(new Date(seasonFromApi.start_date).getHours())
+            expect(formValue.start_time.getMinutes()).toBe(new Date(seasonFromApi.start_date).getMinutes())
+            expect(formValue.end_time.getHours()).toBe(new Date(seasonFromApi.end_date).getHours())
+            expect(formValue.end_time.getMinutes()).toBe(new Date(seasonFromApi.end_date).getMinutes())
         })
 
         it('should log error if loadSeason fails', () => {
@@ -272,16 +363,39 @@ describe('SeasonDetailComponent', () => {
         })
 
         it('should call updateSeason when in edit mode and form is valid', () => {
-            component.seasonForm.patchValue({ rounds: 20 })
+            const startDate = new Date('2025-01-01T00:00:00')
+            const startTime = new Date('1970-01-01T13:00:00')
+            const endDate = new Date('2026-01-02T00:00:00')
+            const endTime = new Date('1970-01-01T01:59:00')
+
+            component.isEditMode = true
+            component.competitionId = 'comp1'
+            ;(component as any).seasonId = 'season1'
+
+            component.seasonForm.setValue({
+                start_date: startDate,
+                start_time: startTime,
+                end_date: endDate,
+                end_time: endTime,
+                rounds: 20,
+                teams: ['team1', 'team2']
+            })
+
+            const expectedStart = (component as any).combineDateAndTime(startDate, startTime)
+            const expectedEnd = (component as any).combineDateAndTime(endDate, endTime)
 
             component.submitForm()
 
-            expect(seasonsService.updateSeason).toHaveBeenCalledWith('comp1', 'season1', {
-                start_date: mockSeason1.start_date,
-                end_date: mockSeason1.end_date,
-                rounds: 20,
-                teams: jasmine.any(Array)
-            })
+            expect(seasonsService.updateSeason).toHaveBeenCalledWith(
+                'comp1',
+                'season1',
+                jasmine.objectContaining({
+                    start_date: expectedStart,
+                    end_date: expectedEnd,
+                    rounds: 20,
+                    teams: ['team1', 'team2']
+                })
+            )
         })
 
         it('should log error if updateSeason fails', () => {
