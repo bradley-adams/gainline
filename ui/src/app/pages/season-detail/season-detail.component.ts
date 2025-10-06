@@ -94,7 +94,7 @@ export class SeasonDetailComponent implements OnInit {
     }
 
     private combineDateAndTime(date: Date | string, time: Date | string): Date {
-        const d = new Date(date) // local Date from form
+        const d = new Date(date)
         let hours: number, minutes: number
 
         if (time instanceof Date) {
@@ -104,10 +104,8 @@ export class SeasonDetailComponent implements OnInit {
             ;[hours, minutes] = time.split(':').map(Number)
         }
 
-        // Create a new Date in UTC
-        const utcDate = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), hours, minutes, 0, 0))
-
-        return utcDate
+        d.setHours(hours, minutes, 0, 0)
+        return d
     }
 
     confirmDelete(): void {
@@ -136,14 +134,11 @@ export class SeasonDetailComponent implements OnInit {
     private loadSeason(competitionId: string, id: string): void {
         this.seasonsService.getSeason(competitionId, id).subscribe({
             next: (season) => {
-                const startUtc = new Date(season.start_date)
-                const endUtc = new Date(season.end_date)
-
                 this.seasonForm.patchValue({
-                    start_date: startUtc,
-                    start_time: startUtc,
-                    end_date: endUtc,
-                    end_time: endUtc,
+                    start_date: new Date(season.start_date),
+                    start_time: new Date(season.start_date),
+                    end_date: new Date(season.end_date),
+                    end_time: new Date(season.end_date),
                     rounds: season.rounds,
                     teams: (season.teams as Team[]).map((t) => t.id)
                 })
@@ -168,6 +163,8 @@ export class SeasonDetailComponent implements OnInit {
     }
 
     private updateSeason(competitionId: string, id: string, updatedSeason: Partial<Season>): void {
+        console.log('Updating season:', updatedSeason)
+
         this.seasonsService.updateSeason(competitionId, id, updatedSeason).subscribe({
             next: () => {
                 this.router.navigate(['/admin/competitions', this.competitionId, 'seasons'])
