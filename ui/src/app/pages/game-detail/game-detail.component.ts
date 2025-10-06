@@ -13,6 +13,7 @@ import { SeasonsService } from '../../services/seasons/seasons.service'
 import { Season, Team, Game } from '../../types/api'
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { MatTimepickerModule } from '@angular/material/timepicker'
 
 @Component({
     selector: 'app-game-detail',
@@ -26,6 +27,7 @@ import { NotificationService } from '../../services/notifications/notifications.
         MatNativeDateModule,
         MatFormFieldModule,
         MatInputModule,
+        MatTimepickerModule,
         BreadcrumbComponent
     ],
     templateUrl: './game-detail.component.html',
@@ -69,10 +71,11 @@ export class GameDetailComponent {
         this.gameForm = this.fb.group({
             round: [null, Validators.required],
             date: [null, Validators.required],
+            time: [null, Validators.required],
             home_team_id: [null, Validators.required],
             away_team_id: [null, Validators.required],
-            home_score: [0],
-            away_score: [0],
+            home_score: [null],
+            away_score: [null],
             status: ['scheduled', Validators.required]
         })
 
@@ -88,20 +91,40 @@ export class GameDetailComponent {
             this.gameForm.get('away_score')?.updateValueAndValidity()
         })
     }
+
     submitForm(): void {
         if (this.gameForm.invalid || !this.competitionId || !this.seasonId) {
             console.error('game form is invalid')
             return
         }
 
-        const gameData: Game = this.gameForm.value
-        gameData.season_id = this.seasonId
+        const { date, time, ...rest } = this.gameForm.value
+        const gameData: Game = {
+            ...rest,
+            season_id: this.seasonId,
+            date: this.combineDateAndTime(date, time)
+        }
 
         if (!this.isEditMode) {
             this.createGame(this.competitionId, this.seasonId, gameData)
         } else if (this.seasonId && this.gameId) {
             this.updateGame(this.competitionId, this.seasonId, this.gameId, gameData)
         }
+    }
+
+    private combineDateAndTime(date: Date | string, time: Date | string): Date {
+        const d = new Date(date)
+        let hours: number, minutes: number
+
+        if (time instanceof Date) {
+            hours = time.getHours()
+            minutes = time.getMinutes()
+        } else {
+            ;[hours, minutes] = time.split(':').map(Number)
+        }
+
+        d.setHours(hours, minutes, 0, 0)
+        return d
     }
 
     private loadSeason(competitionId: string, id: string): void {
@@ -122,7 +145,11 @@ export class GameDetailComponent {
     private loadGame(competitionId: string, seasonId: string, gameId: string): void {
         this.gamesService.getGame(competitionId, seasonId, gameId).subscribe({
             next: (game) => {
-                this.gameForm.patchValue(game)
+                this.gameForm.patchValue({
+                    ...game,
+                    date: new Date(game.date),
+                    time: new Date(game.date)
+                })
             },
             error: (err) => {
                 console.error('Error loading game:', err)

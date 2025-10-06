@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-
 import { GameDetailComponent } from './game-detail.component'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
@@ -136,6 +135,7 @@ describe('GameDetailComponent', () => {
         it('should mark round, date, home_team_id, away_team_id and status as required', () => {
             const roundControl = component.gameForm.get('round')
             const dateControl = component.gameForm.get('date')
+            const timeControl = component.gameForm.get('time')
             const homeTeamControl = component.gameForm.get('home_team_id')
             const awayTeamControl = component.gameForm.get('away_team_id')
             const statusControl = component.gameForm.get('status')
@@ -149,6 +149,11 @@ describe('GameDetailComponent', () => {
             expect(dateControl?.valid).toBeFalse()
             dateControl?.setValue('2025-08-21')
             expect(dateControl?.valid).toBeTrue()
+
+            timeControl?.setValue(null)
+            expect(timeControl?.valid).toBeFalse()
+            timeControl?.setValue('10:00')
+            expect(timeControl?.valid).toBeTrue()
 
             homeTeamControl?.setValue(null)
             expect(homeTeamControl?.valid).toBeFalse()
@@ -172,12 +177,37 @@ describe('GameDetailComponent', () => {
             expect(console.error).toHaveBeenCalledWith('game form is invalid')
         })
 
+        it('should combine date and time correctly on submit', () => {
+            const date = new Date('2025-01-01T00:00:00')
+            const time = new Date('1970-01-01T13:30:00')
+
+            component.isEditMode = false
+            component.gameForm.setValue({
+                round: mockGame1.round,
+                date: date,
+                time: time,
+                home_team_id: mockGame1.home_team_id,
+                away_team_id: mockGame1.away_team_id,
+                home_score: 10,
+                away_score: 5,
+                status: GameStatus.SCHEDULED
+            })
+
+            const expectedStart = (component as any).combineDateAndTime(date, time)
+
+            component.submitForm()
+
+            const calledGame = gamesService.createGame.calls.mostRecent().args[2]
+            expect(calledGame.date?.getTime()).toBe(expectedStart.getTime())
+        })
+
         it('should not submit if competitionId is null', () => {
             spyOn(console, 'error')
             component.competitionId = null
             component.gameForm.setValue({
                 round: 1,
                 date: '2025-08-21',
+                time: '10:00',
                 home_team_id: 'team1',
                 away_team_id: 'team2',
                 home_score: 0,
@@ -207,6 +237,7 @@ describe('GameDetailComponent', () => {
             component.gameForm.setValue({
                 round: mockGame1.round,
                 date: mockGame1.date,
+                time: mockGame1.date,
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
                 home_score: 10,
@@ -237,6 +268,7 @@ describe('GameDetailComponent', () => {
             component.gameForm.patchValue({
                 round: mockGame1.round,
                 date: mockGame1.date,
+                time: mockGame1.date,
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
                 home_score: 10,
@@ -255,6 +287,7 @@ describe('GameDetailComponent', () => {
             component.gameForm.setValue({
                 round: mockGame1.round,
                 date: mockGame1.date,
+                time: mockGame1.date,
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
                 home_score: 10,
@@ -282,6 +315,7 @@ describe('GameDetailComponent', () => {
             expect(component.gameForm.value).toEqual({
                 round: mockGame1.round,
                 date: mockGame1.date,
+                time: mockGame1.date,
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
                 home_score: mockGame1.home_score,
@@ -290,6 +324,34 @@ describe('GameDetailComponent', () => {
             })
 
             expect(component.teams).toEqual(mockTeams)
+        })
+
+        it('should separate date and time correctly when loading a game', () => {
+            const gameFromApi: Game = {
+                id: 'game1',
+                season_id: 'season1',
+                round: 1,
+                date: new Date('2025-06-15T14:45:00Z'),
+                home_team_id: 'team1',
+                away_team_id: 'team2',
+                home_score: 3,
+                away_score: 2,
+                status: GameStatus.FINISHED,
+                created_at: new Date('2025-05-01T10:00:00Z'),
+                updated_at: new Date('2025-06-15T16:00:00Z')
+            }
+
+            gamesService.getGame.and.returnValue(of(gameFromApi))
+            component['loadGame']('comp1', 'season1', 'game1')
+
+            const formValue = component.gameForm.value
+
+            expect(formValue.date.getFullYear()).toBe(2025)
+            expect(formValue.date.getMonth()).toBe(5)
+            expect(formValue.date.getDate()).toBe(16)
+
+            expect(formValue.time.getHours()).toBe(new Date(gameFromApi.date).getHours())
+            expect(formValue.time.getMinutes()).toBe(new Date(gameFromApi.date).getMinutes())
         })
 
         it('should log error if loadGame fails', () => {
