@@ -25,6 +25,14 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
+            <mat-label>Time</mat-label>
+            <input matInput [matTimepicker]="timePicker" formControlName="time" placeholder="Choose time" />
+            <mat-timepicker-toggle matSuffix [for]="timePicker"></mat-timepicker-toggle>
+            <mat-timepicker #timePicker [interval]="'5m'"></mat-timepicker>
+            <mat-error *ngIf="gameForm.get('time')?.hasError('required')">Time is required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
             <mat-label>Home Team</mat-label>
             <mat-select formControlName="home_team_id">
                 <mat-option *ngFor="let team of teams" [value]="team.id">
