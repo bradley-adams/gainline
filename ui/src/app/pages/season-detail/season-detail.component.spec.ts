@@ -10,6 +10,7 @@ import { SeasonsService } from '../../services/seasons/seasons.service'
 import { TeamsService } from '../../services/teams/teams.service'
 import { Season, Team } from '../../types/api'
 import { of, throwError } from 'rxjs'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 describe('SeasonDetailComponent', () => {
     let component: SeasonDetailComponent
@@ -18,6 +19,7 @@ describe('SeasonDetailComponent', () => {
 
     let seasonsService: jasmine.SpyObj<SeasonsService>
     let teamsService: jasmine.SpyObj<TeamsService>
+    let notificationService: jasmine.SpyObj<NotificationService>
 
     const mockTeams: Team[] = [
         {
@@ -91,13 +93,25 @@ describe('SeasonDetailComponent', () => {
     }
 
     beforeEach(async () => {
-        seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeason', 'createSeason', 'updateSeason'])
+        seasonsService = jasmine.createSpyObj('SeasonsService', [
+            'getSeason',
+            'createSeason',
+            'updateSeason',
+            'deleteSeason'
+        ])
         seasonsService.getSeason.and.returnValue(of(mockSeason1))
         seasonsService.createSeason.and.returnValue(of(mockSeason1))
         seasonsService.updateSeason.and.returnValue(of(mockSeason2))
+        seasonsService.deleteSeason.and.returnValue(of(undefined))
 
         teamsService = jasmine.createSpyObj('TeamsService', ['getTeams'])
         teamsService.getTeams.and.returnValue(of(mockTeams))
+
+        notificationService = jasmine.createSpyObj('NotificationService', [
+            'showConfirm',
+            'showError',
+            'showSnackbar'
+        ])
 
         await TestBed.configureTestingModule({
             imports: [SeasonDetailComponent, NoopAnimationsModule],
@@ -111,7 +125,8 @@ describe('SeasonDetailComponent', () => {
                     }
                 ]),
                 { provide: SeasonsService, useValue: seasonsService },
-                { provide: TeamsService, useValue: teamsService }
+                { provide: TeamsService, useValue: teamsService },
+                { provide: NotificationService, useValue: notificationService }
             ]
         }).compileComponents()
     })
@@ -407,6 +422,30 @@ describe('SeasonDetailComponent', () => {
             component.submitForm()
 
             expect(console.error).toHaveBeenCalledWith('Error updating season:', error)
+        })
+
+        it('should call deleteSeason when confirmed', () => {
+            notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+            component.confirmDelete()
+            expect(seasonsService.deleteSeason).toHaveBeenCalledWith('comp1', 'season1')
+            expect(notificationService.showSnackbar).toHaveBeenCalledWith('Season deleted successfully', 'OK')
+        })
+
+        it('should not call deleteSeason when cancelled', () => {
+            notificationService.showConfirm.and.returnValue({ afterClosed: () => of(false) } as any)
+            component.confirmDelete()
+            expect(seasonsService.deleteSeason).not.toHaveBeenCalled()
+            expect(notificationService.showSnackbar).not.toHaveBeenCalled()
+        })
+
+        it('should show error if deleteSeason fails', () => {
+            seasonsService.deleteSeason.and.returnValue(throwError(() => new Error('Failed')))
+            notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+            component.confirmDelete()
+            expect(notificationService.showError).toHaveBeenCalledWith(
+                'Delete Error',
+                'Failed to delete season'
+            )
         })
     })
 })
