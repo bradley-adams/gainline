@@ -40,6 +40,8 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## ToDos:
 
+- Create and error notificaitons should be consistent over competitions, seasons, games and teams.
+- Tests are silently broken.
 - Hook up delete endpoints for Seasons, Games, and Teams.
 - Form validations to match api across all forms.
 - Combine date and time pickers.
