@@ -127,6 +127,19 @@ export class GameDetailComponent {
         return d
     }
 
+    confirmDelete(): void {
+        const confirmationMessage = `Are you sure you want to delete this game?`
+
+        this.notificationService
+            .showConfirm('Confirm Delete', confirmationMessage)
+            .afterClosed()
+            .subscribe((confirmed) => {
+                if (confirmed && this.competitionId && this.seasonId && this.gameId) {
+                    this.removeGame(this.competitionId, this.seasonId, this.gameId)
+                }
+            })
+    }
+
     private loadSeason(competitionId: string, id: string): void {
         this.seasonsService.getSeason(competitionId, id).subscribe({
             next: (season: Season) => {
@@ -178,6 +191,27 @@ export class GameDetailComponent {
             error: (err) => {
                 console.error('Error updating game:', err)
                 this.notificationService.showError('Update Error', 'Failed to update game')
+            }
+        })
+    }
+
+    private removeGame(competitionId: string, seasonId: string, id: string): void {
+        if (!competitionId || !seasonId || !id) return
+
+        this.gamesService.deleteGame(competitionId, seasonId, id).subscribe({
+            next: () => {
+                this.notificationService.showSnackbar('Game deleted successfully', 'OK')
+                this.router.navigate([
+                    '/admin/competitions',
+                    this.competitionId,
+                    'seasons',
+                    this.seasonId,
+                    'games'
+                ])
+            },
+            error: (err) => {
+                console.error('Error deleting game:', err)
+                this.notificationService.showError('Delete Error', 'Failed to delete game')
             }
         })
     }
