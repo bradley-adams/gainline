@@ -9,6 +9,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { TeamsService } from '../../services/teams/teams.service'
 import { Team } from '../../types/api'
 import { of, throwError } from 'rxjs'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 describe('TeamDetailComponent', () => {
     let component: TeamDetailComponent
@@ -16,6 +17,7 @@ describe('TeamDetailComponent', () => {
     let router: Router
 
     let teamsService: jasmine.SpyObj<TeamsService>
+    let notificationService: jasmine.SpyObj<NotificationService>
 
     const mockTeam1: Team = {
         id: 'team1',
@@ -46,10 +48,22 @@ describe('TeamDetailComponent', () => {
     }
 
     beforeEach(async () => {
-        teamsService = jasmine.createSpyObj('TeamsService', ['getTeam', 'createTeam', 'updateTeam'])
+        teamsService = jasmine.createSpyObj('TeamsService', [
+            'getTeam',
+            'createTeam',
+            'updateTeam',
+            'deleteTeam'
+        ])
         teamsService.getTeam.and.returnValue(of(mockTeam1))
         teamsService.createTeam.and.returnValue(of(mockTeam1))
         teamsService.updateTeam.and.returnValue(of(mockTeam2))
+        teamsService.deleteTeam.and.returnValue(of(undefined))
+
+        notificationService = jasmine.createSpyObj('NotificationService', [
+            'showConfirm',
+            'showError',
+            'showSnackbar'
+        ])
 
         await TestBed.configureTestingModule({
             imports: [TeamDetailComponent, NoopAnimationsModule],
@@ -62,7 +76,8 @@ describe('TeamDetailComponent', () => {
                         component: TeamListComponent
                     }
                 ]),
-                { provide: TeamsService, useValue: teamsService }
+                { provide: TeamsService, useValue: teamsService },
+                { provide: NotificationService, useValue: notificationService }
             ]
         }).compileComponents()
     })
@@ -210,6 +225,30 @@ describe('TeamDetailComponent', () => {
             component.submitForm()
 
             expect(console.error).toHaveBeenCalledWith('Error updating team:', error)
+        })
+
+        it('should call deleteTeam when confirmed', () => {
+            notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+            component.confirmDelete()
+            expect(teamsService.deleteTeam).toHaveBeenCalledWith('team1')
+            expect(notificationService.showSnackbar).toHaveBeenCalledWith('Team deleted successfully', 'OK')
+        })
+
+        it('should not call deleteTeam when cancelled', () => {
+            notificationService.showConfirm.and.returnValue({ afterClosed: () => of(false) } as any)
+            component.confirmDelete()
+            expect(teamsService.deleteTeam).not.toHaveBeenCalled()
+            expect(notificationService.showSnackbar).not.toHaveBeenCalled()
+        })
+
+        it('should show error if deleteTeam fails', () => {
+            teamsService.deleteTeam.and.returnValue(throwError(() => new Error('Failed')))
+            notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+            component.confirmDelete()
+            expect(notificationService.showError).toHaveBeenCalledWith(
+                'Delete Error',
+                'Failed to delete team'
+            )
         })
     })
 })
