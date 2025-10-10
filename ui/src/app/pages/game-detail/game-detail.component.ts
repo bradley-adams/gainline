@@ -174,6 +174,7 @@ export class GameDetailComponent {
     private createGame(competitionId: string, seasonId: string, newGame: Game): void {
         this.gamesService.createGame(competitionId, seasonId, newGame).subscribe({
             next: () => {
+                this.notificationService.showSnackbar('Game created successfully', 'OK')
                 this.router.navigate(['/admin/competitions', competitionId, 'seasons', seasonId, 'games'])
             },
             error: (err) => {
@@ -186,6 +187,7 @@ export class GameDetailComponent {
     private updateGame(competitionId: string, seasonId: string, gameId: string, updatedGame: Game): void {
         this.gamesService.updateGame(competitionId, seasonId, gameId, updatedGame).subscribe({
             next: () => {
+                this.notificationService.showSnackbar('Game updated successfully', 'OK')
                 this.router.navigate(['/admin/competitions', competitionId, 'seasons', seasonId, 'games'])
             },
             error: (err) => {
