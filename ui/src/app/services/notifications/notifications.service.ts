@@ -11,7 +11,7 @@ export class NotificationService {
     private readonly dialog = inject(MatDialog)
     private readonly snackBar = inject(MatSnackBar)
 
-    showSnackbar(message: string, buttonLabel = '', duration = 5000): void {
+    showSnackbar(message: string, buttonLabel = '', duration = 500000): void {
         this.snackBar.open(message, buttonLabel, { duration })
     }
 

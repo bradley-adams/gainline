@@ -86,6 +86,7 @@ export class TeamDetailComponent {
     private createTeam(newTeam: Team): void {
         this.teamsService.createTeam(newTeam).subscribe({
             next: () => {
+                this.notificationService.showSnackbar('Team created successfully', 'OK')
                 this.router.navigate(['/admin/teams'])
             },
             error: (err) => {
@@ -98,6 +99,7 @@ export class TeamDetailComponent {
     private updateTeam(id: string, updatedTeam: Team): void {
         this.teamsService.updateTeam(id, updatedTeam).subscribe({
             next: () => {
+                this.notificationService.showSnackbar('Team updated successfully', 'OK')
                 this.router.navigate(['/admin/teams'])
             },
             error: (err) => {

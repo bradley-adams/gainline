@@ -153,6 +153,7 @@ export class SeasonDetailComponent implements OnInit {
     private createSeason(competitionId: string, newSeason: Partial<Season>): void {
         this.seasonsService.createSeason(competitionId, newSeason).subscribe({
             next: () => {
+                this.notificationService.showSnackbar('Season created successfully', 'OK')
                 this.router.navigate(['/admin/competitions', this.competitionId, 'seasons'])
             },
             error: (err) => {
@@ -163,10 +164,9 @@ export class SeasonDetailComponent implements OnInit {
     }
 
     private updateSeason(competitionId: string, id: string, updatedSeason: Partial<Season>): void {
-        console.log('Updating season:', updatedSeason)
-
         this.seasonsService.updateSeason(competitionId, id, updatedSeason).subscribe({
             next: () => {
+                this.notificationService.showSnackbar('Competition updated successfully', 'OK')
                 this.router.navigate(['/admin/competitions', this.competitionId, 'seasons'])
             },
             error: (err) => {
