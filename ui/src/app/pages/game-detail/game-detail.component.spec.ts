@@ -9,6 +9,7 @@ import { SeasonsService } from '../../services/seasons/seasons.service'
 import { GamesService } from '../../services/games/games.service'
 import { Game, GameStatus, Season, Team } from '../../types/api'
 import { of, throwError } from 'rxjs'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 describe('GameDetailComponent', () => {
     let component: GameDetailComponent
@@ -17,6 +18,7 @@ describe('GameDetailComponent', () => {
 
     let seasonsService: jasmine.SpyObj<SeasonsService>
     let gamesService: jasmine.SpyObj<GamesService>
+    let notificationService: jasmine.SpyObj<NotificationService>
 
     const mockTeams: Team[] = [
         {
@@ -92,13 +94,25 @@ describe('GameDetailComponent', () => {
     }
 
     beforeEach(async () => {
-        gamesService = jasmine.createSpyObj('GamesService', ['getGame', 'createGame', 'updateGame'])
+        gamesService = jasmine.createSpyObj('GamesService', [
+            'getGame',
+            'createGame',
+            'updateGame',
+            'deleteGame'
+        ])
         gamesService.getGame.and.returnValue(of(mockGame1))
         gamesService.createGame.and.returnValue(of(mockGame1))
         gamesService.updateGame.and.returnValue(of(mockGame2))
+        gamesService.deleteGame.and.returnValue(of(undefined))
 
         seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeason'])
         seasonsService.getSeason.and.returnValue(of(mockSeason1))
+
+        notificationService = jasmine.createSpyObj('NotificationService', [
+            'showConfirm',
+            'showError',
+            'showSnackbar'
+        ])
 
         await TestBed.configureTestingModule({
             imports: [GameDetailComponent, NoopAnimationsModule],
@@ -112,7 +126,8 @@ describe('GameDetailComponent', () => {
                     }
                 ]),
                 { provide: SeasonsService, useValue: seasonsService },
-                { provide: GamesService, useValue: gamesService }
+                { provide: GamesService, useValue: gamesService },
+                { provide: NotificationService, useValue: notificationService }
             ]
         }).compileComponents()
     })
@@ -400,6 +415,30 @@ describe('GameDetailComponent', () => {
             component.submitForm()
 
             expect(console.error).toHaveBeenCalledWith('Error updating game:', error)
+        })
+
+        it('should call deleteGame when confirmed', () => {
+            notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+            component.confirmDelete()
+            expect(gamesService.deleteGame).toHaveBeenCalledWith('comp1', 'season1', 'game1')
+            expect(notificationService.showSnackbar).toHaveBeenCalledWith('Game deleted successfully', 'OK')
+        })
+
+        it('should not call deleteGame when cancelled', () => {
+            notificationService.showConfirm.and.returnValue({ afterClosed: () => of(false) } as any)
+            component.confirmDelete()
+            expect(gamesService.deleteGame).not.toHaveBeenCalled()
+            expect(notificationService.showSnackbar).not.toHaveBeenCalled()
+        })
+
+        it('should show error if deleteGame fails', () => {
+            gamesService.deleteGame.and.returnValue(throwError(() => new Error('Failed')))
+            notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+            component.confirmDelete()
+            expect(notificationService.showError).toHaveBeenCalledWith(
+                'Delete Error',
+                'Failed to delete game'
+            )
         })
     })
 })
