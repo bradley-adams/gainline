@@ -20,7 +20,19 @@
             <input matInput formControlName="location" />
             <mat-error *ngIf="teamForm.get('location')?.hasError('required')">Location is required</mat-error>
         </mat-form-field>
-        <button type="submit" mat-raised-button color="primary">SAVE</button>
-        <button type="button" mat-stroked-button [routerLink]="['/admin/teams']">CANCEL</button>
+
+        <div class="flex-row">
+            <button type="submit" mat-raised-button color="primary">SAVE</button>
+            <button type="button" mat-stroked-button [routerLink]="['/admin/teams']">CANCEL</button>
+            <button
+                data-testid="delete-button"
+                *ngIf="isEditMode"
+                type="button"
+                class="warn"
+                mat-flat-button
+                (click)="confirmDelete()">
+                DELETE
+            </button>
+        </div>
     </form>
 </div>
