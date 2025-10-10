@@ -86,7 +86,7 @@ export class TeamDetailComponent {
     private createTeam(newTeam: Team): void {
         this.teamsService.createTeam(newTeam).subscribe({
             next: () => {
-                this.notificationService.showSnackbar('Team created successfully', 'OK')
+                this.notificationService.showSnackbar('Team created successfully')
                 this.router.navigate(['/admin/teams'])
             },
             error: (err) => {
@@ -99,7 +99,7 @@ export class TeamDetailComponent {
     private updateTeam(id: string, updatedTeam: Team): void {
         this.teamsService.updateTeam(id, updatedTeam).subscribe({
             next: () => {
-                this.notificationService.showSnackbar('Team updated successfully', 'OK')
+                this.notificationService.showSnackbar('Team updated successfully')
                 this.router.navigate(['/admin/teams'])
             },
             error: (err) => {
@@ -112,7 +112,7 @@ export class TeamDetailComponent {
     private deleteTeam(id: string): void {
         this.teamsService.deleteTeam(id).subscribe({
             next: () => {
-                this.notificationService.showSnackbar('Team deleted successfully', 'OK')
+                this.notificationService.showSnackbar('Team deleted successfully')
                 this.router.navigate(['/admin/teams'])
             },
             error: (err) => {

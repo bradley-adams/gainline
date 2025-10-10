@@ -12,6 +12,14 @@ html {
             density: 0
         )
     );
+
+    @include mat.snack-bar-overrides(
+        (
+            container-color: var(--mat-sys-primary),
+            supporting-text-color: var(--mat-sys-on-primary),
+            button-color: var(--mat-sys-on-primary)
+        )
+    );
 }
 
 .warn {
@@ -19,6 +27,14 @@ html {
         (
             filled-container-color: var(--mat-sys-error),
             filled-label-text-color: var(--mat-sys-on-error)
+        )
+    );
+}
+
+.snackbar-content {
+    @include mat.icon-button-overrides(
+        (
+            icon-color: var(--mat-sys-on-primary)
         )
     );
 }
