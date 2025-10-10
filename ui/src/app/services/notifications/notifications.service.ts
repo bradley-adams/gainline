@@ -3,6 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar'
 import { MatDialog, MatDialogRef } from '@angular/material/dialog'
 import { ConfirmComponent } from '../../components/dialog/confirm/confirm.component'
 import { ErrorComponent } from '../../components/dialog/error/error.component'
+import { SnackbarComponent } from '../../components/snackbar/snackbar.component'
 
 @Injectable({
     providedIn: 'root'
@@ -11,8 +12,11 @@ export class NotificationService {
     private readonly dialog = inject(MatDialog)
     private readonly snackBar = inject(MatSnackBar)
 
-    showSnackbar(message: string, buttonLabel = '', duration = 500000): void {
-        this.snackBar.open(message, buttonLabel, { duration })
+    showSnackbar(message: string, duration = 5000): void {
+        this.snackBar.openFromComponent(SnackbarComponent, {
+            data: message,
+            duration
+        })
     }
 
     showConfirm(title: string, message: string) {

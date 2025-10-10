@@ -85,7 +85,7 @@ export class CompetitionDetailComponent {
     private createCompetition(newCompetition: Competition): void {
         this.competitionsService.createCompetition(newCompetition).subscribe({
             next: () => {
-                this.notificationService.showSnackbar('Competition created successfully', 'OK')
+                this.notificationService.showSnackbar('Competition created successfully')
                 this.router.navigate(['/admin/competitions'])
             },
             error: (err) => {
@@ -98,7 +98,7 @@ export class CompetitionDetailComponent {
     private updateCompetition(id: string, updatedCompetition: Competition): void {
         this.competitionsService.updateCompetition(id, updatedCompetition).subscribe({
             next: () => {
-                this.notificationService.showSnackbar('Competition updated successfully', 'OK')
+                this.notificationService.showSnackbar('Competition updated successfully')
                 this.router.navigate(['/admin/competitions'])
             },
             error: (err) => {
@@ -113,7 +113,7 @@ export class CompetitionDetailComponent {
 
         this.competitionsService.deleteCompetition(competitionId).subscribe({
             next: () => {
-                this.notificationService.showSnackbar('Competition deleted successfully', 'OK')
+                this.notificationService.showSnackbar('Competition deleted successfully')
                 this.router.navigate(['/admin/competitions'])
             },
             error: (err) => {
