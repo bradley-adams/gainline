@@ -40,7 +40,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## ToDos:
 
-- Snackbar notifications are white.
+- Admin dashboard cards layout is whack
 - Create and error notificaitons should be consistent over competitions, seasons, games and teams.
 - Tests are silently broken.
 - Hook up delete endpoints for Seasons, Games, and Teams.
