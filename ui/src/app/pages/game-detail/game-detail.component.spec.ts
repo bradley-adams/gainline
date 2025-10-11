@@ -421,7 +421,7 @@ describe('GameDetailComponent', () => {
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
             component.confirmDelete()
             expect(gamesService.deleteGame).toHaveBeenCalledWith('comp1', 'season1', 'game1')
-            expect(notificationService.showSnackbar).toHaveBeenCalledWith('Game deleted successfully', 'OK')
+            expect(notificationService.showSnackbar).toHaveBeenCalledWith('Game deleted successfully')
         })
 
         it('should not call deleteGame when cancelled', () => {

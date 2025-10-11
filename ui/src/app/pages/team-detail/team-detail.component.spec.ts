@@ -231,7 +231,7 @@ describe('TeamDetailComponent', () => {
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
             component.confirmDelete()
             expect(teamsService.deleteTeam).toHaveBeenCalledWith('team1')
-            expect(notificationService.showSnackbar).toHaveBeenCalledWith('Team deleted successfully', 'OK')
+            expect(notificationService.showSnackbar).toHaveBeenCalledWith('Team deleted successfully')
         })
 
         it('should not call deleteTeam when cancelled', () => {
