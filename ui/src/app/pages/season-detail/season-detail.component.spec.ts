@@ -428,7 +428,7 @@ describe('SeasonDetailComponent', () => {
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
             component.confirmDelete()
             expect(seasonsService.deleteSeason).toHaveBeenCalledWith('comp1', 'season1')
-            expect(notificationService.showSnackbar).toHaveBeenCalledWith('Season deleted successfully', 'OK')
+            expect(notificationService.showSnackbar).toHaveBeenCalledWith('Season deleted successfully')
         })
 
         it('should not call deleteSeason when cancelled', () => {

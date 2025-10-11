@@ -109,10 +109,7 @@ describe('CompetitionDetailComponent', () => {
             component.competitionForm.setValue({ name: 'New Comp' })
             component.submitForm()
             expect(competitionsService.createCompetition).toHaveBeenCalledWith({ name: 'New Comp' })
-            expect(notificationService.showSnackbar).toHaveBeenCalledWith(
-                'Competition created successfully',
-                'OK'
-            )
+            expect(notificationService.showSnackbar).toHaveBeenCalledWith('Competition created successfully')
         })
 
         it('should show error if createCompetition fails', () => {
@@ -154,10 +151,7 @@ describe('CompetitionDetailComponent', () => {
             expect(competitionsService.updateCompetition).toHaveBeenCalledWith('123', {
                 name: 'Updated Comp'
             })
-            expect(notificationService.showSnackbar).toHaveBeenCalledWith(
-                'Competition updated successfully',
-                'OK'
-            )
+            expect(notificationService.showSnackbar).toHaveBeenCalledWith('Competition updated successfully')
         })
 
         it('should show error if updateCompetition fails', () => {
@@ -174,10 +168,7 @@ describe('CompetitionDetailComponent', () => {
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
             component.confirmDelete()
             expect(competitionsService.deleteCompetition).toHaveBeenCalledWith('123')
-            expect(notificationService.showSnackbar).toHaveBeenCalledWith(
-                'Competition deleted successfully',
-                'OK'
-            )
+            expect(notificationService.showSnackbar).toHaveBeenCalledWith('Competition deleted successfully')
         })
 
         it('should not call deleteCompetition when cancelled', () => {
