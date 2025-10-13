@@ -41,7 +41,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 ## ToDos:
 
 - Admin dashboard cards layout is whack
-- Create and error notificaitons should be consistent over competitions, seasons, games and teams.
+- Error should notify simple and console log api error.
 - Tests are silently broken.
 - Hook up delete endpoints for Seasons, Games, and Teams.
 - Form validations to match api across all forms.

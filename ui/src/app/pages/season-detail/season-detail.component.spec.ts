@@ -315,7 +315,7 @@ describe('SeasonDetailComponent', () => {
             expect(seasonsService.getSeason).toHaveBeenCalledWith('comp1', 'season1')
             expect(component.seasonForm.value.start_date).toEqual(mockSeason1.start_date)
             expect(component.seasonForm.value.end_date).toEqual(mockSeason1.end_date)
-            expect(component.seasonForm.value.rounds).toEqual(mockSeason1.rounds)
+            expect(component.seasonForm.value.rounds).toEqual(mockSeason1.rounds.toString())
             expect(component.teams).toEqual(mockTeams)
         })
 
@@ -418,7 +418,9 @@ describe('SeasonDetailComponent', () => {
             spyOn(console, 'error')
             seasonsService.updateSeason.and.returnValue(throwError(() => error))
 
-            component.seasonForm.patchValue({ rounds: 'Bad Update' })
+            component.seasonForm.patchValue({
+                teams: [12345] //invalid team to make form valid and api fail
+            })
             component.submitForm()
 
             expect(console.error).toHaveBeenCalledWith('Error updating season:', error)

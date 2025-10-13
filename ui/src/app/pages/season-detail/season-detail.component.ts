@@ -66,7 +66,7 @@ export class SeasonDetailComponent implements OnInit {
             start_time: [null, Validators.required],
             end_date: [null, Validators.required],
             end_time: [null, Validators.required],
-            rounds: ['', [Validators.required, Validators.min(1), Validators.max(50)]],
+            rounds: ['', [Validators.required, Validators.pattern(/^(?:[1-9]|[1-4][0-9]|50)$/)]],
             teams: [[]]
         })
     }
@@ -82,7 +82,7 @@ export class SeasonDetailComponent implements OnInit {
         const seasonData: Partial<Season> = {
             start_date: this.combineDateAndTime(start_date, start_time),
             end_date: this.combineDateAndTime(end_date, end_time),
-            rounds,
+            rounds: parseInt(rounds, 10),
             teams
         }
 
@@ -139,7 +139,7 @@ export class SeasonDetailComponent implements OnInit {
                     start_time: new Date(season.start_date),
                     end_date: new Date(season.end_date),
                     end_time: new Date(season.end_date),
-                    rounds: season.rounds,
+                    rounds: season.rounds.toString(),
                     teams: (season.teams as Team[]).map((t) => t.id)
                 })
             },
