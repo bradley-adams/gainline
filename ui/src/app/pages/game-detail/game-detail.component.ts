@@ -80,15 +80,21 @@ export class GameDetailComponent {
         })
 
         this.gameForm.get('status')?.valueChanges.subscribe((status) => {
+            const homeScoreCtrl = this.gameForm.get('home_score')
+            const awayScoreCtrl = this.gameForm.get('away_score')
+
+            const baseValidators = [Validators.pattern(/^[0-9]+$/)]
+
             if (status === 'playing' || status === 'finished') {
-                this.gameForm.get('home_score')?.setValidators([Validators.required])
-                this.gameForm.get('away_score')?.setValidators([Validators.required])
+                homeScoreCtrl?.setValidators([...baseValidators, Validators.required])
+                awayScoreCtrl?.setValidators([...baseValidators, Validators.required])
             } else {
-                this.gameForm.get('home_score')?.clearValidators()
-                this.gameForm.get('away_score')?.clearValidators()
+                homeScoreCtrl?.setValidators(baseValidators)
+                awayScoreCtrl?.setValidators(baseValidators)
             }
-            this.gameForm.get('home_score')?.updateValueAndValidity()
-            this.gameForm.get('away_score')?.updateValueAndValidity()
+
+            homeScoreCtrl?.updateValueAndValidity()
+            awayScoreCtrl?.updateValueAndValidity()
         })
     }
 
@@ -98,11 +104,13 @@ export class GameDetailComponent {
             return
         }
 
-        const { date, time, ...rest } = this.gameForm.value
+        const { date, time, home_score, away_score, ...rest } = this.gameForm.value
         const gameData: Game = {
             ...rest,
             season_id: this.seasonId,
-            date: this.combineDateAndTime(date, time)
+            date: this.combineDateAndTime(date, time),
+            home_score: home_score !== null && home_score !== '' ? parseInt(home_score, 10) : null,
+            away_score: away_score !== null && away_score !== '' ? parseInt(away_score, 10) : null
         }
 
         if (!this.isEditMode) {

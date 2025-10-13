@@ -65,13 +65,14 @@
             <mat-label>Rounds</mat-label>
             <input
                 matInput
-                type="number"
-                min="1"
-                max="50"
+                type="text"
                 formControlName="rounds"
-                class="no-spinner"
-                (wheel)="$event.preventDefault()" />
-            <mat-error *ngIf="seasonForm.get('rounds')?.hasError('required')">Rounds are required</mat-error>
+                inputmode="numeric"
+                pattern="[0-9]*"
+                placeholder="Enter rounds" />
+            <mat-error *ngIf="seasonForm.get('rounds')?.hasError('pattern')">
+                Please enter a valid number between 1 and 50
+            </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">

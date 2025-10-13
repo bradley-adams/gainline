@@ -60,20 +60,34 @@
             <mat-label>Home Score</mat-label>
             <input
                 matInput
-                type="number"
+                type="text"
+                inputmode="numeric"
+                pattern="[0-9]*"
                 formControlName="home_score"
-                class="no-spinner"
-                (wheel)="$event.preventDefault()" />
+                placeholder="Enter home score" />
+            <mat-error *ngIf="gameForm.get('home_score')?.hasError('pattern')">
+                Enter a valid whole number
+            </mat-error>
+            <mat-error *ngIf="gameForm.get('home_score')?.hasError('required')">
+                Home score is required
+            </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
             <mat-label>Away Score</mat-label>
             <input
                 matInput
-                type="number"
+                type="text"
+                inputmode="numeric"
+                pattern="[0-9]*"
                 formControlName="away_score"
-                class="no-spinner"
-                (wheel)="$event.preventDefault()" />
+                placeholder="Enter away score" />
+            <mat-error *ngIf="gameForm.get('away_score')?.hasError('pattern')">
+                Enter a valid whole number
+            </mat-error>
+            <mat-error *ngIf="gameForm.get('away_score')?.hasError('required')">
+                Away score is required
+            </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
