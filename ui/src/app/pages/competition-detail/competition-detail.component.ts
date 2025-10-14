@@ -41,8 +41,11 @@ export class CompetitionDetailComponent {
 
     submitForm(): void {
         if (this.competitionForm.invalid) {
-            console.error('competition form is invalid')
-            this.notificationService.showError('Form Error', 'Please fill out all required fields.')
+            this.notificationService.showErrorAndLog(
+                'Form Error',
+                'Required fields cannot be left blank',
+                new Error('competition form is invalid')
+            )
             return
         }
 
@@ -76,8 +79,7 @@ export class CompetitionDetailComponent {
                 })
             },
             error: (err) => {
-                console.error('Error loading competition:', err)
-                this.notificationService.showError('Load Error', 'Failed to load competition')
+                this.notificationService.showErrorAndLog('Load Error', 'Failed to load competition', err)
             }
         })
     }
@@ -89,8 +91,7 @@ export class CompetitionDetailComponent {
                 this.router.navigate(['/admin/competitions'])
             },
             error: (err) => {
-                console.error('Error creating competition:', err)
-                this.notificationService.showError('Create Error', 'Failed to create competition')
+                this.notificationService.showErrorAndLog('Create Error', 'Failed to create competition', err)
             }
         })
     }
@@ -102,8 +103,7 @@ export class CompetitionDetailComponent {
                 this.router.navigate(['/admin/competitions'])
             },
             error: (err) => {
-                console.error('Error updating competition:', err)
-                this.notificationService.showError('Update Error', 'Failed to update competition')
+                this.notificationService.showErrorAndLog('Update Error', 'Failed to update competition', err)
             }
         })
     }
@@ -117,8 +117,7 @@ export class CompetitionDetailComponent {
                 this.router.navigate(['/admin/competitions'])
             },
             error: (err) => {
-                console.error('Error deleting competition:', err)
-                this.notificationService.showError('Delete Error', 'Failed to delete competition')
+                this.notificationService.showErrorAndLog('Delete Error', 'Failed to delete competition', err)
             }
         })
     }

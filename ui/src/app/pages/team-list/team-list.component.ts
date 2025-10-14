@@ -30,8 +30,7 @@ export class TeamListComponent {
                 this.dataSource.data = teams
             },
             error: (err) => {
-                console.error('Error loading teams:', err)
-                this.notificationService.showError('Load Error', 'Failed to load teams')
+                this.notificationService.showErrorAndLog('Load Error', 'Failed to load teams', err)
             }
         })
     }

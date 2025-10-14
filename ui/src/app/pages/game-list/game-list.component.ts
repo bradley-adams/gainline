@@ -46,8 +46,7 @@ export class GameListComponent implements OnInit {
                 this.loadGames(competitionId, seasonId)
             },
             error: (err) => {
-                console.error('Error loading season:', err)
-                this.notificationService.showError('Load Error', 'Failed to load season')
+                this.notificationService.showErrorAndLog('Load Error', 'Failed to load season', err)
             }
         })
     }
@@ -65,7 +64,9 @@ export class GameListComponent implements OnInit {
                 }))
                 this.dataSource.data = gamesWithNames
             },
-            error: (err) => console.error('Error loading games:', err)
+            error: (err) => {
+                this.notificationService.showErrorAndLog('Load Error', 'Failed to load games', err)
+            }
         })
     }
 }

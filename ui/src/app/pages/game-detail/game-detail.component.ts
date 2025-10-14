@@ -157,8 +157,7 @@ export class GameDetailComponent {
                 this.rounds = Array.from({ length: season.rounds }, (_, i) => i + 1)
             },
             error: (err) => {
-                console.error('Error loading season:', err)
-                this.notificationService.showError('Load Error', 'Failed to load season')
+                this.notificationService.showErrorAndLog('Load Error', 'Failed to load season', err)
             }
         })
     }
@@ -173,8 +172,7 @@ export class GameDetailComponent {
                 })
             },
             error: (err) => {
-                console.error('Error loading game:', err)
-                this.notificationService.showError('Load Error', 'Failed to load game')
+                this.notificationService.showErrorAndLog('Load Error', 'Failed to load game', err)
             }
         })
     }
@@ -186,8 +184,7 @@ export class GameDetailComponent {
                 this.router.navigate(['/admin/competitions', competitionId, 'seasons', seasonId, 'games'])
             },
             error: (err) => {
-                console.error('Error creating game:', err)
-                this.notificationService.showError('Create Error', 'Failed to create game')
+                this.notificationService.showErrorAndLog('Create Error', 'Failed to create game', err)
             }
         })
     }
@@ -199,8 +196,7 @@ export class GameDetailComponent {
                 this.router.navigate(['/admin/competitions', competitionId, 'seasons', seasonId, 'games'])
             },
             error: (err) => {
-                console.error('Error updating game:', err)
-                this.notificationService.showError('Update Error', 'Failed to update game')
+                this.notificationService.showErrorAndLog('Update Error', 'Failed to update game', err)
             }
         })
     }
@@ -220,8 +216,7 @@ export class GameDetailComponent {
                 ])
             },
             error: (err) => {
-                console.error('Error deleting game:', err)
-                this.notificationService.showError('Delete Error', 'Failed to delete game')
+                this.notificationService.showErrorAndLog('Delete Error', 'Failed to delete game', err)
             }
         })
     }
