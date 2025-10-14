@@ -77,8 +77,7 @@ export class TeamDetailComponent {
                 })
             },
             error: (err) => {
-                console.error('Error loading team:', err)
-                this.notificationService.showError('Load Error', 'Failed to load team')
+                this.notificationService.showErrorAndLog('Load Error', 'Failed to load team', err)
             }
         })
     }
@@ -90,8 +89,7 @@ export class TeamDetailComponent {
                 this.router.navigate(['/admin/teams'])
             },
             error: (err) => {
-                console.error('Error creating team:', err)
-                this.notificationService.showError('Create Error', 'Failed to create team')
+                this.notificationService.showErrorAndLog('Create Error', 'Failed to create team', err)
             }
         })
     }
@@ -103,8 +101,7 @@ export class TeamDetailComponent {
                 this.router.navigate(['/admin/teams'])
             },
             error: (err) => {
-                console.error('Error updating team:', err)
-                this.notificationService.showError('Update Error', 'Failed to update team')
+                this.notificationService.showErrorAndLog('Update Error', 'Failed to update team', err)
             }
         })
     }
@@ -116,8 +113,7 @@ export class TeamDetailComponent {
                 this.router.navigate(['/admin/teams'])
             },
             error: (err) => {
-                console.error('Error deleting team:', err)
-                this.notificationService.showError('Delete Error', 'Failed to delete team')
+                this.notificationService.showErrorAndLog('Delete Error', 'Failed to delete team', err)
             }
         })
     }

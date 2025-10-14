@@ -32,4 +32,17 @@ export class NotificationService {
             disableClose: true
         })
     }
+
+    showErrorAndLog(title: string, message: string, error?: any) {
+        const sanitizedMessage = message.toLowerCase().replace(/[^\w\s]/g, '')
+
+        if (error) {
+            console.error(sanitizedMessage, error)
+        }
+
+        return this.dialog.open(ErrorComponent, {
+            data: { title, message },
+            disableClose: true
+        })
+    }
 }

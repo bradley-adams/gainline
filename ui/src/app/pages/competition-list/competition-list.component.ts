@@ -30,8 +30,7 @@ export class CompetitionListComponent {
                 this.dataSource.data = competitions
             },
             error: (err) => {
-                console.error('Error loading competitions:', err)
-                this.notificationService.showError('Load Error', 'Failed to load competitions')
+                this.notificationService.showErrorAndLog('Load Error', 'Failed to load competitions', err)
             }
         })
     }

@@ -38,8 +38,7 @@ export class SeasonListComponent {
                 this.dataSource.data = seasons
             },
             error: (err) => {
-                console.error('Error loading seasons:', err)
-                this.notificationService.showError('Load Error', 'Failed to load seasons')
+                this.notificationService.showErrorAndLog('Load Error', 'Failed to load seasons', err)
             }
         })
     }

@@ -44,9 +44,7 @@ export class ScheduleComponent implements OnInit {
     }
 
     private initFormListeners(): void {
-        this.scheduleForm
-            .get('competition')!
-            .valueChanges.subscribe(this.onCompetitionChange.bind(this))
+        this.scheduleForm.get('competition')!.valueChanges.subscribe(this.onCompetitionChange.bind(this))
         this.scheduleForm.get('season')!.valueChanges.subscribe(this.onSeasonChange.bind(this))
         this.scheduleForm.get('round')!.valueChanges.subscribe(this.onRoundChange.bind(this))
     }
@@ -99,15 +97,11 @@ export class ScheduleComponent implements OnInit {
             next: (competitions) => {
                 this.competitions = competitions
                 if (competitions.length > 0) {
-                    this.scheduleForm.patchValue(
-                        { competition: competitions[0].id },
-                        { emitEvent: true }
-                    )
+                    this.scheduleForm.patchValue({ competition: competitions[0].id }, { emitEvent: true })
                 }
             },
             error: (err) => {
-                console.error('Error loading competitions:', err)
-                this.notificationService.showError('Load Error', 'Failed to load competitions')
+                this.notificationService.showErrorAndLog('Load Error', 'Failed to load competitions', err)
             }
         })
     }
@@ -121,8 +115,7 @@ export class ScheduleComponent implements OnInit {
                 }
             },
             error: (err) => {
-                console.error('Error loading seasons:', err)
-                this.notificationService.showError('Load Error', 'Failed to load seasons')
+                this.notificationService.showErrorAndLog('Load Error', 'Failed to load seasons', err)
             }
         })
     }
@@ -134,8 +127,7 @@ export class ScheduleComponent implements OnInit {
                 this.dataSource.data = this.games
             },
             error: (err) => {
-                console.error('Error loading games:', err)
-                this.notificationService.showError('Load Error', 'Failed to load games')
+                this.notificationService.showErrorAndLog('Load Error', 'Failed to load games', err)
             }
         })
     }

@@ -125,8 +125,7 @@ export class SeasonDetailComponent implements OnInit {
         this.teamsService.getTeams().subscribe({
             next: (teams) => (this.teams = teams),
             error: (err) => {
-                console.error('Error loading teams:', err)
-                this.notificationService.showError('Load Error', 'Failed to load teams')
+                this.notificationService.showErrorAndLog('Load Error', 'Failed to load teams', err)
             }
         })
     }
@@ -144,8 +143,7 @@ export class SeasonDetailComponent implements OnInit {
                 })
             },
             error: (err) => {
-                console.error('Error loading season:', err)
-                this.notificationService.showError('Load Error', 'Failed to load season')
+                this.notificationService.showErrorAndLog('Load Error', 'Failed to load season', err)
             }
         })
     }
@@ -157,8 +155,7 @@ export class SeasonDetailComponent implements OnInit {
                 this.router.navigate(['/admin/competitions', this.competitionId, 'seasons'])
             },
             error: (err) => {
-                console.error('Error creating season:', err)
-                this.notificationService.showError('Create Error', 'Failed to create season')
+                this.notificationService.showErrorAndLog('Create Error', 'Failed to create season', err)
             }
         })
     }
@@ -170,8 +167,7 @@ export class SeasonDetailComponent implements OnInit {
                 this.router.navigate(['/admin/competitions', this.competitionId, 'seasons'])
             },
             error: (err) => {
-                console.error('Error updating season:', err)
-                this.notificationService.showError('Update Error', 'Failed to update season')
+                this.notificationService.showErrorAndLog('Update Error', 'Failed to update season', err)
             }
         })
     }
@@ -185,8 +181,7 @@ export class SeasonDetailComponent implements OnInit {
                 this.router.navigate(['/admin/competitions', this.competitionId, 'seasons'])
             },
             error: (err) => {
-                console.error('Error deleting season:', err)
-                this.notificationService.showError('Delete Error', 'Failed to delete season')
+                this.notificationService.showErrorAndLog('Delete Error', 'Failed to delete season', err)
             }
         })
     }
