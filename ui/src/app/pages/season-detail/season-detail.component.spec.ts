@@ -109,7 +109,7 @@ describe('SeasonDetailComponent', () => {
 
         notificationService = jasmine.createSpyObj('NotificationService', [
             'showConfirm',
-            'showError',
+            'showErrorAndLog',
             'showSnackbar'
         ])
 
@@ -419,7 +419,7 @@ describe('SeasonDetailComponent', () => {
             seasonsService.updateSeason.and.returnValue(throwError(() => error))
 
             component.seasonForm.patchValue({
-                teams: [12345] //invalid team to make form valid and api fail
+                start_date: [12345] //invalid team to make form valid and api fail
             })
             component.submitForm()
 
@@ -444,7 +444,7 @@ describe('SeasonDetailComponent', () => {
             seasonsService.deleteSeason.and.returnValue(throwError(() => new Error('Failed')))
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
             component.confirmDelete()
-            expect(notificationService.showError).toHaveBeenCalledWith(
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Delete Error',
                 'Failed to delete season'
             )

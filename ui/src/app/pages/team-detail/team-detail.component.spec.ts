@@ -61,7 +61,7 @@ describe('TeamDetailComponent', () => {
 
         notificationService = jasmine.createSpyObj('NotificationService', [
             'showConfirm',
-            'showError',
+            'showErrorAndLog',
             'showSnackbar'
         ])
 
@@ -245,7 +245,7 @@ describe('TeamDetailComponent', () => {
             teamsService.deleteTeam.and.returnValue(throwError(() => new Error('Failed')))
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
             component.confirmDelete()
-            expect(notificationService.showError).toHaveBeenCalledWith(
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Delete Error',
                 'Failed to delete team'
             )

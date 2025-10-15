@@ -55,7 +55,7 @@ describe('CompetitionDetailComponent', () => {
 
         notificationService = jasmine.createSpyObj('NotificationService', [
             'showConfirm',
-            'showError',
+            'showErrorAndLog',
             'showSnackbar'
         ])
 
@@ -99,7 +99,7 @@ describe('CompetitionDetailComponent', () => {
 
         it('should not submit if form is invalid', () => {
             component.submitForm()
-            expect(notificationService.showError).toHaveBeenCalledWith(
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Form Error',
                 'Please fill out all required fields.'
             )
@@ -116,7 +116,7 @@ describe('CompetitionDetailComponent', () => {
             competitionsService.createCompetition.and.returnValue(throwError(() => new Error('Failed')))
             component.competitionForm.setValue({ name: 'Bad Comp' })
             component.submitForm()
-            expect(notificationService.showError).toHaveBeenCalledWith(
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Create Error',
                 'Failed to create competition'
             )
@@ -139,7 +139,7 @@ describe('CompetitionDetailComponent', () => {
         it('should show error if loadCompetition fails', () => {
             competitionsService.getCompetition.and.returnValue(throwError(() => new Error('Failed')))
             component['loadCompetition']('123')
-            expect(notificationService.showError).toHaveBeenCalledWith(
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Load Error',
                 'Failed to load competition'
             )
@@ -158,7 +158,7 @@ describe('CompetitionDetailComponent', () => {
             competitionsService.updateCompetition.and.returnValue(throwError(() => new Error('Failed')))
             component.competitionForm.setValue({ name: 'Bad Update' })
             component.submitForm()
-            expect(notificationService.showError).toHaveBeenCalledWith(
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Update Error',
                 'Failed to update competition'
             )
@@ -182,7 +182,7 @@ describe('CompetitionDetailComponent', () => {
             competitionsService.deleteCompetition.and.returnValue(throwError(() => new Error('Failed')))
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
             component.confirmDelete()
-            expect(notificationService.showError).toHaveBeenCalledWith(
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Delete Error',
                 'Failed to delete competition'
             )

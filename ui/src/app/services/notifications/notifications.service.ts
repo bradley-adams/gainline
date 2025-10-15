@@ -26,13 +26,6 @@ export class NotificationService {
         })
     }
 
-    showError(title: string, message: string) {
-        return this.dialog.open(ErrorComponent, {
-            data: { title, message },
-            disableClose: true
-        })
-    }
-
     showErrorAndLog(title: string, message: string, error?: any) {
         const sanitizedMessage = message.toLowerCase().replace(/[^\w\s]/g, '')
 
