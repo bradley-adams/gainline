@@ -110,7 +110,7 @@ describe('GameDetailComponent', () => {
 
         notificationService = jasmine.createSpyObj('NotificationService', [
             'showConfirm',
-            'showError',
+            'showErrorAndLog',
             'showSnackbar'
         ])
 
@@ -435,7 +435,7 @@ describe('GameDetailComponent', () => {
             gamesService.deleteGame.and.returnValue(throwError(() => new Error('Failed')))
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
             component.confirmDelete()
-            expect(notificationService.showError).toHaveBeenCalledWith(
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Delete Error',
                 'Failed to delete game'
             )
