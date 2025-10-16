@@ -144,10 +144,9 @@ describe('TeamDetailComponent', () => {
             })
         })
 
-        it('should log error if createTeam fails', () => {
-            const error = new Error('Failed to create')
-            spyOn(console, 'error')
-            teamsService.createTeam.and.returnValue(throwError(() => error))
+        it('should show error if createTeam fails', () => {
+            const mockError = new Error('Failed to create')
+            teamsService.createTeam.and.returnValue(throwError(() => mockError))
 
             component.isEditMode = false
             component.teamForm.patchValue({
@@ -157,7 +156,11 @@ describe('TeamDetailComponent', () => {
             })
             component.submitForm()
 
-            expect(console.error).toHaveBeenCalledWith('Error creating team:', error)
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+                'Create Error',
+                'Failed to create team',
+                mockError
+            )
         })
 
         it('should navigate after createTeam', () => {
@@ -194,14 +197,17 @@ describe('TeamDetailComponent', () => {
             })
         })
 
-        it('should log error if loadTeam fails', () => {
-            const error = new Error('Failed to load')
-            spyOn(console, 'error')
-            teamsService.getTeam.and.returnValue(throwError(() => error))
+        it('should show error if loadTeam fails', () => {
+            const mockError = new Error('Failed to load')
+            teamsService.getTeam.and.returnValue(throwError(() => mockError))
 
             component['loadTeam']('123')
 
-            expect(console.error).toHaveBeenCalledWith('Error loading team:', error)
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+                'Load Error',
+                'Failed to load team',
+                mockError
+            )
         })
 
         it('should call updateTeam when in edit mode and form is valid', () => {
@@ -215,16 +221,18 @@ describe('TeamDetailComponent', () => {
                 location: mockTeam1.location
             })
         })
-
-        it('should log error if updateTeam fails', () => {
-            const error = new Error('Failed to update')
-            spyOn(console, 'error')
-            teamsService.updateTeam.and.returnValue(throwError(() => error))
+        it('should show error if updateTeam fails', () => {
+            const mockError = new Error('Failed to update')
+            teamsService.updateTeam.and.returnValue(throwError(() => mockError))
 
             component.teamForm.patchValue({ name: 1 })
             component.submitForm()
 
-            expect(console.error).toHaveBeenCalledWith('Error updating team:', error)
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+                'Update Error',
+                'Failed to update team',
+                mockError
+            )
         })
 
         it('should call deleteTeam when confirmed', () => {
@@ -242,12 +250,16 @@ describe('TeamDetailComponent', () => {
         })
 
         it('should show error if deleteTeam fails', () => {
-            teamsService.deleteTeam.and.returnValue(throwError(() => new Error('Failed')))
+            const mockError = new Error('Failed')
+            teamsService.deleteTeam.and.returnValue(throwError(() => mockError))
+
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
             component.confirmDelete()
+
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Delete Error',
-                'Failed to delete team'
+                'Failed to delete team',
+                mockError
             )
         })
     })

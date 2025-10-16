@@ -98,10 +98,12 @@ describe('CompetitionDetailComponent', () => {
         })
 
         it('should not submit if form is invalid', () => {
+            const mockError = new Error('competition form is invalid')
             component.submitForm()
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Form Error',
-                'Please fill out all required fields.'
+                'Required fields cannot be left blank',
+                mockError
             )
         })
 
@@ -113,12 +115,16 @@ describe('CompetitionDetailComponent', () => {
         })
 
         it('should show error if createCompetition fails', () => {
-            competitionsService.createCompetition.and.returnValue(throwError(() => new Error('Failed')))
+            const mockError = new Error('Failed')
+            competitionsService.createCompetition.and.returnValue(throwError(() => mockError))
+
             component.competitionForm.setValue({ name: 'Bad Comp' })
             component.submitForm()
+
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Create Error',
-                'Failed to create competition'
+                'Failed to create competition',
+                mockError
             )
         })
     })
@@ -137,11 +143,14 @@ describe('CompetitionDetailComponent', () => {
         })
 
         it('should show error if loadCompetition fails', () => {
-            competitionsService.getCompetition.and.returnValue(throwError(() => new Error('Failed')))
+            const mockError = new Error('Failed')
+            competitionsService.getCompetition.and.returnValue(throwError(() => mockError))
+
             component['loadCompetition']('123')
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Load Error',
-                'Failed to load competition'
+                'Failed to load competition',
+                mockError
             )
         })
 
@@ -155,12 +164,16 @@ describe('CompetitionDetailComponent', () => {
         })
 
         it('should show error if updateCompetition fails', () => {
-            competitionsService.updateCompetition.and.returnValue(throwError(() => new Error('Failed')))
+            const mockError = new Error('Failed')
+            competitionsService.updateCompetition.and.returnValue(throwError(() => mockError))
+
             component.competitionForm.setValue({ name: 'Bad Update' })
             component.submitForm()
+
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Update Error',
-                'Failed to update competition'
+                'Failed to update competition',
+                mockError
             )
         })
 
@@ -179,12 +192,16 @@ describe('CompetitionDetailComponent', () => {
         })
 
         it('should show error if deleteCompetition fails', () => {
-            competitionsService.deleteCompetition.and.returnValue(throwError(() => new Error('Failed')))
+            const mockError = new Error('Failed')
+            competitionsService.deleteCompetition.and.returnValue(throwError(() => mockError))
+
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
             component.confirmDelete()
+
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Delete Error',
-                'Failed to delete competition'
+                'Failed to delete competition',
+                mockError
             )
         })
     })

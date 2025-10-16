@@ -87,7 +87,7 @@ describe('CompetitionListComponent', () => {
         competitionsService.getCompetitions.and.returnValue(throwError(() => error))
 
         component.ngOnInit()
-        expect(console.error).toHaveBeenCalledWith('Error loading competitions:', error)
+        expect(console.error).toHaveBeenCalledWith('failed to load competitions', error)
     })
 
     it('should have a "Create Competition" button with correct link', () => {
