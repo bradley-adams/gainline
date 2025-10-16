@@ -227,6 +227,6 @@ describe('ScheduleComponent', () => {
 
         component.ngOnInit()
 
-        expect(console.error).toHaveBeenCalledWith('Error loading competitions:', httpError)
+        expect(console.error).toHaveBeenCalledWith('failed to load competitions', httpError)
     })
 })

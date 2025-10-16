@@ -161,13 +161,13 @@ describe('GameListComponent', () => {
         expect(noDataRow.textContent).toContain('No games found')
     })
 
-    it('should show error when games fail to load', () => {
+    it('should show error when season fails to load', () => {
         const error = new Error('Failed to load')
         spyOn(console, 'error')
 
         seasonsService.getSeason.and.returnValue(throwError(() => error))
         component.ngOnInit()
-        expect(console.error).toHaveBeenCalledWith('Error loading season:', error)
+        expect(console.error).toHaveBeenCalledWith('failed to load season', error)
     })
 
     it('should show error when games fail to load', () => {
@@ -176,7 +176,7 @@ describe('GameListComponent', () => {
 
         gamesService.getGames.and.returnValue(throwError(() => error))
         component.ngOnInit()
-        expect(console.error).toHaveBeenCalledWith('Error loading games:', error)
+        expect(console.error).toHaveBeenCalledWith('failed to load games', error)
     })
 
     it('create button navigates correctly', () => {

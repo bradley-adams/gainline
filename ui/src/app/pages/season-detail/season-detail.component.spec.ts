@@ -266,10 +266,9 @@ describe('SeasonDetailComponent', () => {
             )
         })
 
-        it('should log error if createSeason fails', () => {
-            const error = new Error('Failed to create')
-            spyOn(console, 'error')
-            seasonsService.createSeason.and.returnValue(throwError(() => error))
+        it('should show error if createSeason fails', () => {
+            const mockError = new Error('Failed to create')
+            seasonsService.createSeason.and.returnValue(throwError(() => mockError))
 
             component.isEditMode = false
             component.seasonForm.patchValue({
@@ -281,7 +280,11 @@ describe('SeasonDetailComponent', () => {
             })
             component.submitForm()
 
-            expect(console.error).toHaveBeenCalledWith('Error creating season:', error)
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+                'Create Error',
+                'Failed to create season',
+                mockError
+            )
         })
 
         it('should navigate after createSeason', () => {
@@ -353,14 +356,17 @@ describe('SeasonDetailComponent', () => {
             expect(formValue.end_time.getMinutes()).toBe(new Date(seasonFromApi.end_date).getMinutes())
         })
 
-        it('should log error if loadSeason fails', () => {
-            const error = new Error('Failed to load')
-            spyOn(console, 'error')
-            seasonsService.getSeason.and.returnValue(throwError(() => error))
+        it('should show error if loadSeason fails', () => {
+            const mockError = new Error('Failed to load')
+            seasonsService.getSeason.and.returnValue(throwError(() => mockError))
 
             component['loadSeason']('123', '456') // trigger loadSeason again
 
-            expect(console.error).toHaveBeenCalledWith('Error loading season:', error)
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+                'Load Error',
+                'Failed to load season',
+                mockError
+            )
         })
 
         it('should populate teams control with IDs in edit mode', () => {
@@ -368,13 +374,17 @@ describe('SeasonDetailComponent', () => {
             expect(component.seasonForm.value.teams).toEqual(['team1', 'team2', 'team3', 'team4'])
         })
 
-        it('should log error if loadTeams fails', () => {
-            const error = new Error('Teams failed')
-            spyOn(console, 'error')
-            teamsService.getTeams.and.returnValue(throwError(() => error))
+        it('should show error if loadTeams fails', () => {
+            const mockError = new Error('Teams failed')
+            teamsService.getTeams.and.returnValue(throwError(() => mockError))
 
             component['loadTeams']()
-            expect(console.error).toHaveBeenCalledWith('Error loading teams:', error)
+
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+                'Load Error',
+                'Failed to load teams',
+                mockError
+            )
         })
 
         it('should call updateSeason when in edit mode and form is valid', () => {
@@ -413,17 +423,20 @@ describe('SeasonDetailComponent', () => {
             )
         })
 
-        it('should log error if updateSeason fails', () => {
-            const error = new Error('Failed to update')
-            spyOn(console, 'error')
-            seasonsService.updateSeason.and.returnValue(throwError(() => error))
+        it('should show error if updateSeason fails', () => {
+            const mockError = new Error('Failed to update')
+            seasonsService.updateSeason.and.returnValue(throwError(() => mockError))
 
             component.seasonForm.patchValue({
-                start_date: [12345] //invalid team to make form valid and api fail
+                teams: [12345] // invalid team to make form valid and API fail
             })
             component.submitForm()
 
-            expect(console.error).toHaveBeenCalledWith('Error updating season:', error)
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+                'Update Error',
+                'Failed to update season',
+                mockError
+            )
         })
 
         it('should call deleteSeason when confirmed', () => {
@@ -441,12 +454,16 @@ describe('SeasonDetailComponent', () => {
         })
 
         it('should show error if deleteSeason fails', () => {
-            seasonsService.deleteSeason.and.returnValue(throwError(() => new Error('Failed')))
+            const mockError = new Error('Failed')
+            seasonsService.deleteSeason.and.returnValue(throwError(() => mockError))
+
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
             component.confirmDelete()
+
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Delete Error',
-                'Failed to delete season'
+                'Failed to delete season',
+                mockError
             )
         })
     })

@@ -118,7 +118,7 @@ describe('TeamListComponent', () => {
         teamsService.getTeams.and.returnValue(throwError(() => error))
 
         component.ngOnInit()
-        expect(console.error).toHaveBeenCalledWith('Error loading teams:', error)
+        expect(console.error).toHaveBeenCalledWith('failed to load teams', error)
     })
 
     it('should navigate when "Create Team" button is clicked', () => {

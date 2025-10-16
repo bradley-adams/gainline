@@ -136,7 +136,7 @@ describe('SeasonListComponent', () => {
         spyOn(console, 'error')
         seasonsService.getSeasons.and.returnValue(throwError(() => error))
         component.ngOnInit()
-        expect(console.error).toHaveBeenCalledWith('Error loading seasons:', error)
+        expect(console.error).toHaveBeenCalledWith('failed to load seasons', error)
     })
 
     it('should navigate when "Create Season" button is clicked', () => {

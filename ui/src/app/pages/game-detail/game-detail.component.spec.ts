@@ -274,10 +274,9 @@ describe('GameDetailComponent', () => {
             })
         })
 
-        it('should log error if createGame fails', () => {
-            const error = new Error('Failed to create')
-            spyOn(console, 'error')
-            gamesService.createGame.and.returnValue(throwError(() => error))
+        it('should show error if createGame fails', () => {
+            const mockError = new Error('Failed to create')
+            gamesService.createGame.and.returnValue(throwError(() => mockError))
 
             component.isEditMode = false
             component.gameForm.patchValue({
@@ -292,7 +291,11 @@ describe('GameDetailComponent', () => {
             })
             component.submitForm()
 
-            expect(console.error).toHaveBeenCalledWith('Error creating game:', error)
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+                'Create Error',
+                'Failed to create game',
+                mockError
+            )
         })
 
         it('should navigate after createGame', () => {
@@ -369,24 +372,30 @@ describe('GameDetailComponent', () => {
             expect(formValue.time.getMinutes()).toBe(new Date(gameFromApi.date).getMinutes())
         })
 
-        it('should log error if loadGame fails', () => {
-            const error = new Error('Failed to load')
-            spyOn(console, 'error')
-            gamesService.getGame.and.returnValue(throwError(() => error))
+        it('should show error if loadGame fails', () => {
+            const mockError = new Error('Failed to load')
+            gamesService.getGame.and.returnValue(throwError(() => mockError))
 
             component['loadGame']('123', '456', '789')
 
-            expect(console.error).toHaveBeenCalledWith('Error loading game:', error)
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+                'Load Error',
+                'Failed to load game',
+                mockError
+            )
         })
 
-        it('should log error if loadSeason fails', () => {
-            const error = new Error('Failed to load season')
-            spyOn(console, 'error')
-            seasonsService.getSeason.and.returnValue(throwError(() => error))
+        it('should show error if loadSeason fails', () => {
+            const mockError = new Error('Failed to load season')
+            seasonsService.getSeason.and.returnValue(throwError(() => mockError))
 
             component.ngOnInit()
 
-            expect(console.error).toHaveBeenCalledWith('Error loading season:', error)
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+                'Load Error',
+                'Failed to load season',
+                mockError
+            )
         })
 
         it('should call updateGame when in edit mode and form is valid', () => {
@@ -406,15 +415,18 @@ describe('GameDetailComponent', () => {
             })
         })
 
-        it('should log error if updateGame fails', () => {
-            const error = new Error('Failed to update')
-            spyOn(console, 'error')
-            gamesService.updateGame.and.returnValue(throwError(() => error))
+        it('should show error if updateGame fails', () => {
+            const mockError = new Error('Failed to update')
+            gamesService.updateGame.and.returnValue(throwError(() => mockError))
 
             component.gameForm.patchValue({ round: 'Bad Update' })
             component.submitForm()
 
-            expect(console.error).toHaveBeenCalledWith('Error updating game:', error)
+            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+                'Update Error',
+                'Failed to update game',
+                mockError
+            )
         })
 
         it('should call deleteGame when confirmed', () => {
@@ -432,12 +444,16 @@ describe('GameDetailComponent', () => {
         })
 
         it('should show error if deleteGame fails', () => {
-            gamesService.deleteGame.and.returnValue(throwError(() => new Error('Failed')))
+            const mockError = new Error('Failed')
+            gamesService.deleteGame.and.returnValue(throwError(() => mockError))
+
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
             component.confirmDelete()
+
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Delete Error',
-                'Failed to delete game'
+                'Failed to delete game',
+                mockError
             )
         })
     })
