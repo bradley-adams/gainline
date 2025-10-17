@@ -8,6 +8,7 @@ import { SeasonsService } from '../../services/seasons/seasons.service'
 import { GamesService } from '../../services/games/games.service'
 import { of, throwError } from 'rxjs'
 import { Competition, Game, GameStatus, Season, Team } from '../../types/api'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 describe('ScheduleComponent', () => {
     let component: ScheduleComponent
@@ -16,6 +17,7 @@ describe('ScheduleComponent', () => {
     let competitionsService: jasmine.SpyObj<CompetitionsService>
     let seasonsService: jasmine.SpyObj<SeasonsService>
     let gamesService: jasmine.SpyObj<GamesService>
+    let notificationService: jasmine.SpyObj<NotificationService>
 
     const mockCompetitions: Competition[] = [
         {
@@ -129,6 +131,8 @@ describe('ScheduleComponent', () => {
         gamesService = jasmine.createSpyObj('GamesService', ['getGames'])
         gamesService.getGames.and.returnValue(of(mockGames))
 
+        notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
+
         await TestBed.configureTestingModule({
             imports: [ScheduleComponent, NoopAnimationsModule],
             providers: [
@@ -136,7 +140,8 @@ describe('ScheduleComponent', () => {
                 provideHttpClientTesting(),
                 { provide: CompetitionsService, useValue: competitionsService },
                 { provide: SeasonsService, useValue: seasonsService },
-                { provide: GamesService, useValue: gamesService }
+                { provide: GamesService, useValue: gamesService },
+                { provide: NotificationService, useValue: notificationService }
             ]
         }).compileComponents()
 
@@ -213,20 +218,15 @@ describe('ScheduleComponent', () => {
         expect(component.dataSource.data.length).toBe(0)
     })
 
-    it('should log error if getCompetitions fails', () => {
-        spyOn(console, 'error')
-
-        const httpError = new HttpErrorResponse({
-            status: 500,
-            statusText: 'Internal Server Error',
-            url: 'http://fake-url/v1/competitions',
-            error: { message: 'fail' }
-        })
-
-        competitionsService.getCompetitions.and.returnValue(throwError(() => httpError))
+    it('should show error if getCompetitions fails', () => {
+        const mockError = new Error('Failed')
+        competitionsService.getCompetitions.and.returnValue(throwError(() => mockError))
 
         component.ngOnInit()
-
-        expect(console.error).toHaveBeenCalledWith('failed to load competitions', httpError)
+        expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+            'Load Error',
+            'Failed to load competitions',
+            mockError
+        )
     })
 })

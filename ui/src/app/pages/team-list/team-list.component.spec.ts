@@ -9,6 +9,7 @@ import { Team } from '../../types/api'
 import { TeamsService } from '../../services/teams/teams.service'
 import { of, throwError } from 'rxjs'
 import { By } from '@angular/platform-browser'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 describe('TeamListComponent', () => {
     let component: TeamListComponent
@@ -16,6 +17,8 @@ describe('TeamListComponent', () => {
     let router: Router
 
     let teamsService: jasmine.SpyObj<TeamsService>
+
+    let notificationService: jasmine.SpyObj<NotificationService>
 
     const mockTeams: Team[] = [
         {
@@ -56,6 +59,8 @@ describe('TeamListComponent', () => {
         teamsService = jasmine.createSpyObj('TeamsService', ['getTeams'])
         teamsService.getTeams.and.returnValue(of(mockTeams))
 
+        notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
+
         await TestBed.configureTestingModule({
             imports: [TeamListComponent],
             providers: [
@@ -71,7 +76,8 @@ describe('TeamListComponent', () => {
                         component: TeamDetailComponent
                     }
                 ]),
-                { provide: TeamsService, useValue: teamsService }
+                { provide: TeamsService, useValue: teamsService },
+                { provide: NotificationService, useValue: notificationService }
             ]
         }).compileComponents()
 
@@ -112,13 +118,15 @@ describe('TeamListComponent', () => {
     })
 
     it('should show error when teams fail to load', () => {
-        const error = new Error('Failed to load')
-        spyOn(console, 'error')
-
-        teamsService.getTeams.and.returnValue(throwError(() => error))
+        const mockError = new Error('Failed')
+        teamsService.getTeams.and.returnValue(throwError(() => mockError))
 
         component.ngOnInit()
-        expect(console.error).toHaveBeenCalledWith('failed to load teams', error)
+        expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+            'Load Error',
+            'Failed to load teams',
+            mockError
+        )
     })
 
     it('should navigate when "Create Team" button is clicked', () => {

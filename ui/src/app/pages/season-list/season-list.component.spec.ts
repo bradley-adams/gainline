@@ -9,6 +9,7 @@ import { SeasonsService } from '../../services/seasons/seasons.service'
 import { Season, Team } from '../../types/api'
 import { of, throwError } from 'rxjs'
 import { By } from '@angular/platform-browser'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 describe('SeasonListComponent', () => {
     let component: SeasonListComponent
@@ -16,6 +17,7 @@ describe('SeasonListComponent', () => {
     let router: Router
 
     let seasonsService: jasmine.SpyObj<SeasonsService>
+    let notificationService: jasmine.SpyObj<NotificationService>
 
     const mockTeams: Team[] = [
         {
@@ -79,6 +81,8 @@ describe('SeasonListComponent', () => {
         seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeasons'])
         seasonsService.getSeasons.and.returnValue(of(mockSeasons))
 
+        notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
+
         await TestBed.configureTestingModule({
             imports: [SeasonListComponent],
             providers: [
@@ -100,7 +104,8 @@ describe('SeasonListComponent', () => {
                     useValue: {
                         snapshot: { paramMap: convertToParamMap({ 'competition-id': 'comp1' }) }
                     }
-                }
+                },
+                { provide: NotificationService, useValue: notificationService }
             ]
         }).compileComponents()
 
@@ -132,11 +137,15 @@ describe('SeasonListComponent', () => {
     })
 
     it('should show error when seasons fail to load', () => {
-        const error = new Error('Failed to load')
-        spyOn(console, 'error')
-        seasonsService.getSeasons.and.returnValue(throwError(() => error))
+        const mockError = new Error('Failed')
+        seasonsService.getSeasons.and.returnValue(throwError(() => mockError))
+
         component.ngOnInit()
-        expect(console.error).toHaveBeenCalledWith('failed to load seasons', error)
+        expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+            'Load Error',
+            'Failed to load seasons',
+            mockError
+        )
     })
 
     it('should navigate when "Create Season" button is clicked', () => {
