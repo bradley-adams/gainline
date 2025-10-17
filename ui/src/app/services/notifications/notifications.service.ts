@@ -26,12 +26,19 @@ export class NotificationService {
         })
     }
 
-    showErrorAndLog(title: string, message: string, error?: any) {
+    showErrorAndLog(title: string, message: string, error: Error) {
         const sanitizedMessage = message.toLowerCase().replace(/[^\w\s]/g, '')
+        console.error(sanitizedMessage, error)
 
-        if (error) {
-            console.error(sanitizedMessage, error)
-        }
+        return this.dialog.open(ErrorComponent, {
+            data: { title, message },
+            disableClose: true
+        })
+    }
+
+    showWarnAndLog(title: string, message: string) {
+        const sanitizedMessage = message.toLowerCase().replace(/[^\w\s]/g, '')
+        console.warn(sanitizedMessage)
 
         return this.dialog.open(ErrorComponent, {
             data: { title, message },

@@ -73,7 +73,10 @@ export class SeasonDetailComponent implements OnInit {
 
     submitForm(): void {
         if (this.seasonForm.invalid || !this.competitionId) {
-            console.error('Season form is invalid')
+            this.notificationService.showWarnAndLog(
+                'Form Error',
+                'Season form is invalid or competition not selected'
+            )
             return
         }
 
