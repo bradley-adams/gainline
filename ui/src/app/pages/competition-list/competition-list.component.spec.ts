@@ -9,6 +9,7 @@ import { CompetitionsService } from '../../services/competitions/competitions.se
 import { Competition } from '../../types/api'
 import { of, throwError } from 'rxjs'
 import { By } from '@angular/platform-browser'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 describe('CompetitionListComponent', () => {
     let component: CompetitionListComponent
@@ -16,6 +17,7 @@ describe('CompetitionListComponent', () => {
     let router: Router
 
     let competitionsService: jasmine.SpyObj<CompetitionsService>
+    let notificationService: jasmine.SpyObj<NotificationService>
 
     const mockCompetitions: Competition[] = [
         {
@@ -36,6 +38,8 @@ describe('CompetitionListComponent', () => {
         competitionsService = jasmine.createSpyObj('CompetitionsService', ['getCompetitions'])
         competitionsService.getCompetitions.and.returnValue(of(mockCompetitions))
 
+        notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
+
         await TestBed.configureTestingModule({
             imports: [CompetitionListComponent],
             providers: [
@@ -51,7 +55,8 @@ describe('CompetitionListComponent', () => {
                         component: CompetitionDetailComponent
                     }
                 ]),
-                { provide: CompetitionsService, useValue: competitionsService }
+                { provide: CompetitionsService, useValue: competitionsService },
+                { provide: NotificationService, useValue: notificationService }
             ]
         }).compileComponents()
 
@@ -82,12 +87,15 @@ describe('CompetitionListComponent', () => {
     })
 
     it('should show error when competitions fail to load', () => {
-        const error = new Error('Failed to load')
-        spyOn(console, 'error')
-        competitionsService.getCompetitions.and.returnValue(throwError(() => error))
+        const mockError = new Error('Failed')
+        competitionsService.getCompetitions.and.returnValue(throwError(() => mockError))
 
         component.ngOnInit()
-        expect(console.error).toHaveBeenCalledWith('failed to load competitions', error)
+        expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+            'Load Error',
+            'Failed to load competitions',
+            mockError
+        )
     })
 
     it('should have a "Create Competition" button with correct link', () => {

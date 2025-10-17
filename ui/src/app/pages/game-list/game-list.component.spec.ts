@@ -10,6 +10,7 @@ import { GamesService } from '../../services/games/games.service'
 import { of, throwError } from 'rxjs'
 import { By } from '@angular/platform-browser'
 import { SeasonsService } from '../../services/seasons/seasons.service'
+import { NotificationService } from '../../services/notifications/notifications.service'
 
 describe('GameListComponent', () => {
     let component: GameListComponent
@@ -18,6 +19,8 @@ describe('GameListComponent', () => {
 
     let gamesService: jasmine.SpyObj<GamesService>
     let seasonsService: jasmine.SpyObj<SeasonsService>
+
+    let notificationService: jasmine.SpyObj<NotificationService>
 
     const mockTeams: Team[] = [
         {
@@ -101,6 +104,8 @@ describe('GameListComponent', () => {
         gamesService.getGames.and.returnValue(of(mockGames))
         seasonsService.getSeason.and.returnValue(of(mockSeason))
 
+        notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
+
         await TestBed.configureTestingModule({
             imports: [GameListComponent],
             providers: [
@@ -125,7 +130,8 @@ describe('GameListComponent', () => {
                             paramMap: convertToParamMap({ 'competition-id': 'comp1', 'season-id': 'season1' })
                         }
                     }
-                }
+                },
+                { provide: NotificationService, useValue: notificationService }
             ]
         }).compileComponents()
 
@@ -162,21 +168,27 @@ describe('GameListComponent', () => {
     })
 
     it('should show error when season fails to load', () => {
-        const error = new Error('Failed to load')
-        spyOn(console, 'error')
+        const mockError = new Error('Failed')
+        seasonsService.getSeason.and.returnValue(throwError(() => mockError))
 
-        seasonsService.getSeason.and.returnValue(throwError(() => error))
         component.ngOnInit()
-        expect(console.error).toHaveBeenCalledWith('failed to load season', error)
+        expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+            'Load Error',
+            'Failed to load season',
+            mockError
+        )
     })
 
     it('should show error when games fail to load', () => {
-        const error = new Error('Failed to load games')
-        spyOn(console, 'error')
+        const mockError = new Error('Failed')
+        gamesService.getGames.and.returnValue(throwError(() => mockError))
 
-        gamesService.getGames.and.returnValue(throwError(() => error))
         component.ngOnInit()
-        expect(console.error).toHaveBeenCalledWith('failed to load games', error)
+        expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+            'Load Error',
+            'Failed to load games',
+            mockError
+        )
     })
 
     it('create button navigates correctly', () => {
