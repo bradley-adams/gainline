@@ -110,6 +110,7 @@ describe('SeasonDetailComponent', () => {
         notificationService = jasmine.createSpyObj('NotificationService', [
             'showConfirm',
             'showErrorAndLog',
+            'showWarnAndLog',
             'showSnackbar'
         ])
 
@@ -180,9 +181,12 @@ describe('SeasonDetailComponent', () => {
         })
 
         it('should not submit if form is invalid', () => {
-            spyOn(console, 'error')
             component.submitForm()
-            expect(console.error).toHaveBeenCalledWith('Season form is invalid')
+
+            expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
+                'Form Error',
+                'Season form is invalid or competition not selected'
+            )
         })
 
         it('should combine start_date and start_time correctly on submit', () => {
@@ -220,7 +224,6 @@ describe('SeasonDetailComponent', () => {
         })
 
         it('should not submit if competitionId is null', () => {
-            spyOn(console, 'error')
             component.competitionId = null
             component.seasonForm.setValue({
                 start_date: mockSeason1.start_date,
@@ -231,7 +234,10 @@ describe('SeasonDetailComponent', () => {
                 teams: ['team1', 'team2']
             })
             component.submitForm()
-            expect(console.error).toHaveBeenCalledWith('Season form is invalid')
+            expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
+                'Form Error',
+                'Season form is invalid or competition not selected'
+            )
         })
 
         it('should call createSeason when in create mode and form is valid', () => {
