@@ -101,6 +101,10 @@ export class GameDetailComponent {
     submitForm(): void {
         if (this.gameForm.invalid || !this.competitionId || !this.seasonId) {
             console.error('game form is invalid')
+            this.notificationService.showWarnAndLog(
+                'Form Error',
+                'Game form is invalid or competition/season not selected'
+            )
             return
         }
 

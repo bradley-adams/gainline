@@ -56,6 +56,7 @@ describe('CompetitionDetailComponent', () => {
         notificationService = jasmine.createSpyObj('NotificationService', [
             'showConfirm',
             'showErrorAndLog',
+            'showWarnAndLog',
             'showSnackbar'
         ])
 
@@ -98,12 +99,10 @@ describe('CompetitionDetailComponent', () => {
         })
 
         it('should not submit if form is invalid', () => {
-            const mockError = new Error('competition form is invalid')
             component.submitForm()
-            expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+            expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
                 'Form Error',
-                'Required fields cannot be left blank',
-                mockError
+                'Competition form is invalid'
             )
         })
 

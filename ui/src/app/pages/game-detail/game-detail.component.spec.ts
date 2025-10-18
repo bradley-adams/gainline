@@ -111,6 +111,7 @@ describe('GameDetailComponent', () => {
         notificationService = jasmine.createSpyObj('NotificationService', [
             'showConfirm',
             'showErrorAndLog',
+            'showWarnAndLog',
             'showSnackbar'
         ])
 
@@ -187,9 +188,11 @@ describe('GameDetailComponent', () => {
         })
 
         it('should not submit if form is invalid', () => {
-            spyOn(console, 'error')
             component.submitForm()
-            expect(console.error).toHaveBeenCalledWith('game form is invalid')
+            expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
+                'Form Error',
+                'Game form is invalid or competition/season not selected'
+            )
         })
 
         it('should combine date and time correctly on submit', () => {
@@ -217,7 +220,6 @@ describe('GameDetailComponent', () => {
         })
 
         it('should not submit if competitionId is null', () => {
-            spyOn(console, 'error')
             component.competitionId = null
             component.gameForm.setValue({
                 round: 1,
@@ -231,9 +233,10 @@ describe('GameDetailComponent', () => {
             })
 
             component.submitForm()
-
-            const call = (console.error as jasmine.Spy).calls.all()[0].args[0]
-            expect(call).toEqual('game form is invalid')
+            expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
+                'Form Error',
+                'Game form is invalid or competition/season not selected'
+            )
         })
 
         it('should populate rounds based on season', () => {
