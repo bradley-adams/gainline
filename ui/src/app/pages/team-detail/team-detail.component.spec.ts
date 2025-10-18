@@ -62,6 +62,7 @@ describe('TeamDetailComponent', () => {
         notificationService = jasmine.createSpyObj('NotificationService', [
             'showConfirm',
             'showErrorAndLog',
+            'showWarnAndLog',
             'showSnackbar'
         ])
 
@@ -122,9 +123,11 @@ describe('TeamDetailComponent', () => {
         })
 
         it('should not submit if form is invalid', () => {
-            spyOn(console, 'error')
             component.submitForm()
-            expect(console.error).toHaveBeenCalledWith('team form is invalid')
+            expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
+                'Form Error',
+                'Team form is invalid'
+            )
         })
 
         it('should call createTeam when in create mode and form is valid', () => {

@@ -42,7 +42,7 @@ export class TeamDetailComponent {
 
     submitForm(): void {
         if (this.teamForm.invalid) {
-            console.error('team form is invalid')
+            this.notificationService.showWarnAndLog('Form Error', 'Team form is invalid')
             return
         }
 

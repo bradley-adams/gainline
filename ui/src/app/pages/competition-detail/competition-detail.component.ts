@@ -41,11 +41,7 @@ export class CompetitionDetailComponent {
 
     submitForm(): void {
         if (this.competitionForm.invalid) {
-            this.notificationService.showErrorAndLog(
-                'Form Error',
-                'Required fields cannot be left blank',
-                new Error('competition form is invalid')
-            )
+            this.notificationService.showWarnAndLog('Form Error', 'Competition form is invalid')
             return
         }
 
