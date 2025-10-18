@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-
-import { AdminDashboardComponent } from './admin-dashboard.component'
+import { By } from '@angular/platform-browser'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideRouter } from '@angular/router'
+
+import { AdminDashboardComponent } from './admin-dashboard.component'
 import { TeamListComponent } from '../team-list/team-list.component'
 import { CompetitionListComponent } from '../competition-list/competition-list.component'
-import { By } from '@angular/platform-browser'
 
 describe('AdminDashboardComponent', () => {
-    let component: AdminDashboardComponent
     let fixture: ComponentFixture<AdminDashboardComponent>
+    let component: AdminDashboardComponent
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
@@ -19,18 +19,14 @@ describe('AdminDashboardComponent', () => {
                 provideHttpClient(),
                 provideHttpClientTesting(),
                 provideRouter([
-                    {
-                        path: 'admin/teams',
-                        component: TeamListComponent
-                    },
-                    {
-                        path: 'admin/competitions',
-                        component: CompetitionListComponent
-                    }
+                    { path: 'admin/teams', component: TeamListComponent },
+                    { path: 'admin/competitions', component: CompetitionListComponent }
                 ])
             ]
         }).compileComponents()
+    })
 
+    beforeEach(() => {
         fixture = TestBed.createComponent(AdminDashboardComponent)
         component = fixture.componentInstance
         fixture.detectChanges()
@@ -40,13 +36,13 @@ describe('AdminDashboardComponent', () => {
         expect(component).toBeTruthy()
     })
 
-    it('should have a link to manage competitions', () => {
+    it('should render a button linking to the competitions page', () => {
         const button = fixture.debugElement.query(By.css('button[routerLink="/admin/competitions"]'))
         expect(button).toBeTruthy()
         expect(button.nativeElement.textContent).toContain('Manage')
     })
 
-    it('should have a link to manage teams', () => {
+    it('should render a button linking to the teams page', () => {
         const button = fixture.debugElement.query(By.css('button[routerLink="/admin/teams"]'))
         expect(button).toBeTruthy()
         expect(button.nativeElement.textContent).toContain('Manage')

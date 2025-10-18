@@ -40,10 +40,8 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## ToDos:
 
-- Don't rely on logs in the tests.
 - Notification service tests.
-- Tests are silently broken.
-- Hook up delete endpoints for Seasons, Games, and Teams.
+- Delete icons for Competitions, Seasons, Games, and Teams.
 - Form validations to match api across all forms.
 - Combine date and time pickers.
 - Auto sort imports.
