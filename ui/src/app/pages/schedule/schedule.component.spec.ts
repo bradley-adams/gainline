@@ -1,14 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { ScheduleComponent } from './schedule.component'
+import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
-import { HttpErrorResponse, provideHttpClient } from '@angular/common/http'
+import { of, throwError } from 'rxjs'
+
+import { ScheduleComponent } from './schedule.component'
 import { CompetitionsService } from '../../services/competitions/competitions.service'
 import { SeasonsService } from '../../services/seasons/seasons.service'
 import { GamesService } from '../../services/games/games.service'
-import { of, throwError } from 'rxjs'
-import { Competition, Game, GameStatus, Season, Team } from '../../types/api'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { Competition, Game, GameStatus, Season, Team } from '../../types/api'
 
 describe('ScheduleComponent', () => {
     let component: ScheduleComponent
@@ -154,23 +155,13 @@ describe('ScheduleComponent', () => {
         expect(component).toBeTruthy()
     })
 
-    it('should load competitions on init and set first competition', async () => {
+    it('should load competitions on init and select the first competition', () => {
         expect(competitionsService.getCompetitions).toHaveBeenCalled()
         expect(component.competitions.length).toBe(2)
         expect(component.scheduleForm.get('competition')!.value).toBe('comp1')
     })
 
-    it('should display "No games found" row when dataSource is empty', () => {
-        component.games = []
-        component.dataSource.data = []
-
-        const noDataRow: HTMLElement = fixture.nativeElement.querySelector('tr.mat-row td.mat-cell')
-
-        expect(noDataRow).toBeTruthy()
-        expect(noDataRow.textContent).toContain('No games found')
-    })
-
-    it('should load seasons and set first season when competition changes', async () => {
+    it('should load seasons and select first season when competition changes', () => {
         const compId = mockCompetitions[1].id
 
         component.scheduleForm.get('competition')!.setValue(compId)
@@ -180,7 +171,7 @@ describe('ScheduleComponent', () => {
         expect(component.scheduleForm.get('season')!.value).toBe(mockSeasons[0].id)
     })
 
-    it('should load games and update dataSource when season and round change', async () => {
+    it('should load games and update dataSource when season or round changes', () => {
         const compId = mockCompetitions[0].id
         const seasonId = mockSeasons[0].id
         const round = 1
@@ -190,18 +181,18 @@ describe('ScheduleComponent', () => {
         component.scheduleForm.get('round')!.setValue(round)
 
         expect(gamesService.getGames).toHaveBeenCalledWith(compId, seasonId)
+        const filteredGames = component.games.filter((g) => g.round === round)
+        expect(filteredGames.length).toBeGreaterThan(0)
         expect(component.games.every((g) => g.round === round)).toBeTrue()
-        expect(component.dataSource.data.length).toBe(component.games.length)
+        expect(component.dataSource.data.length).toBe(filteredGames.length)
+        expect(component.dataSource.data).toEqual(filteredGames)
     })
 
-    it('should reset rounds and round form control when season has zero rounds', async () => {
+    it('should reset rounds and clear round selection when season has zero rounds', () => {
         const compId = 'new-comp-id'
 
-        // Setup the spy to return empty array for unknown compId
         seasonsService.getSeasons.and.callFake((id: string) => {
-            if (id === 'comp1' || id === 'comp2') {
-                return of(mockSeasons)
-            }
+            if (id === 'comp1' || id === 'comp2') return of(mockSeasons)
             return of([])
         })
 
@@ -211,18 +202,28 @@ describe('ScheduleComponent', () => {
         expect(component.seasons.length).toBe(0)
         expect(component.rounds.length).toBe(0)
         expect(component.scheduleForm.get('round')!.value).toBe('')
-
-        expect(component.seasons.length).toBe(0)
-        expect(component.rounds.length).toBe(0)
         expect(component.games.length).toBe(0)
         expect(component.dataSource.data.length).toBe(0)
+        expect(component.dataSource.data).toEqual([])
     })
 
-    it('should show error if getCompetitions fails', () => {
+    it('should display "No games found" message when no games are available', () => {
+        component.games = []
+        component.dataSource.data = []
+
+        const noDataRow: HTMLElement = fixture.nativeElement.querySelector('tr.mat-row td.mat-cell')
+        expect(noDataRow).toBeTruthy()
+        expect(noDataRow.textContent).toContain('No games found')
+        expect(component.dataSource.data.length).toBe(0)
+        expect(component.dataSource.data).toEqual([])
+    })
+
+    it('should show error notification if loading competitions fails', () => {
         const mockError = new Error('Failed')
         competitionsService.getCompetitions.and.returnValue(throwError(() => mockError))
 
         component.ngOnInit()
+
         expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
             'Load Error',
             'Failed to load competitions',
