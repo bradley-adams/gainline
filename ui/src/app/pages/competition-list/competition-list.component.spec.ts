@@ -1,15 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-
-import { CompetitionListComponent } from './competition-list.component'
+import { By } from '@angular/platform-browser'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideRouter, Router } from '@angular/router'
+import { of, throwError } from 'rxjs'
+
+import { CompetitionListComponent } from './competition-list.component'
 import { CompetitionDetailComponent } from '../competition-detail/competition-detail.component'
 import { CompetitionsService } from '../../services/competitions/competitions.service'
-import { Competition } from '../../types/api'
-import { of, throwError } from 'rxjs'
-import { By } from '@angular/platform-browser'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { Competition } from '../../types/api'
 
 describe('CompetitionListComponent', () => {
     let component: CompetitionListComponent
@@ -73,15 +73,15 @@ describe('CompetitionListComponent', () => {
     it('should load competitions into the table', () => {
         const rows = fixture.nativeElement.querySelectorAll('tr')
         expect(rows.length).toBe(3)
+
         expect(rows[1].textContent).toContain('Competition 1')
         expect(rows[2].textContent).toContain('Competition 2')
     })
 
-    it('should display "No competitions found" row when dataSource is empty', () => {
+    it('should display "No competitions found" when no data is available', () => {
         component.dataSource.data = []
 
         const noDataRow: HTMLElement = fixture.nativeElement.querySelector('tr.mat-row td.mat-cell')
-
         expect(noDataRow).toBeTruthy()
         expect(noDataRow.textContent).toContain('No competitions found')
     })
@@ -91,6 +91,7 @@ describe('CompetitionListComponent', () => {
         competitionsService.getCompetitions.and.returnValue(throwError(() => mockError))
 
         component.ngOnInit()
+
         expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
             'Load Error',
             'Failed to load competitions',
@@ -107,10 +108,9 @@ describe('CompetitionListComponent', () => {
         const tableRows = fixture.nativeElement.querySelectorAll('tr')
         expect(tableRows.length).toBe(mockCompetitions.length + 1)
 
-        // Header row
         const headerRow = tableRows[0]
+        expect(headerRow.cells[0].textContent).toContain('Competition Name')
 
-        expect(headerRow.cells[0].innerHTML).toBe('Competition Name')
         expect(headerRow.cells[1].innerHTML).toBe('Created At')
         expect(headerRow.cells[2].innerHTML).toBe('Actions')
 
@@ -124,20 +124,19 @@ describe('CompetitionListComponent', () => {
         expect(tableRows[2].cells[2].textContent).toBe('editcalendar_today')
     })
 
-    it('edit and seasons buttons navigate correctly', () => {
+    it('should navigate correctly when edit and seasons buttons are clicked', () => {
         const routerSpy = spyOn(router, 'navigateByUrl')
 
         const tableRows = fixture.nativeElement.querySelectorAll('tr')
-
         const editButton = tableRows[1].querySelector('[data-testid="edit-button"]')
         const seasonsButton = tableRows[1].querySelector('[data-testid="seasons-button"]')
 
         editButton.click()
-        const call = routerSpy.calls.all()[0].args[0].toString()
-        expect(call).toEqual('/admin/competitions/comp1')
+        const editCall = routerSpy.calls.all()[0].args[0].toString()
+        expect(editCall).toEqual('/admin/competitions/comp1')
 
         seasonsButton.click()
-        const call2 = routerSpy.calls.all()[1].args[0].toString()
-        expect(call2).toEqual('/admin/competitions/comp1/seasons')
+        const seasonsCall = routerSpy.calls.all()[1].args[0].toString()
+        expect(seasonsCall).toEqual('/admin/competitions/comp1/seasons')
     })
 })
