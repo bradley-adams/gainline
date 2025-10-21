@@ -1,14 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { ActivatedRoute, provideRouter } from '@angular/router'
-import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
+import { ActivatedRoute, provideRouter } from '@angular/router'
 import { provideHttpClient } from '@angular/common/http'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { of, throwError } from 'rxjs'
+
 import { CompetitionDetailComponent } from './competition-detail.component'
 import { CompetitionListComponent } from '../competition-list/competition-list.component'
-import { Competition } from '../../types/api'
 import { CompetitionsService } from '../../services/competitions/competitions.service'
-import { of, throwError } from 'rxjs'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { Competition } from '../../types/api'
 
 describe('CompetitionDetailComponent', () => {
     let component: CompetitionDetailComponent
@@ -106,14 +107,14 @@ describe('CompetitionDetailComponent', () => {
             )
         })
 
-        it('should call createCompetition when in create mode and form is valid', () => {
+        it('should create a competition when form is valid', () => {
             component.competitionForm.setValue({ name: 'New Comp' })
             component.submitForm()
             expect(competitionsService.createCompetition).toHaveBeenCalledWith({ name: 'New Comp' })
             expect(notificationService.showSnackbar).toHaveBeenCalledWith('Competition created successfully')
         })
 
-        it('should show error if createCompetition fails', () => {
+        it('should show an error when createCompetition fails', () => {
             const mockError = new Error('Failed')
             competitionsService.createCompetition.and.returnValue(throwError(() => mockError))
 
@@ -136,12 +137,12 @@ describe('CompetitionDetailComponent', () => {
             fixture.detectChanges()
         })
 
-        it('should load competition when in edit mode', () => {
+        it('should load the existing competition in edit mode', () => {
             expect(competitionsService.getCompetition).toHaveBeenCalledWith('123')
             expect(component.competitionForm.value.name).toBe('Competition 1')
         })
 
-        it('should show error if loadCompetition fails', () => {
+        it('should show an error when loading the competition fails', () => {
             const mockError = new Error('Failed')
             competitionsService.getCompetition.and.returnValue(throwError(() => mockError))
 
@@ -153,7 +154,7 @@ describe('CompetitionDetailComponent', () => {
             )
         })
 
-        it('should call updateCompetition when in edit mode and form is valid', () => {
+        it('should update the competition when form is valid', () => {
             component.competitionForm.setValue({ name: 'Updated Comp' })
             component.submitForm()
             expect(competitionsService.updateCompetition).toHaveBeenCalledWith('123', {
@@ -162,7 +163,7 @@ describe('CompetitionDetailComponent', () => {
             expect(notificationService.showSnackbar).toHaveBeenCalledWith('Competition updated successfully')
         })
 
-        it('should show error if updateCompetition fails', () => {
+        it('should show an error when updating the competition fails', () => {
             const mockError = new Error('Failed')
             competitionsService.updateCompetition.and.returnValue(throwError(() => mockError))
 
@@ -176,21 +177,21 @@ describe('CompetitionDetailComponent', () => {
             )
         })
 
-        it('should call deleteCompetition when confirmed', () => {
+        it('should delete the competition when confirmed', () => {
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
             component.confirmDelete()
             expect(competitionsService.deleteCompetition).toHaveBeenCalledWith('123')
             expect(notificationService.showSnackbar).toHaveBeenCalledWith('Competition deleted successfully')
         })
 
-        it('should not call deleteCompetition when cancelled', () => {
+        it('should not delete the competition when cancelled', () => {
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(false) } as any)
             component.confirmDelete()
             expect(competitionsService.deleteCompetition).not.toHaveBeenCalled()
             expect(notificationService.showSnackbar).not.toHaveBeenCalled()
         })
 
-        it('should show error if deleteCompetition fails', () => {
+        it('should show an error when deleting the competition fails', () => {
             const mockError = new Error('Failed')
             competitionsService.deleteCompetition.and.returnValue(throwError(() => mockError))
 
