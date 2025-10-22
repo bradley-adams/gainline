@@ -1,15 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { By } from '@angular/platform-browser'
+import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router'
+import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { of, throwError } from 'rxjs'
 
 import { SeasonListComponent } from './season-list.component'
-import { provideHttpClient } from '@angular/common/http'
-import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router'
 import { SeasonDetailComponent } from '../season-detail/season-detail.component'
 import { SeasonsService } from '../../services/seasons/seasons.service'
-import { Season, Team } from '../../types/api'
-import { of, throwError } from 'rxjs'
-import { By } from '@angular/platform-browser'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { Season, Team } from '../../types/api'
 
 describe('SeasonListComponent', () => {
     let component: SeasonListComponent
@@ -86,7 +85,6 @@ describe('SeasonListComponent', () => {
         await TestBed.configureTestingModule({
             imports: [SeasonListComponent],
             providers: [
-                provideHttpClient(),
                 provideHttpClientTesting(),
                 provideRouter([
                     {
@@ -101,9 +99,7 @@ describe('SeasonListComponent', () => {
                 { provide: SeasonsService, useValue: seasonsService },
                 {
                     provide: ActivatedRoute,
-                    useValue: {
-                        snapshot: { paramMap: convertToParamMap({ 'competition-id': 'comp1' }) }
-                    }
+                    useValue: { snapshot: { paramMap: convertToParamMap({ 'competition-id': 'comp1' }) } }
                 },
                 { provide: NotificationService, useValue: notificationService }
             ]
@@ -119,27 +115,23 @@ describe('SeasonListComponent', () => {
         expect(component).toBeTruthy()
     })
 
-    it('should load seasons into the table', () => {
+    it('should load seasons into the table on init', () => {
         const rows = fixture.nativeElement.querySelectorAll('tr')
         expect(rows.length).toBe(3)
-
         expect(rows[1].textContent).toContain('season1')
         expect(rows[2].textContent).toContain('season2')
     })
 
     it('should display "No seasons found" row when dataSource is empty', () => {
         component.dataSource.data = []
-
         const noDataRow: HTMLElement = fixture.nativeElement.querySelector('tr.mat-row td.mat-cell')
-
         expect(noDataRow).toBeTruthy()
         expect(noDataRow.textContent).toContain('No seasons found')
     })
 
-    it('should show error when seasons fail to load', () => {
+    it('should show error when getSeasons fails', () => {
         const mockError = new Error('Failed')
         seasonsService.getSeasons.and.returnValue(throwError(() => mockError))
-
         component.ngOnInit()
         expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
             'Load Error',
@@ -148,17 +140,17 @@ describe('SeasonListComponent', () => {
         )
     })
 
-    it('should navigate when "Create Season" button is clicked', () => {
+    it('should navigate to create season page when button is clicked', () => {
         const routerSpy = spyOn(router, 'navigateByUrl')
         const button = fixture.debugElement.query(By.css('.actions button'))
         button.nativeElement.click()
         expect(routerSpy).toHaveBeenCalled()
     })
 
-    it('should display table correctly', () => {
+    it('should display season table with correct headers and data', () => {
         const tableRows = fixture.nativeElement.querySelectorAll('tr')
         expect(tableRows.length).toBe(mockSeasons.length + 1)
-        // Header row
+
         const headerRow = tableRows[0]
         expect(headerRow.cells[0].innerHTML).toBe('Season ID')
         expect(headerRow.cells[1].innerHTML).toBe('Starts')
@@ -182,9 +174,8 @@ describe('SeasonListComponent', () => {
         expect(tableRows[2].cells[4].textContent).toBe('editcalendar_today')
     })
 
-    it('edit and games buttons navigate correctly', () => {
+    it('should navigate correctly when edit and games buttons are clicked', () => {
         const routerSpy = spyOn(router, 'navigateByUrl')
-
         const tableRows = fixture.nativeElement.querySelectorAll('tr')
 
         const editButton = tableRows[1].querySelector('[data-testid="edit-button"]')
