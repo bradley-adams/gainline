@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-
-import { SeasonDetailComponent } from './season-detail.component'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
+import { ActivatedRoute, provideRouter, Router } from '@angular/router'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ActivatedRoute, provideRouter, Router } from '@angular/router'
+import { of, throwError } from 'rxjs'
+
+import { SeasonDetailComponent } from './season-detail.component'
 import { SeasonListComponent } from '../season-list/season-list.component'
 import { SeasonsService } from '../../services/seasons/seasons.service'
 import { TeamsService } from '../../services/teams/teams.service'
-import { Season, Team } from '../../types/api'
-import { of, throwError } from 'rxjs'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { Season, Team } from '../../types/api'
 
 describe('SeasonDetailComponent', () => {
     let component: SeasonDetailComponent
@@ -82,11 +82,8 @@ describe('SeasonDetailComponent', () => {
         return {
             snapshot: {
                 paramMap: {
-                    get: (key: string) => {
-                        if (key === 'competition-id') return competitionId
-                        if (key === 'season-id') return seasonId
-                        return null
-                    }
+                    get: (key: string) =>
+                        ({ 'competition-id': competitionId, 'season-id': seasonId })[key] ?? null
                 }
             }
         }
@@ -147,7 +144,7 @@ describe('SeasonDetailComponent', () => {
             expect(component).toBeTruthy()
         })
 
-        it('should mark start_date, start_time, end_date, end_time and rounds as required', () => {
+        it('should require start/end dates, times, and rounds', () => {
             const startControl = component.seasonForm.get('start_date')
             const startTimeControl = component.seasonForm.get('start_time')
             const endControl = component.seasonForm.get('end_date')
@@ -182,7 +179,6 @@ describe('SeasonDetailComponent', () => {
 
         it('should not submit if form is invalid', () => {
             component.submitForm()
-
             expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
                 'Form Error',
                 'Season form is invalid or competition not selected'
@@ -275,7 +271,6 @@ describe('SeasonDetailComponent', () => {
         it('should show error if createSeason fails', () => {
             const mockError = new Error('Failed to create')
             seasonsService.createSeason.and.returnValue(throwError(() => mockError))
-
             component.isEditMode = false
             component.seasonForm.patchValue({
                 start_date: mockSeason1.start_date,
@@ -284,8 +279,8 @@ describe('SeasonDetailComponent', () => {
                 end_time: new Date('1970-01-01T15:30:00Z'),
                 rounds: mockSeason1.rounds
             })
-            component.submitForm()
 
+            component.submitForm()
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Create Error',
                 'Failed to create season',
@@ -295,7 +290,6 @@ describe('SeasonDetailComponent', () => {
 
         it('should navigate after createSeason', () => {
             const routerSpy = spyOn(router, 'navigateByUrl')
-
             component.isEditMode = false
             component.seasonForm.setValue({
                 start_date: mockSeason1.start_date,
@@ -305,8 +299,8 @@ describe('SeasonDetailComponent', () => {
                 rounds: mockSeason1.rounds,
                 teams: ['team1', 'team2']
             })
-            component.submitForm()
 
+            component.submitForm()
             const call = routerSpy.calls.all()[0].args[0].toString()
             expect(call).toEqual('/admin/competitions/comp1/seasons')
         })
@@ -339,21 +333,19 @@ describe('SeasonDetailComponent', () => {
                 created_at: new Date(),
                 updated_at: new Date()
             }
-
-            // Spy getSeason to return our specific test season
             seasonsService.getSeason.and.returnValue(of(seasonFromApi))
             component['loadSeason']('comp1', 'season1')
 
             const formValue = component.seasonForm.value
 
             // Date part
-            expect(formValue.start_date.getFullYear()).toBe(2025)
-            expect(formValue.start_date.getMonth()).toBe(0)
-            expect(formValue.start_date.getDate()).toBe(1)
+            expect(formValue.start_date.getUTCFullYear()).toBe(2025)
+            expect(formValue.start_date.getUTCMonth()).toBe(0)
+            expect(formValue.start_date.getUTCDate()).toBe(1)
 
-            expect(formValue.end_date.getFullYear()).toBe(2026)
-            expect(formValue.end_date.getMonth()).toBe(0)
-            expect(formValue.end_date.getDate()).toBe(1)
+            expect(formValue.end_date.getUTCFullYear()).toBe(2025)
+            expect(formValue.end_date.getUTCMonth()).toBe(11)
+            expect(formValue.end_date.getUTCDate()).toBe(31)
 
             // Time part
             expect(formValue.start_time.getHours()).toBe(new Date(seasonFromApi.start_date).getHours())
@@ -365,9 +357,7 @@ describe('SeasonDetailComponent', () => {
         it('should show error if loadSeason fails', () => {
             const mockError = new Error('Failed to load')
             seasonsService.getSeason.and.returnValue(throwError(() => mockError))
-
             component['loadSeason']('123', '456') // trigger loadSeason again
-
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Load Error',
                 'Failed to load season',
@@ -383,9 +373,7 @@ describe('SeasonDetailComponent', () => {
         it('should show error if loadTeams fails', () => {
             const mockError = new Error('Teams failed')
             teamsService.getTeams.and.returnValue(throwError(() => mockError))
-
             component['loadTeams']()
-
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Load Error',
                 'Failed to load teams',
@@ -402,7 +390,6 @@ describe('SeasonDetailComponent', () => {
             component.isEditMode = true
             component.competitionId = 'comp1'
             ;(component as any).seasonId = 'season1'
-
             component.seasonForm.setValue({
                 start_date: startDate,
                 start_time: startTime,
@@ -416,7 +403,6 @@ describe('SeasonDetailComponent', () => {
             const expectedEnd = (component as any).combineDateAndTime(endDate, endTime)
 
             component.submitForm()
-
             expect(seasonsService.updateSeason).toHaveBeenCalledWith(
                 'comp1',
                 'season1',
@@ -432,12 +418,10 @@ describe('SeasonDetailComponent', () => {
         it('should show error if updateSeason fails', () => {
             const mockError = new Error('Failed to update')
             seasonsService.updateSeason.and.returnValue(throwError(() => mockError))
-
             component.seasonForm.patchValue({
                 teams: [12345] // invalid team to make form valid and API fail
             })
             component.submitForm()
-
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Update Error',
                 'Failed to update season',
@@ -462,10 +446,8 @@ describe('SeasonDetailComponent', () => {
         it('should show error if deleteSeason fails', () => {
             const mockError = new Error('Failed')
             seasonsService.deleteSeason.and.returnValue(throwError(() => mockError))
-
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
             component.confirmDelete()
-
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Delete Error',
                 'Failed to delete season',
