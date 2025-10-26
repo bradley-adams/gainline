@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-
-import { GameListComponent } from './game-list.component'
+import { By } from '@angular/platform-browser'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router'
-import { GameDetailComponent } from '../game-detail/game-detail.component'
-import { Game, GameStatus, Season, Team } from '../../types/api'
-import { GamesService } from '../../services/games/games.service'
 import { of, throwError } from 'rxjs'
-import { By } from '@angular/platform-browser'
+
+import { GameListComponent } from './game-list.component'
+import { GameDetailComponent } from '../game-detail/game-detail.component'
+import { GamesService } from '../../services/games/games.service'
 import { SeasonsService } from '../../services/seasons/seasons.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { Game, GameStatus, Season, Team } from '../../types/api'
 
 describe('GameListComponent', () => {
     let component: GameListComponent
@@ -19,7 +19,6 @@ describe('GameListComponent', () => {
 
     let gamesService: jasmine.SpyObj<GamesService>
     let seasonsService: jasmine.SpyObj<SeasonsService>
-
     let notificationService: jasmine.SpyObj<NotificationService>
 
     const mockTeams: Team[] = [
@@ -100,11 +99,10 @@ describe('GameListComponent', () => {
     beforeEach(async () => {
         gamesService = jasmine.createSpyObj('GamesService', ['getGames'])
         seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeason'])
+        notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
 
         gamesService.getGames.and.returnValue(of(mockGames))
         seasonsService.getSeason.and.returnValue(of(mockSeason))
-
-        notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
 
         await TestBed.configureTestingModule({
             imports: [GameListComponent],
@@ -127,7 +125,10 @@ describe('GameListComponent', () => {
                     provide: ActivatedRoute,
                     useValue: {
                         snapshot: {
-                            paramMap: convertToParamMap({ 'competition-id': 'comp1', 'season-id': 'season1' })
+                            paramMap: convertToParamMap({
+                                'competition-id': 'comp1',
+                                'season-id': 'season1'
+                            })
                         }
                     }
                 },
@@ -158,9 +159,38 @@ describe('GameListComponent', () => {
         expect(rows[2].textContent).toContain('scheduled')
     })
 
+    it('should render the games table with correct headers and rows', () => {
+        const tableRows = fixture.nativeElement.querySelectorAll('tr')
+        expect(tableRows.length).toBe(mockGames.length + 1) // header + 2 games
+
+        const headerRow = tableRows[0]
+        expect(headerRow.cells[0].innerHTML).toBe('Date')
+        expect(headerRow.cells[1].innerHTML).toBe('Home Team')
+        expect(headerRow.cells[2].innerHTML).toBe('Home Score')
+        expect(headerRow.cells[3].innerHTML).toBe('Away Score')
+        expect(headerRow.cells[4].innerHTML).toBe('Away Team')
+        expect(headerRow.cells[5].innerHTML).toBe('Status')
+        expect(headerRow.cells[6].innerHTML).toBe('Actions')
+
+        expect(tableRows[1].cells[0].textContent).toBe('02/02/2025 04:00')
+        expect(tableRows[1].cells[1].textContent).toBe('Team One')
+        expect(tableRows[1].cells[2].textContent).toBe('2')
+        expect(tableRows[1].cells[3].textContent).toBe('1')
+        expect(tableRows[1].cells[4].textContent).toBe('Team Two')
+        expect(tableRows[1].cells[5].textContent).toBe('finished')
+        expect(tableRows[1].cells[6].textContent).toBe('edit')
+
+        expect(tableRows[2].cells[0].textContent).toBe('02/03/2025 04:00')
+        expect(tableRows[2].cells[1].textContent).toBe('Team Three')
+        expect(tableRows[2].cells[2].textContent).toBe('0')
+        expect(tableRows[2].cells[3].textContent).toBe('0')
+        expect(tableRows[2].cells[4].textContent).toBe('Team Four')
+        expect(tableRows[2].cells[5].textContent).toBe('scheduled')
+        expect(tableRows[2].cells[6].textContent).toBe('edit')
+    })
+
     it('should display "No games found" row when dataSource is empty', () => {
         component.dataSource.data = []
-
         const noDataRow: HTMLElement = fixture.nativeElement.querySelector('tr.mat-row td.mat-cell')
 
         expect(noDataRow).toBeTruthy()
@@ -172,6 +202,7 @@ describe('GameListComponent', () => {
         seasonsService.getSeason.and.returnValue(throwError(() => mockError))
 
         component.ngOnInit()
+
         expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
             'Load Error',
             'Failed to load season',
@@ -184,6 +215,7 @@ describe('GameListComponent', () => {
         gamesService.getGames.and.returnValue(throwError(() => mockError))
 
         component.ngOnInit()
+
         expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
             'Load Error',
             'Failed to load games',
@@ -191,49 +223,17 @@ describe('GameListComponent', () => {
         )
     })
 
-    it('create button navigates correctly', () => {
+    it('should navigate to create game page when create button is clicked', () => {
         const routerSpy = spyOn(router, 'navigateByUrl')
 
         const button = fixture.debugElement.query(By.css('.actions button'))
         button.nativeElement.click()
+
         const call = routerSpy.calls.all()[0].args[0].toString()
         expect(call).toEqual('/admin/competitions/comp1/seasons/season1/games/create')
     })
 
-    it('should display table correctly', () => {
-        const tableRows = fixture.nativeElement.querySelectorAll('tr')
-        expect(tableRows.length).toBe(mockGames.length + 1) // header + 2 games
-
-        // Header row
-        const headerRow = tableRows[0]
-        expect(headerRow.cells[0].innerHTML).toBe('Date')
-        expect(headerRow.cells[1].innerHTML).toBe('Home Team')
-        expect(headerRow.cells[2].innerHTML).toBe('Home Score')
-        expect(headerRow.cells[3].innerHTML).toBe('Away Score')
-        expect(headerRow.cells[4].innerHTML).toBe('Away Team')
-        expect(headerRow.cells[5].innerHTML).toBe('Status')
-        expect(headerRow.cells[6].innerHTML).toBe('Actions')
-
-        // First game row
-        expect(tableRows[1].cells[0].textContent).toBe('02/02/2025 04:00')
-        expect(tableRows[1].cells[1].textContent).toBe('Team One')
-        expect(tableRows[1].cells[2].textContent).toBe('2')
-        expect(tableRows[1].cells[3].textContent).toBe('1')
-        expect(tableRows[1].cells[4].textContent).toBe('Team Two')
-        expect(tableRows[1].cells[5].textContent).toBe('finished')
-        expect(tableRows[1].cells[6].textContent).toBe('edit')
-
-        // Second game row
-        expect(tableRows[2].cells[0].textContent).toBe('02/03/2025 04:00')
-        expect(tableRows[2].cells[1].textContent).toBe('Team Three')
-        expect(tableRows[2].cells[2].textContent).toBe('0')
-        expect(tableRows[2].cells[3].textContent).toBe('0')
-        expect(tableRows[2].cells[4].textContent).toBe('Team Four')
-        expect(tableRows[2].cells[5].textContent).toBe('scheduled')
-        expect(tableRows[2].cells[6].textContent).toBe('edit')
-    })
-
-    it('edit buttons navigate correctly', () => {
+    it('should navigate to the correct edit page when edit button is clicked', () => {
         const routerSpy = spyOn(router, 'navigateByUrl')
 
         const editButton = fixture.debugElement.query(By.css('[data-testid="edit-button"]'))
