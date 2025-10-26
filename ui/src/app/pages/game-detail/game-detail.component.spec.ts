@@ -1,15 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { GameDetailComponent } from './game-detail.component'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ActivatedRoute, provideRouter, Router } from '@angular/router'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
-import { GameListComponent } from '../game-list/game-list.component'
-import { SeasonsService } from '../../services/seasons/seasons.service'
-import { GamesService } from '../../services/games/games.service'
-import { Game, GameStatus, Season, Team } from '../../types/api'
+import { ActivatedRoute, provideRouter, Router } from '@angular/router'
 import { of, throwError } from 'rxjs'
+
+import { GameDetailComponent } from './game-detail.component'
+import { GameListComponent } from '../game-list/game-list.component'
+import { GamesService } from '../../services/games/games.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { SeasonsService } from '../../services/seasons/seasons.service'
+import { Game, GameStatus, Season, Team } from '../../types/api'
 
 describe('GameDetailComponent', () => {
     let component: GameDetailComponent
@@ -78,16 +79,12 @@ describe('GameDetailComponent', () => {
         updated_at: new Date('2025-02-21T10:00:00Z')
     }
 
-    function mockRoute(competitionId: string | null, seasonId: string | null, gameId: string | null) {
+    function mockRoute(compId: string | null, seasonId: string | null, gameId: string | null) {
         return {
             snapshot: {
                 paramMap: {
-                    get: (key: string) => {
-                        if (key === 'competition-id') return competitionId
-                        if (key === 'season-id') return seasonId
-                        if (key === 'game-id') return gameId
-                        return null
-                    }
+                    get: (key: string) =>
+                        ({ 'competition-id': compId, 'season-id': seasonId, 'game-id': gameId })[key] ?? null
                 }
             }
         }
@@ -243,7 +240,7 @@ describe('GameDetailComponent', () => {
             expect(component.rounds).toEqual([1, 2, 3])
         })
 
-        it('should have home and away teams populated 2', () => {
+        it('should populate home and away teams', () => {
             component.ngOnInit()
             expect(component.teams.length).toBe(2)
             expect(component.teams[0].name).toBe('Team One')
@@ -301,7 +298,7 @@ describe('GameDetailComponent', () => {
             )
         })
 
-        it('should navigate after createGame', () => {
+        it('should navigate to games list after successful createGame', () => {
             const routerSpy = spyOn(router, 'navigateByUrl')
 
             component.isEditMode = false
@@ -368,8 +365,8 @@ describe('GameDetailComponent', () => {
             const formValue = component.gameForm.value
 
             expect(formValue.date.getFullYear()).toBe(2025)
-            expect(formValue.date.getMonth()).toBe(5)
-            expect(formValue.date.getDate()).toBe(16)
+            expect(formValue.date.getUTCMonth()).toBe(5)
+            expect(formValue.date.getUTCDate()).toBe(15)
 
             expect(formValue.time.getHours()).toBe(new Date(gameFromApi.date).getHours())
             expect(formValue.time.getMinutes()).toBe(new Date(gameFromApi.date).getMinutes())
@@ -401,7 +398,7 @@ describe('GameDetailComponent', () => {
             )
         })
 
-        it('should call updateGame when in edit mode and form is valid', () => {
+        it('should update game when in edit mode and form is valid', () => {
             component.gameForm.patchValue({ round: 5 })
 
             component.submitForm()
