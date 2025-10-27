@@ -1,21 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-
-import { TeamDetailComponent } from './team-detail.component'
+import { ActivatedRoute, provideRouter, Router } from '@angular/router'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { ActivatedRoute, provideRouter, Router } from '@angular/router'
-import { TeamListComponent } from '../team-list/team-list.component'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
-import { TeamsService } from '../../services/teams/teams.service'
-import { Team } from '../../types/api'
 import { of, throwError } from 'rxjs'
+
+import { TeamDetailComponent } from './team-detail.component'
+import { TeamListComponent } from '../team-list/team-list.component'
+import { TeamsService } from '../../services/teams/teams.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { Team } from '../../types/api'
 
 describe('TeamDetailComponent', () => {
     let component: TeamDetailComponent
     let fixture: ComponentFixture<TeamDetailComponent>
     let router: Router
-
     let teamsService: jasmine.SpyObj<TeamsService>
     let notificationService: jasmine.SpyObj<NotificationService>
 
@@ -122,7 +121,7 @@ describe('TeamDetailComponent', () => {
             expect(locationControl?.valid).toBeTrue()
         })
 
-        it('should not submit if form is invalid', () => {
+        it('should not submit form if invalid', () => {
             component.submitForm()
             expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
                 'Form Error',
@@ -130,14 +129,9 @@ describe('TeamDetailComponent', () => {
             )
         })
 
-        it('should call createTeam when in create mode and form is valid', () => {
+        it('should call createTeam when form is valid in create mode', () => {
             component.isEditMode = false
-            component.teamForm.setValue({
-                name: 'Team One',
-                abbreviation: 'T1',
-                location: 'City A'
-            })
-
+            component.teamForm.setValue({ name: 'Team One', abbreviation: 'T1', location: 'City A' })
             component.submitForm()
 
             expect(teamsService.createTeam).toHaveBeenCalledWith({
@@ -147,16 +141,12 @@ describe('TeamDetailComponent', () => {
             })
         })
 
-        it('should show error if createTeam fails', () => {
+        it('should show error notification if createTeam fails', () => {
             const mockError = new Error('Failed to create')
             teamsService.createTeam.and.returnValue(throwError(() => mockError))
 
             component.isEditMode = false
-            component.teamForm.patchValue({
-                name: 'Team One',
-                abbreviation: 'T1',
-                location: 'City A'
-            })
+            component.teamForm.patchValue({ name: 'Team One', abbreviation: 'T1', location: 'City A' })
             component.submitForm()
 
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
@@ -166,15 +156,10 @@ describe('TeamDetailComponent', () => {
             )
         })
 
-        it('should navigate after createTeam', () => {
+        it('should navigate to team list after successful createTeam', () => {
             const routerSpy = spyOn(router, 'navigateByUrl')
-
             component.isEditMode = false
-            component.teamForm.setValue({
-                name: 'Team One',
-                abbreviation: 'T1',
-                location: 'City A'
-            })
+            component.teamForm.setValue({ name: 'Team One', abbreviation: 'T1', location: 'City A' })
             component.submitForm()
 
             const call = routerSpy.calls.all()[0].args[0].toString()
@@ -190,9 +175,8 @@ describe('TeamDetailComponent', () => {
             fixture.detectChanges()
         })
 
-        it('should load team when in edit mode', () => {
+        it('should load team data when in edit mode', () => {
             expect(teamsService.getTeam).toHaveBeenCalledWith('team1')
-
             expect(component.teamForm.value).toEqual({
                 name: mockTeam1.name,
                 abbreviation: mockTeam1.abbreviation,
@@ -200,12 +184,11 @@ describe('TeamDetailComponent', () => {
             })
         })
 
-        it('should show error if loadTeam fails', () => {
+        it('should show error notification if loading team fails', () => {
             const mockError = new Error('Failed to load')
             teamsService.getTeam.and.returnValue(throwError(() => mockError))
 
             component['loadTeam']('123')
-
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Load Error',
                 'Failed to load team',
@@ -213,9 +196,8 @@ describe('TeamDetailComponent', () => {
             )
         })
 
-        it('should call updateTeam when in edit mode and form is valid', () => {
+        it('should call updateTeam with form data when valid', () => {
             component.teamForm.patchValue({ name: 'test' })
-
             component.submitForm()
 
             expect(teamsService.updateTeam).toHaveBeenCalledWith('team1', {
@@ -224,7 +206,8 @@ describe('TeamDetailComponent', () => {
                 location: mockTeam1.location
             })
         })
-        it('should show error if updateTeam fails', () => {
+
+        it('should show error notification if updateTeam fails', () => {
             const mockError = new Error('Failed to update')
             teamsService.updateTeam.and.returnValue(throwError(() => mockError))
 
@@ -238,27 +221,26 @@ describe('TeamDetailComponent', () => {
             )
         })
 
-        it('should call deleteTeam when confirmed', () => {
+        it('should call deleteTeam and show snackbar when deletion is confirmed', () => {
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
             component.confirmDelete()
             expect(teamsService.deleteTeam).toHaveBeenCalledWith('team1')
             expect(notificationService.showSnackbar).toHaveBeenCalledWith('Team deleted successfully')
         })
 
-        it('should not call deleteTeam when cancelled', () => {
+        it('should not call deleteTeam or show snackbar when deletion is cancelled', () => {
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(false) } as any)
             component.confirmDelete()
             expect(teamsService.deleteTeam).not.toHaveBeenCalled()
             expect(notificationService.showSnackbar).not.toHaveBeenCalled()
         })
 
-        it('should show error if deleteTeam fails', () => {
+        it('should show error notification if deleteTeam fails', () => {
             const mockError = new Error('Failed')
             teamsService.deleteTeam.and.returnValue(throwError(() => mockError))
-
             notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
-            component.confirmDelete()
 
+            component.confirmDelete()
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Delete Error',
                 'Failed to delete team',

@@ -1,23 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing'
-
-import { TeamListComponent } from './team-list.component'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
-import { provideRouter, Router } from '@angular/router'
-import { TeamDetailComponent } from '../team-detail/team-detail.component'
-import { Team } from '../../types/api'
-import { TeamsService } from '../../services/teams/teams.service'
-import { of, throwError } from 'rxjs'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { By } from '@angular/platform-browser'
+import { provideRouter, Router } from '@angular/router'
+import { of, throwError } from 'rxjs'
+
+import { TeamListComponent } from './team-list.component'
+import { TeamDetailComponent } from '../team-detail/team-detail.component'
+import { TeamsService } from '../../services/teams/teams.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { Team } from '../../types/api'
 
 describe('TeamListComponent', () => {
     let component: TeamListComponent
     let fixture: ComponentFixture<TeamListComponent>
     let router: Router
-
     let teamsService: jasmine.SpyObj<TeamsService>
-
     let notificationService: jasmine.SpyObj<NotificationService>
 
     const mockTeams: Team[] = [
@@ -91,9 +89,9 @@ describe('TeamListComponent', () => {
         expect(component).toBeTruthy()
     })
 
-    it('should load games into the table', () => {
+    it('should load teams into the table', () => {
         const rows = fixture.nativeElement.querySelectorAll('tr')
-        expect(rows.length).toBe(5)
+        expect(rows.length).toBe(mockTeams.length + 1) // header + teams
 
         // first team row
         expect(rows[1].textContent).toContain(mockTeams[0].name)
@@ -110,14 +108,14 @@ describe('TeamListComponent', () => {
 
     it('should display "No teams found" row when dataSource is empty', () => {
         component.dataSource.data = []
+        fixture.detectChanges()
 
         const noDataRow: HTMLElement = fixture.nativeElement.querySelector('tr.mat-row td.mat-cell')
-
         expect(noDataRow).toBeTruthy()
         expect(noDataRow.textContent).toContain('No teams found')
     })
 
-    it('should show error when teams fail to load', () => {
+    it('should show error when loading teams fails', () => {
         const mockError = new Error('Failed')
         teamsService.getTeams.and.returnValue(throwError(() => mockError))
 
@@ -129,18 +127,18 @@ describe('TeamListComponent', () => {
         )
     })
 
-    it('should navigate when "Create Team" button is clicked', () => {
+    it('should navigate to create team page when "Create Team" button is clicked', () => {
         const routerSpy = spyOn(router, 'navigateByUrl')
         fixture.detectChanges()
 
         const button = fixture.debugElement.query(By.css('.actions button'))
-
         button.nativeElement.click()
+
         const call = routerSpy.calls.all()[0].args[0].toString()
         expect(call).toEqual('/admin/teams/create')
     })
 
-    it('should display table correctly', () => {
+    it('should display team table with correct headers and rows', () => {
         const tableRows = fixture.nativeElement.querySelectorAll('tr')
         expect(tableRows.length).toBe(mockTeams.length + 1)
 
@@ -165,12 +163,12 @@ describe('TeamListComponent', () => {
         expect(tableRows[2].cells[4].textContent).toBe('edit')
     })
 
-    it('edit buttons navigate correctly', () => {
+    it('should navigate correctly when edit button is clicked', () => {
         const routerSpy = spyOn(router, 'navigateByUrl')
 
         const editButton = fixture.debugElement.query(By.css('[data-testid="edit-button"]'))
-
         editButton.nativeElement.click()
+
         const call = routerSpy.calls.all()[0].args[0].toString()
         expect(call).toEqual('/admin/teams/team1')
     })
