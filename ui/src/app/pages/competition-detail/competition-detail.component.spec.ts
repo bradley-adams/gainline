@@ -99,12 +99,32 @@ describe('CompetitionDetailComponent', () => {
             expect(control?.valid).toBeTrue()
         })
 
-        it('should not submit if form is invalid', () => {
+        it('should mark name as invalid if too short', () => {
+            const control = component.competitionForm.get('name')
+            control?.setValue('Te') // 2 characters
+            expect(control?.hasError('minlength')).toBeTrue()
+            expect(control?.valid).toBeFalse()
+        })
+
+        it('should mark name as invalid if too long', () => {
+            const control = component.competitionForm.get('name')
+            control?.setValue('A'.repeat(101)) // 101 characters
+            expect(control?.hasError('maxlength')).toBeTrue()
+            expect(control?.valid).toBeFalse()
+        })
+
+        it('should mark name as invalid if it contains invalid characters', () => {
+            const control = component.competitionForm.get('name')
+            control?.setValue('@@!!') // invalid chars
+            expect(control?.hasError('pattern')).toBeTrue()
+            expect(control?.valid).toBeFalse()
+        })
+
+        it('should not submit if name is too short', () => {
+            component.competitionForm.setValue({ name: 'Te' })
             component.submitForm()
-            expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
-                'Form Error',
-                'Competition form is invalid'
-            )
+            expect(competitionsService.createCompetition).not.toHaveBeenCalled()
+            expect(notificationService.showWarnAndLog).not.toHaveBeenCalled() // because frontend validation shows errors
         })
 
         it('should create a competition when form is valid', () => {

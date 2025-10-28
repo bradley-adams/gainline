@@ -5,13 +5,23 @@
 
 <div class="container">
     <form [formGroup]="competitionForm" (ngSubmit)="submitForm()">
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" class="full-width">
             <mat-label>Name</mat-label>
             <input matInput formControlName="name" />
-            <mat-error *ngIf="competitionForm.get('name')?.hasError('required')">Name is required</mat-error>
+
+            <mat-error *ngIf="competitionForm.get('name')?.errors as errors">
+                <ng-container *ngIf="errors['required']">Name is required</ng-container>
+                <ng-container *ngIf="errors['minlength']">
+                    Name must be at least 3 characters long
+                </ng-container>
+                <ng-container *ngIf="errors['maxlength']">Name cannot exceed 100 characters</ng-container>
+                <ng-container *ngIf="!errors['minlength'] && !errors['maxlength'] && errors['pattern']">
+                    Only letters, numbers, spaces, periods, commas, apostrophes, and hyphens are allowed
+                </ng-container>
+            </mat-error>
         </mat-form-field>
 
-        <div class="flex-row">
+        <div class="actions">
             <button type="submit" mat-flat-button>SAVE</button>
             <button class="accent" mat-stroked-button [routerLink]="['/admin/competitions']">CANCEL</button>
             <button

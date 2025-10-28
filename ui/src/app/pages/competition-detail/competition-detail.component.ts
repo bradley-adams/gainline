@@ -31,7 +31,15 @@ export class CompetitionDetailComponent {
         this.isEditMode = !!this.competitionId
 
         this.competitionForm = this.formBuilder.group({
-            name: ['', Validators.required]
+            name: [
+                '',
+                [
+                    Validators.required,
+                    Validators.minLength(3),
+                    Validators.maxLength(100),
+                    Validators.pattern(/^[A-Za-z0-9 .,'-]+$/)
+                ]
+            ]
         })
 
         if (this.isEditMode && this.competitionId) {
@@ -41,7 +49,7 @@ export class CompetitionDetailComponent {
 
     submitForm(): void {
         if (this.competitionForm.invalid) {
-            this.notificationService.showWarnAndLog('Form Error', 'Competition form is invalid')
+            this.competitionForm.markAllAsTouched()
             return
         }
 
