@@ -61,22 +61,37 @@ export class SeasonDetailComponent implements OnInit {
     }
 
     private initForm(): void {
-        this.seasonForm = this.formBuilder.group({
-            start_date: [null, Validators.required],
-            start_time: [null, Validators.required],
-            end_date: [null, Validators.required],
-            end_time: [null, Validators.required],
-            rounds: ['', [Validators.required, Validators.pattern(/^(?:[1-9]|[1-4][0-9]|50)$/)]],
-            teams: [[]]
-        })
+        this.seasonForm = this.formBuilder.group(
+            {
+                start_date: [null, Validators.required],
+                start_time: [null, Validators.required],
+                end_date: [null, Validators.required],
+                end_time: [null, Validators.required],
+                rounds: [
+                    '',
+                    [
+                        Validators.required,
+                        Validators.min(1),
+                        Validators.max(52),
+                        Validators.pattern(/^(?:[1-9]|[1-4][0-9]|50)$/)
+                    ]
+                ],
+                teams: [[], [Validators.required, this.minMaxArrayValidator(2, this.teams.length)]]
+            },
+            {
+                validators: this.endDateAfterStartDateValidator()
+            }
+        )
     }
 
     submitForm(): void {
-        if (this.seasonForm.invalid || !this.competitionId) {
-            this.notificationService.showWarnAndLog(
-                'Form Error',
-                'Season form is invalid or competition not selected'
-            )
+        if (!this.competitionId) {
+            this.notificationService.showWarnAndLog('Form Error', 'No competition selected')
+            return
+        }
+
+        if (this.seasonForm.invalid) {
+            this.seasonForm.markAllAsTouched()
             return
         }
 
@@ -126,7 +141,19 @@ export class SeasonDetailComponent implements OnInit {
 
     private loadTeams(): void {
         this.teamsService.getTeams().subscribe({
-            next: (teams) => (this.teams = teams),
+            next: (teams) => {
+                this.teams = teams
+
+                // Update teams control validator to reflect the real max
+                const teamsControl = this.seasonForm.get('teams')
+                if (teamsControl) {
+                    teamsControl.setValidators([
+                        Validators.required,
+                        this.minMaxArrayValidator(2, this.teams.length)
+                    ])
+                    teamsControl.updateValueAndValidity()
+                }
+            },
             error: (err) => {
                 this.notificationService.showErrorAndLog('Load Error', 'Failed to load teams', err)
             }
@@ -187,5 +214,44 @@ export class SeasonDetailComponent implements OnInit {
                 this.notificationService.showErrorAndLog('Delete Error', 'Failed to delete season', err)
             }
         })
+    }
+
+    private endDateAfterStartDateValidator() {
+        return (group: FormGroup) => {
+            const startDate = group.get('start_date')?.value
+            const startTime = group.get('start_time')?.value
+            const endDate = group.get('end_date')?.value
+            const endTime = group.get('end_time')?.value
+
+            if (!startDate || !startTime || !endDate || !endTime) return null
+
+            const start = this.combineDateAndTime(startDate, startTime)
+            const end = this.combineDateAndTime(endDate, endTime)
+
+            if (end <= start) {
+                group.get('end_date')?.setErrors({ endBeforeStart: true })
+                group.get('end_time')?.setErrors({ endBeforeStart: true })
+            } else {
+                ;['end_date', 'end_time'].forEach((field) => {
+                    const errors = group.get(field)?.errors
+                    if (errors) {
+                        delete errors['endBeforeStart']
+                        if (Object.keys(errors).length === 0) group.get(field)?.setErrors(null)
+                    }
+                })
+            }
+
+            return null
+        }
+    }
+
+    private minMaxArrayValidator(min: number, max: number) {
+        return (control: any) => {
+            const value = control.value
+            if (!Array.isArray(value)) return { invalidArray: true }
+            if (value.length < min) return { minArray: true }
+            if (value.length > max) return { maxArray: true }
+            return null
+        }
     }
 }

@@ -144,6 +144,50 @@ describe('SeasonDetailComponent', () => {
             expect(component).toBeTruthy()
         })
 
+        it('should mark teams invalid if fewer than 2 selected', () => {
+            const teams = component.seasonForm.get('teams')
+            teams?.setValue([])
+            expect(teams?.valid).toBeFalse()
+            teams?.setValue(['team1'])
+            expect(teams?.valid).toBeFalse()
+            teams?.setValue(['team1', 'team2'])
+            expect(teams?.valid).toBeTrue()
+        })
+
+        it('should mark end_date and end_time invalid if end is before start', () => {
+            const startDate = new Date('2025-01-02')
+            const startTime = new Date('1970-01-01T10:00:00')
+            const endDate = new Date('2025-01-01')
+            const endTime = new Date('1970-01-01T09:00:00')
+
+            component.seasonForm.setValue({
+                start_date: startDate,
+                start_time: startTime,
+                end_date: endDate,
+                end_time: endTime,
+                rounds: 10,
+                teams: ['team1', 'team2']
+            })
+
+            expect(component.seasonForm.valid).toBeFalse()
+            expect(component.seasonForm.get('end_date')?.errors?.['endBeforeStart']).toBeTrue()
+            expect(component.seasonForm.get('end_time')?.errors?.['endBeforeStart']).toBeTrue()
+        })
+
+        it('should mark teams invalid if more than max available', () => {
+            const max = component.teams.length
+            component.seasonForm.get('teams')?.setValue(component.teams.map((t) => t.id).concat('extraTeam'))
+            expect(component.seasonForm.get('teams')?.valid).toBeFalse()
+        })
+
+        it('should combine date and time correctly from string time', () => {
+            const date = new Date('2025-01-01')
+            const time = '13:45'
+            const combined = (component as any).combineDateAndTime(date, time)
+            expect(combined.getHours()).toBe(13)
+            expect(combined.getMinutes()).toBe(45)
+        })
+
         it('should require start/end dates, times, and rounds', () => {
             const startControl = component.seasonForm.get('start_date')
             const startTimeControl = component.seasonForm.get('start_time')
@@ -177,12 +221,20 @@ describe('SeasonDetailComponent', () => {
             expect(roundsControl?.valid).toBeTrue()
         })
 
-        it('should not submit if form is invalid', () => {
+        it('should not call createSeason or updateSeason if form is invalid', () => {
+            component.seasonForm.setValue({
+                start_date: '',
+                start_time: null,
+                end_date: '',
+                end_time: null,
+                rounds: '',
+                teams: []
+            })
+            component.isEditMode = false
             component.submitForm()
-            expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
-                'Form Error',
-                'Season form is invalid or competition not selected'
-            )
+
+            expect(seasonsService.createSeason).not.toHaveBeenCalled()
+            expect(seasonsService.updateSeason).not.toHaveBeenCalled()
         })
 
         it('should combine start_date and start_time correctly on submit', () => {
@@ -192,13 +244,14 @@ describe('SeasonDetailComponent', () => {
             const endTime = new Date('1970-01-01T15:45:00')
 
             component.isEditMode = false
+            component.competitionId = 'comp1'
             component.seasonForm.setValue({
                 start_date: startDate,
                 start_time: startTime,
                 end_date: endDate,
                 end_time: endTime,
-                rounds: 5,
-                teams: ['team1']
+                rounds: 20,
+                teams: ['team1', 'team2']
             })
 
             const expectedStart = (component as any).combineDateAndTime(startDate, startTime)
@@ -232,7 +285,7 @@ describe('SeasonDetailComponent', () => {
             component.submitForm()
             expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
                 'Form Error',
-                'Season form is invalid or competition not selected'
+                'No competition selected'
             )
         })
 
@@ -277,7 +330,8 @@ describe('SeasonDetailComponent', () => {
                 start_time: new Date('1970-01-01T13:30:00Z'),
                 end_date: mockSeason1.end_date,
                 end_time: new Date('1970-01-01T15:30:00Z'),
-                rounds: mockSeason1.rounds
+                rounds: mockSeason1.rounds,
+                teams: ['team1', 'team2']
             })
 
             component.submitForm()
@@ -419,7 +473,12 @@ describe('SeasonDetailComponent', () => {
             const mockError = new Error('Failed to update')
             seasonsService.updateSeason.and.returnValue(throwError(() => mockError))
             component.seasonForm.patchValue({
-                teams: [12345] // invalid team to make form valid and API fail
+                start_date: mockSeason1.start_date,
+                start_time: new Date('1970-01-01T13:30:00Z'),
+                end_date: mockSeason1.end_date,
+                end_time: new Date('1970-01-01T15:30:00Z'),
+                rounds: mockSeason1.rounds,
+                teams: ['team1', 'team2']
             })
             component.submitForm()
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
