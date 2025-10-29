@@ -4,85 +4,106 @@
 <h1 *ngIf="isEditMode">Update Season</h1>
 
 <div class="container">
-    <form [formGroup]="seasonForm" (ngSubmit)="submitForm()">
-        <mat-form-field appearance="outline">
-            <mat-label>Start Date</mat-label>
-            <input
-                matInput
-                [matDatepicker]="startDatePicker"
-                formControlName="start_date"
-                placeholder="Choose start date" />
-            <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #startDatePicker></mat-datepicker>
-            <mat-error *ngIf="seasonForm.get('start_date')?.hasError('required')">
-                Start date is required
-            </mat-error>
-        </mat-form-field>
+    <form [formGroup]="seasonForm" (ngSubmit)="submitForm()" class="season-form">
+        <div class="form-row">
+            <mat-form-field appearance="outline" class="wide-field">
+                <mat-label>Start Date</mat-label>
+                <input
+                    matInput
+                    [matDatepicker]="startDatePicker"
+                    formControlName="start_date"
+                    placeholder="Choose start date" />
+                <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #startDatePicker></mat-datepicker>
+                <mat-error *ngIf="seasonForm.get('start_date')?.hasError('required')">
+                    Start date is required
+                </mat-error>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-            <mat-label>Start Time</mat-label>
-            <input
-                matInput
-                [matTimepicker]="startTimePicker"
-                formControlName="start_time"
-                placeholder="Choose start time" />
-            <mat-timepicker-toggle matSuffix [for]="startTimePicker"></mat-timepicker-toggle>
-            <mat-timepicker #startTimePicker [interval]="'1h'"></mat-timepicker>
-            <mat-error *ngIf="seasonForm.get('start_time')?.hasError('required')">
-                Start time is required
-            </mat-error>
-        </mat-form-field>
+            <mat-form-field appearance="outline" class="wide-field">
+                <mat-label>Start Time</mat-label>
+                <input
+                    matInput
+                    [matTimepicker]="startTimePicker"
+                    formControlName="start_time"
+                    placeholder="Choose start time" />
+                <mat-timepicker-toggle matSuffix [for]="startTimePicker"></mat-timepicker-toggle>
+                <mat-timepicker #startTimePicker [interval]="'1h'"></mat-timepicker>
+                <mat-error *ngIf="seasonForm.get('start_time')?.hasError('required')">
+                    Start time is required
+                </mat-error>
+            </mat-form-field>
+        </div>
 
-        <mat-form-field appearance="outline">
-            <mat-label>End Date</mat-label>
-            <input
-                matInput
-                [matDatepicker]="endDatePicker"
-                formControlName="end_date"
-                placeholder="Choose end date" />
-            <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #endDatePicker></mat-datepicker>
-            <mat-error *ngIf="seasonForm.get('end_date')?.hasError('required')">
-                End date is required
-            </mat-error>
-        </mat-form-field>
+        <div class="form-row">
+            <mat-form-field appearance="outline" class="wide-field">
+                <mat-label>End Date</mat-label>
+                <input
+                    matInput
+                    [matDatepicker]="endDatePicker"
+                    formControlName="end_date"
+                    placeholder="Choose end date" />
+                <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+                <mat-datepicker #endDatePicker></mat-datepicker>
+                <mat-error *ngIf="seasonForm.get('end_date')?.hasError('required')">
+                    End date is required
+                </mat-error>
+                <mat-error *ngIf="seasonForm.get('end_date')?.hasError('endBeforeStart')">
+                    End date must be after start date
+                </mat-error>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-            <mat-label>End Time</mat-label>
-            <input
-                matInput
-                [matTimepicker]="endTimePicker"
-                formControlName="end_time"
-                placeholder="Choose end time" />
-            <mat-timepicker-toggle matSuffix [for]="endTimePicker"></mat-timepicker-toggle>
-            <mat-timepicker #endTimePicker [interval]="'1h'"></mat-timepicker>
-            <mat-error *ngIf="seasonForm.get('end_time')?.hasError('required')">
-                End time is required
-            </mat-error>
-        </mat-form-field>
+            <mat-form-field appearance="outline" class="wide-field">
+                <mat-label>End Time</mat-label>
+                <input
+                    matInput
+                    [matTimepicker]="endTimePicker"
+                    formControlName="end_time"
+                    placeholder="Choose end time" />
+                <mat-timepicker-toggle matSuffix [for]="endTimePicker"></mat-timepicker-toggle>
+                <mat-timepicker #endTimePicker [interval]="'1h'"></mat-timepicker>
+                <mat-error *ngIf="seasonForm.get('end_time')?.hasError('required')">
+                    End time is required
+                </mat-error>
+            </mat-form-field>
+        </div>
 
-        <mat-form-field appearance="outline">
-            <mat-label>Rounds</mat-label>
-            <input
-                matInput
-                type="text"
-                formControlName="rounds"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                placeholder="Enter rounds" />
-            <mat-error *ngIf="seasonForm.get('rounds')?.hasError('pattern')">
-                Please enter a valid number between 1 and 50
-            </mat-error>
-        </mat-form-field>
+        <div class="form-row">
+            <mat-form-field appearance="outline" class="wide-field">
+                <mat-label>Rounds</mat-label>
+                <input
+                    matInput
+                    type="text"
+                    formControlName="rounds"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    placeholder="Enter number of rounds" />
+                <mat-error *ngIf="seasonForm.get('rounds')?.hasError('pattern')">
+                    Please enter a whole number only
+                </mat-error>
+                <mat-error *ngIf="seasonForm.get('rounds')?.hasError('min')">
+                    Minimum number of rounds is 1
+                </mat-error>
+                <mat-error *ngIf="seasonForm.get('rounds')?.hasError('max')">
+                    Maximum number of rounds is 52
+                </mat-error>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-            <mat-label>Teams</mat-label>
-            <mat-select formControlName="teams" multiple>
-                <mat-option *ngFor="let team of teams" [value]="team.id">
-                    {{ team.name }}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
+            <mat-form-field appearance="outline" class="wide-field">
+                <mat-label>Teams</mat-label>
+                <mat-select formControlName="teams" multiple>
+                    <mat-option *ngFor="let team of teams" [value]="team.id">
+                        {{ team.name }}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="seasonForm.get('teams')?.hasError('minArray')">
+                    At least 2 teams are required
+                </mat-error>
+                <mat-error *ngIf="seasonForm.get('teams')?.hasError('maxArray')">
+                    Maximum of teams allowed
+                </mat-error>
+            </mat-form-field>
+        </div>
 
         <div class="flex-row">
             <button type="submit" mat-flat-button color="primary">SAVE</button>
