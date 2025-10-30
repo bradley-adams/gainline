@@ -68,14 +68,16 @@ export class GameDetailComponent {
     }
 
     private initForm(): void {
+        const baseScoreValidators = [Validators.pattern(/^[0-9]+$/), Validators.min(0)]
+
         this.gameForm = this.fb.group({
             round: [null, Validators.required],
             date: [null, Validators.required],
             time: [null, Validators.required],
             home_team_id: [null, Validators.required],
             away_team_id: [null, Validators.required],
-            home_score: [null],
-            away_score: [null],
+            home_score: [null, baseScoreValidators],
+            away_score: [null, baseScoreValidators],
             status: ['scheduled', Validators.required]
         })
 
@@ -83,14 +85,14 @@ export class GameDetailComponent {
             const homeScoreCtrl = this.gameForm.get('home_score')
             const awayScoreCtrl = this.gameForm.get('away_score')
 
-            const baseValidators = [Validators.pattern(/^[0-9]+$/)]
-
             if (status === 'playing' || status === 'finished') {
-                homeScoreCtrl?.setValidators([...baseValidators, Validators.required])
-                awayScoreCtrl?.setValidators([...baseValidators, Validators.required])
+                homeScoreCtrl?.setValidators([...baseScoreValidators, Validators.required])
+                awayScoreCtrl?.setValidators([...baseScoreValidators, Validators.required])
             } else {
-                homeScoreCtrl?.setValidators(baseValidators)
-                awayScoreCtrl?.setValidators(baseValidators)
+                homeScoreCtrl?.setValidators(baseScoreValidators)
+                awayScoreCtrl?.setValidators(baseScoreValidators)
+                homeScoreCtrl?.reset()
+                awayScoreCtrl?.reset()
             }
 
             homeScoreCtrl?.updateValueAndValidity()
@@ -99,12 +101,17 @@ export class GameDetailComponent {
     }
 
     submitForm(): void {
-        if (this.gameForm.invalid || !this.competitionId || !this.seasonId) {
+        if (!this.competitionId || !this.seasonId) {
             console.error('game form is invalid')
             this.notificationService.showWarnAndLog(
                 'Form Error',
                 'Game form is invalid or competition/season not selected'
             )
+            return
+        }
+
+        if (this.gameForm.invalid) {
+            this.gameForm.markAllAsTouched()
             return
         }
 
