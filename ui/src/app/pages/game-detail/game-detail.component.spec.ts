@@ -11,6 +11,7 @@ import { GamesService } from '../../services/games/games.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
 import { SeasonsService } from '../../services/seasons/seasons.service'
 import { Game, GameStatus, Season, Team } from '../../types/api'
+import { Validators } from '@angular/forms'
 
 describe('GameDetailComponent', () => {
     let component: GameDetailComponent
@@ -184,8 +185,10 @@ describe('GameDetailComponent', () => {
             expect(statusControl?.valid).toBeTrue()
         })
 
-        it('should not submit if form is invalid', () => {
+        it('should show warning if competitionId or seasonId is missing', () => {
+            component.competitionId = null
             component.submitForm()
+
             expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
                 'Form Error',
                 'Game form is invalid or competition/season not selected'
@@ -247,6 +250,53 @@ describe('GameDetailComponent', () => {
             expect(component.teams[1].name).toBe('Team Two')
         })
 
+        it('should remove required validator from scores when status is "scheduled"', () => {
+            const homeScoreCtrl = component.gameForm.get('home_score')!
+            const awayScoreCtrl = component.gameForm.get('away_score')!
+
+            component.gameForm.patchValue({ status: 'playing' })
+            expect(homeScoreCtrl.hasValidator(Validators.required)).toBeTrue()
+            expect(awayScoreCtrl.hasValidator(Validators.required)).toBeTrue()
+
+            component.gameForm.patchValue({ status: 'scheduled' })
+            expect(homeScoreCtrl.hasValidator(Validators.required)).toBeFalse()
+            expect(awayScoreCtrl.hasValidator(Validators.required)).toBeFalse()
+        })
+
+        it('should add required validator when status is "playing" or "finished"', () => {
+            const homeScoreCtrl = component.gameForm.get('home_score')!
+            const awayScoreCtrl = component.gameForm.get('away_score')!
+
+            component.gameForm.patchValue({ status: 'scheduled' })
+            expect(homeScoreCtrl.hasValidator(Validators.required)).toBeFalse()
+
+            component.gameForm.patchValue({ status: 'playing' })
+            expect(homeScoreCtrl.hasValidator(Validators.required)).toBeTrue()
+
+            component.gameForm.patchValue({ status: 'finished' })
+            expect(awayScoreCtrl.hasValidator(Validators.required)).toBeTrue()
+        })
+
+        it('should not include scores when status is "scheduled"', () => {
+            component.isEditMode = false
+            component.gameForm.patchValue({
+                round: 1,
+                date: new Date('2025-01-01T00:00:00'),
+                time: new Date('2025-01-01T13:30:00'),
+                home_team_id: 'team1',
+                away_team_id: 'team2',
+                home_score: 5,
+                away_score: 4,
+                status: 'scheduled'
+            })
+
+            component.submitForm()
+
+            const calledGame = gamesService.createGame.calls.mostRecent().args[2]
+            expect(calledGame.home_score).toBeNull()
+            expect(calledGame.away_score).toBeNull()
+        })
+
         it('should call createGame when in create mode and form is valid', () => {
             component.isEditMode = false
             component.gameForm.setValue({
@@ -257,7 +307,7 @@ describe('GameDetailComponent', () => {
                 away_team_id: mockGame1.away_team_id,
                 home_score: 10,
                 away_score: 5,
-                status: GameStatus.SCHEDULED
+                status: GameStatus.FINISHED
             })
 
             component.submitForm()
@@ -269,7 +319,7 @@ describe('GameDetailComponent', () => {
                 away_team_id: mockGame1.away_team_id,
                 home_score: 10,
                 away_score: 5,
-                status: GameStatus.SCHEDULED,
+                status: GameStatus.FINISHED,
                 season_id: mockGame1.season_id
             })
         })
