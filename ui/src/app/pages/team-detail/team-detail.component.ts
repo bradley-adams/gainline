@@ -30,9 +30,25 @@ export class TeamDetailComponent {
         this.isEditMode = !!this.teamId
 
         this.teamForm = this.formBuilder.group({
-            name: ['', Validators.required],
-            abbreviation: ['', Validators.required],
-            location: ['', Validators.required]
+            name: [
+                '',
+                [
+                    Validators.required,
+                    Validators.minLength(3),
+                    Validators.maxLength(100),
+                    Validators.pattern(/^[A-Za-z0-9 .,'-]+$/)
+                ]
+            ],
+            abbreviation: [
+                '',
+                [
+                    Validators.required,
+                    Validators.minLength(2),
+                    Validators.maxLength(4),
+                    Validators.pattern(/^[A-Za-z]+$/)
+                ]
+            ],
+            location: ['', [Validators.minLength(2), Validators.maxLength(100)]]
         })
 
         if (this.isEditMode && this.teamId) {
@@ -42,7 +58,7 @@ export class TeamDetailComponent {
 
     submitForm(): void {
         if (this.teamForm.invalid) {
-            this.notificationService.showWarnAndLog('Form Error', 'Team form is invalid')
+            this.teamForm.markAllAsTouched()
             return
         }
 
