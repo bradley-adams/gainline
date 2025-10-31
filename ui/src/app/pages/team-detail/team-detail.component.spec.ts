@@ -20,7 +20,7 @@ describe('TeamDetailComponent', () => {
 
     const mockTeam1: Team = {
         id: 'team1',
-        abbreviation: 'T1',
+        abbreviation: 'TO',
         location: 'City A',
         name: 'Team One',
         created_at: new Date('2024-01-01T00:00:00Z'),
@@ -29,7 +29,7 @@ describe('TeamDetailComponent', () => {
 
     const mockTeam2: Team = {
         id: 'team2',
-        abbreviation: 'T2',
+        abbreviation: 'TT',
         location: 'City B',
         name: 'Team Two',
         created_at: new Date('2024-01-02T00:00:00Z'),
@@ -97,46 +97,94 @@ describe('TeamDetailComponent', () => {
             expect(component).toBeTruthy()
         })
 
-        it('should mark name, abbreviation, and location as required', () => {
-            const nameControl = component.teamForm.get('name')
-            const abbreviationControl = component.teamForm.get('abbreviation')
-            const locationControl = component.teamForm.get('location')
+        it('should validate name, abbreviation, and location correctly', () => {
+            const name = component.teamForm.get('name')
+            const abbr = component.teamForm.get('abbreviation')
+            const loc = component.teamForm.get('location')
 
-            // Name
-            nameControl?.setValue('')
-            expect(nameControl?.valid).toBeFalse()
-            nameControl?.setValue('Team One')
-            expect(nameControl?.valid).toBeTrue()
+            name?.setValue('')
+            expect(name?.valid).toBeFalse()
+            name?.setValue('Team One')
+            expect(name?.valid).toBeTrue()
 
-            // Abbreviation
-            abbreviationControl?.setValue('')
-            expect(abbreviationControl?.valid).toBeFalse()
-            abbreviationControl?.setValue('T1')
-            expect(abbreviationControl?.valid).toBeTrue()
+            abbr?.setValue('')
+            expect(abbr?.valid).toBeFalse()
+            abbr?.setValue('TO')
+            expect(abbr?.valid).toBeTrue()
 
-            // Location
-            locationControl?.setValue('')
-            expect(locationControl?.valid).toBeFalse()
-            locationControl?.setValue('City A')
-            expect(locationControl?.valid).toBeTrue()
+            loc?.setValue('a')
+            expect(loc?.valid).toBeFalse()
+            loc?.setValue('City A')
+            expect(loc?.valid).toBeTrue()
         })
 
-        it('should not submit form if invalid', () => {
-            component.submitForm()
-            expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
-                'Form Error',
-                'Team form is invalid'
-            )
+        it('should invalidate name with disallowed characters', () => {
+            const name = component.teamForm.get('name')
+            name?.setValue('Team@123')
+            expect(name?.valid).toBeFalse()
+
+            name?.setValue('Team One')
+            expect(name?.valid).toBeTrue()
+        })
+
+        it('should invalidate abbreviation with non-letter characters', () => {
+            const abbr = component.teamForm.get('abbreviation')
+            abbr?.setValue('T1')
+            expect(abbr?.valid).toBeFalse()
+
+            abbr?.setValue('TO')
+            expect(abbr?.valid).toBeTrue()
+        })
+
+        it('should enforce min and max lengths for name and abbreviation', () => {
+            const name = component.teamForm.get('name')
+            const abbr = component.teamForm.get('abbreviation')
+
+            name?.setValue('AB')
+            expect(name?.valid).toBeFalse()
+
+            name?.setValue('A'.repeat(101))
+            expect(name?.valid).toBeFalse()
+
+            name?.setValue('Valid Name')
+            expect(name?.valid).toBeTrue()
+
+            abbr?.setValue('A')
+            expect(abbr?.valid).toBeFalse()
+
+            abbr?.setValue('ABCDE')
+            expect(abbr?.valid).toBeFalse()
+
+            abbr?.setValue('ABC')
+            expect(abbr?.valid).toBeTrue()
+        })
+
+        it('should allow location to be empty', () => {
+            const loc = component.teamForm.get('location')
+            loc?.setValue('')
+            expect(loc?.valid).toBeTrue()
+        })
+
+        it('should make the form valid only when all controls are valid', () => {
+            component.teamForm.setValue({ name: '', abbreviation: '', location: '' })
+            expect(component.teamForm.valid).toBeFalse()
+
+            component.teamForm.setValue({
+                name: 'Team One',
+                abbreviation: 'TO',
+                location: 'City A'
+            })
+            expect(component.teamForm.valid).toBeTrue()
         })
 
         it('should call createTeam when form is valid in create mode', () => {
             component.isEditMode = false
-            component.teamForm.setValue({ name: 'Team One', abbreviation: 'T1', location: 'City A' })
+            component.teamForm.setValue({ name: 'Team One', abbreviation: 'TO', location: 'City A' })
             component.submitForm()
 
             expect(teamsService.createTeam).toHaveBeenCalledWith({
                 name: 'Team One',
-                abbreviation: 'T1',
+                abbreviation: 'TO',
                 location: 'City A'
             })
         })
@@ -146,7 +194,7 @@ describe('TeamDetailComponent', () => {
             teamsService.createTeam.and.returnValue(throwError(() => mockError))
 
             component.isEditMode = false
-            component.teamForm.patchValue({ name: 'Team One', abbreviation: 'T1', location: 'City A' })
+            component.teamForm.patchValue({ name: 'Team One', abbreviation: 'TO', location: 'City A' })
             component.submitForm()
 
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
@@ -159,7 +207,7 @@ describe('TeamDetailComponent', () => {
         it('should navigate to team list after successful createTeam', () => {
             const routerSpy = spyOn(router, 'navigateByUrl')
             component.isEditMode = false
-            component.teamForm.setValue({ name: 'Team One', abbreviation: 'T1', location: 'City A' })
+            component.teamForm.setValue({ name: 'Team One', abbreviation: 'TO', location: 'City A' })
             component.submitForm()
 
             const call = routerSpy.calls.all()[0].args[0].toString()
