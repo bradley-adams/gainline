@@ -1,36 +1,74 @@
-<h1 *ngIf="!isEditMode">Create Team</h1>
-<h1 *ngIf="isEditMode">Update Team</h1>
+<h1>{{ isEditMode ? 'Update Team' : 'Create Team' }}</h1>
 
 <div class="container">
     <form [formGroup]="teamForm" (ngSubmit)="submitForm()">
         <mat-form-field appearance="outline">
             <mat-label>Name</mat-label>
             <input matInput formControlName="name" />
+
             <mat-error *ngIf="teamForm.get('name')?.hasError('required')">Name is required</mat-error>
+
+            <mat-error
+                *ngIf="
+                    !teamForm.get('name')?.hasError('required') && teamForm.get('name')?.hasError('pattern')
+                ">
+                Name can only contain letters, spaces, apostrophes, and dashes
+            </mat-error>
+
+            <mat-error
+                *ngIf="
+                    !teamForm.get('name')?.hasError('required') &&
+                    !teamForm.get('name')?.hasError('pattern') &&
+                    (teamForm.get('name')?.hasError('minlength') ||
+                        teamForm.get('name')?.hasError('maxlength'))
+                ">
+                Name must be between 3 and 100 characters
+            </mat-error>
         </mat-form-field>
+
         <mat-form-field appearance="outline">
             <mat-label>Abbreviation</mat-label>
             <input matInput formControlName="abbreviation" />
+
             <mat-error *ngIf="teamForm.get('abbreviation')?.hasError('required')">
                 Abbreviation is required
             </mat-error>
+
+            <mat-error
+                *ngIf="
+                    !teamForm.get('abbreviation')?.hasError('required') &&
+                    teamForm.get('abbreviation')?.hasError('pattern')
+                ">
+                Must contain only letters
+            </mat-error>
+
+            <mat-error
+                *ngIf="
+                    !teamForm.get('abbreviation')?.hasError('required') &&
+                    !teamForm.get('abbreviation')?.hasError('pattern') &&
+                    (teamForm.get('abbreviation')?.hasError('minlength') ||
+                        teamForm.get('abbreviation')?.hasError('maxlength'))
+                ">
+                Must be between 2 and 4 characters
+            </mat-error>
         </mat-form-field>
+
         <mat-form-field appearance="outline">
             <mat-label>Location</mat-label>
             <input matInput formControlName="location" />
-            <mat-error *ngIf="teamForm.get('location')?.hasError('required')">Location is required</mat-error>
+            <mat-error
+                *ngIf="
+                    teamForm.get('location')?.hasError('minlength') ||
+                    teamForm.get('location')?.hasError('maxlength')
+                ">
+                Location must be between 2 and 100 characters
+            </mat-error>
         </mat-form-field>
 
         <div class="flex-row">
             <button type="submit" mat-flat-button color="primary">SAVE</button>
             <button type="button" mat-stroked-button [routerLink]="['/admin/teams']">CANCEL</button>
-            <button
-                data-testid="delete-button"
-                *ngIf="isEditMode"
-                type="button"
-                class="warn"
-                mat-flat-button
-                (click)="confirmDelete()">
+            <button *ngIf="isEditMode" type="button" class="warn" mat-flat-button (click)="confirmDelete()">
                 DELETE
             </button>
         </div>

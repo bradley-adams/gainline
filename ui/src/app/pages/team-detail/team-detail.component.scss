@@ -1,4 +1,24 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding: 1rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+mat-form-field {
+    width: 30rem;
+    max-width: 100%;
+}
+
 .flex-row {
     display: flex;
     gap: 1rem;
+    justify-content: flex-start;
 }
