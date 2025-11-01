@@ -1,10 +1,9 @@
 <app-breadcrumb></app-breadcrumb>
 
-<h1 *ngIf="!isEditMode">Create Season</h1>
-<h1 *ngIf="isEditMode">Update Season</h1>
+<h1>{{ isEditMode ? 'Update Season' : 'Create Season' }}</h1>
 
 <div class="container">
-    <form [formGroup]="seasonForm" (ngSubmit)="submitForm()" class="season-form">
+    <form [formGroup]="seasonForm" (ngSubmit)="submitForm()">
         <div class="form-row">
             <mat-form-field appearance="outline" class="wide-field">
                 <mat-label>Start Date</mat-label>
@@ -100,13 +99,13 @@
                     At least 2 teams are required
                 </mat-error>
                 <mat-error *ngIf="seasonForm.get('teams')?.hasError('maxArray')">
-                    Maximum of teams allowed
+                    Maximum number of teams allowed
                 </mat-error>
             </mat-form-field>
         </div>
 
-        <div class="flex-row">
-            <button type="submit" mat-flat-button color="primary">SAVE</button>
+        <div class="actions">
+            <button type="submit" mat-flat-button>SAVE</button>
             <button mat-stroked-button [routerLink]="['/admin/competitions', competitionId, 'seasons']">
                 CANCEL
             </button>
@@ -114,8 +113,8 @@
                 data-testid="delete-button"
                 *ngIf="isEditMode"
                 type="button"
-                class="warn"
                 mat-flat-button
+                class="warn"
                 (click)="confirmDelete()">
                 DELETE
             </button>
