@@ -40,9 +40,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## ToDos:
 
-- Notification service tests.
 - Delete icons for Competitions, Seasons, Games, and Teams.
-- Form validations to match api across all forms.
 - Combine date and time pickers.
 - Auto sort imports.
 - Fix breadcrumbs logic/functionality.

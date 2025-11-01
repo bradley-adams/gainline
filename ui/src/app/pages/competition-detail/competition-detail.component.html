@@ -1,7 +1,6 @@
 <app-breadcrumb></app-breadcrumb>
 
-<h1 *ngIf="!isEditMode">Create Competition</h1>
-<h1 *ngIf="isEditMode">Update Competition</h1>
+<h1>{{ isEditMode ? 'Update Competition' : 'Create Competition' }}</h1>
 
 <div class="container">
     <form [formGroup]="competitionForm" (ngSubmit)="submitForm()">
@@ -23,13 +22,13 @@
 
         <div class="actions">
             <button type="submit" mat-flat-button>SAVE</button>
-            <button class="accent" mat-stroked-button [routerLink]="['/admin/competitions']">CANCEL</button>
+            <button mat-stroked-button [routerLink]="['/admin/competitions']">CANCEL</button>
             <button
                 data-testid="delete-button"
                 *ngIf="isEditMode"
                 type="button"
-                class="warn"
                 mat-flat-button
+                class="warn"
                 (click)="confirmDelete()">
                 DELETE
             </button>

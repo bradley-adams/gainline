@@ -3,9 +3,9 @@
 <h1>{{ isEditMode ? 'Update Game' : 'Create Game' }}</h1>
 
 <div class="container">
-    <form [formGroup]="gameForm" (ngSubmit)="submitForm()" class="game-form">
+    <form [formGroup]="gameForm" (ngSubmit)="submitForm()">
         <div class="form-row">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="wide-field">
                 <mat-label>Date</mat-label>
                 <input
                     matInput
@@ -17,7 +17,7 @@
                 <mat-error *ngIf="gameForm.get('date')?.hasError('required')">Date is required</mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="wide-field">
                 <mat-label>Time</mat-label>
                 <input
                     matInput
@@ -31,7 +31,7 @@
         </div>
 
         <div class="form-row">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="wide-field">
                 <mat-label>Home Team</mat-label>
                 <mat-select formControlName="home_team_id">
                     <mat-option *ngFor="let team of teams" [value]="team.id">{{ team.name }}</mat-option>
@@ -41,7 +41,7 @@
                 </mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="wide-field">
                 <mat-label>Home Score</mat-label>
                 <input matInput type="text" formControlName="home_score" placeholder="Enter home score" />
                 <mat-error *ngIf="gameForm.get('home_score')?.hasError('required')">
@@ -58,7 +58,7 @@
         </div>
 
         <div class="form-row">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="wide-field">
                 <mat-label>Away Team</mat-label>
                 <mat-select formControlName="away_team_id">
                     <mat-option *ngFor="let team of teams" [value]="team.id">{{ team.name }}</mat-option>
@@ -68,7 +68,7 @@
                 </mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="wide-field">
                 <mat-label>Away Score</mat-label>
                 <input matInput type="text" formControlName="away_score" placeholder="Enter away score" />
                 <mat-error *ngIf="gameForm.get('away_score')?.hasError('required')">
@@ -85,7 +85,7 @@
         </div>
 
         <div class="form-row">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="wide-field">
                 <mat-label>Round</mat-label>
                 <mat-select formControlName="round">
                     <mat-option *ngFor="let round of rounds" [value]="round">Round {{ round }}</mat-option>
@@ -93,7 +93,7 @@
                 <mat-error *ngIf="gameForm.get('round')?.hasError('required')">Round is required</mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" class="wide-field">
                 <mat-label>Status</mat-label>
                 <mat-select formControlName="status">
                     <mat-option value="scheduled">Scheduled</mat-option>
@@ -104,14 +104,14 @@
             </mat-form-field>
         </div>
 
-        <div class="flex-row">
-            <button type="submit" mat-flat-button color="primary">SAVE</button>
+        <div class="actions">
+            <button type="submit" mat-flat-button>SAVE</button>
             <button
                 mat-stroked-button
                 [routerLink]="['/admin/competitions', competitionId, 'seasons', seasonId, 'games']">
                 CANCEL
             </button>
-            <button *ngIf="isEditMode" type="button" class="warn" mat-flat-button (click)="confirmDelete()">
+            <button *ngIf="isEditMode" type="button" mat-flat-button class="warn" (click)="confirmDelete()">
                 DELETE
             </button>
         </div>

@@ -12,9 +12,16 @@ form {
     gap: 1.5rem;
 }
 
+.form-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 1rem;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
 mat-form-field {
-    width: 30rem;
-    max-width: 100%;
+    flex: 0 0 20rem;
 }
 
 .flex-row {
