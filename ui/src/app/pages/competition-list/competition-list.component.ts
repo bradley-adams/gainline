@@ -1,11 +1,11 @@
 import { Component, inject } from '@angular/core'
-import { CompetitionsService } from '../../services/competitions/competitions.service'
-import { MatTableDataSource } from '@angular/material/table'
-import { Competition } from '../../types/api'
 import { CommonModule } from '@angular/common'
-import { MaterialModule } from '../../shared/material/material.module'
 import { RouterModule } from '@angular/router'
+import { MatTableDataSource } from '@angular/material/table'
+import { MaterialModule } from '../../shared/material/material.module'
+import { CompetitionsService } from '../../services/competitions/competitions.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { Competition } from '../../types/api'
 
 @Component({
     selector: 'app-competition-list',
@@ -31,6 +31,30 @@ export class CompetitionListComponent {
             },
             error: (err) => {
                 this.notificationService.showErrorAndLog('Load Error', 'Failed to load competitions', err)
+            }
+        })
+    }
+
+    public confirmDelete(comp: Competition): void {
+        const confirmationMessage = `Are you sure you want to delete competition "${comp.name}"?`
+        this.notificationService
+            .showConfirm('Confirm Delete', confirmationMessage)
+            .afterClosed()
+            .subscribe((confirmed) => {
+                if (confirmed) {
+                    this.removeCompetition(comp.id)
+                }
+            })
+    }
+
+    private removeCompetition(id: string): void {
+        this.competitionsService.deleteCompetition(id).subscribe({
+            next: () => {
+                this.notificationService.showSnackbar('Competition deleted successfully')
+                this.loadCompetitions()
+            },
+            error: (err) => {
+                this.notificationService.showErrorAndLog('Delete Error', 'Failed to delete competition', err)
             }
         })
     }

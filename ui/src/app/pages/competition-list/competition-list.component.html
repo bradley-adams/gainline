@@ -29,6 +29,10 @@
                 [routerLink]="['/admin/competitions', comp.id, 'seasons']">
                 <mat-icon>calendar_today</mat-icon>
             </button>
+
+            <button data-testid="delete-button" mat-icon-button color="warn" (click)="confirmDelete(comp)">
+                <mat-icon>delete</mat-icon>
+            </button>
         </td>
     </ng-container>
 

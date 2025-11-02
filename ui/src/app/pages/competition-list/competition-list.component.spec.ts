@@ -35,10 +35,18 @@ describe('CompetitionListComponent', () => {
     ]
 
     beforeEach(async () => {
-        competitionsService = jasmine.createSpyObj('CompetitionsService', ['getCompetitions'])
+        competitionsService = jasmine.createSpyObj('CompetitionsService', [
+            'getCompetitions',
+            'deleteCompetition'
+        ])
         competitionsService.getCompetitions.and.returnValue(of(mockCompetitions))
+        competitionsService.deleteCompetition.and.returnValue(of(undefined))
 
-        notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
+        notificationService = jasmine.createSpyObj('NotificationService', [
+            'showErrorAndLog',
+            'showSnackbar',
+            'showConfirm'
+        ])
 
         await TestBed.configureTestingModule({
             imports: [CompetitionListComponent],
@@ -80,6 +88,7 @@ describe('CompetitionListComponent', () => {
 
     it('should display "No competitions found" when no data is available', () => {
         component.dataSource.data = []
+        fixture.detectChanges()
 
         const noDataRow: HTMLElement = fixture.nativeElement.querySelector('tr.mat-row td.mat-cell')
         expect(noDataRow).toBeTruthy()
@@ -110,7 +119,6 @@ describe('CompetitionListComponent', () => {
 
         const headerRow = tableRows[0]
         expect(headerRow.cells[0].textContent).toContain('Competition Name')
-
         expect(headerRow.cells[1].innerHTML).toBe('Created At')
         expect(headerRow.cells[2].innerHTML).toBe('Actions')
 
@@ -120,8 +128,13 @@ describe('CompetitionListComponent', () => {
         expect(tableRows[1].cells[1].textContent).toBe('Jan 1, 2023, 1:00:00 PM')
         expect(tableRows[2].cells[1].textContent).toBe('Jan 3, 2023, 1:00:00 PM')
 
-        expect(tableRows[1].cells[2].textContent).toBe('editcalendar_today')
-        expect(tableRows[2].cells[2].textContent).toBe('editcalendar_today')
+        expect(tableRows[1].cells[2].textContent).toContain('edit')
+        expect(tableRows[1].cells[2].textContent).toContain('calendar_today')
+        expect(tableRows[1].cells[2].textContent).toContain('delete')
+
+        expect(tableRows[2].cells[2].textContent).toContain('edit')
+        expect(tableRows[2].cells[2].textContent).toContain('calendar_today')
+        expect(tableRows[2].cells[2].textContent).toContain('delete')
     })
 
     it('should navigate correctly when edit and seasons buttons are clicked', () => {
@@ -138,5 +151,33 @@ describe('CompetitionListComponent', () => {
         seasonsButton.click()
         const seasonsCall = routerSpy.calls.all()[1].args[0].toString()
         expect(seasonsCall).toEqual('/admin/competitions/comp1/seasons')
+    })
+
+    it('should delete the competition when confirmed', () => {
+        notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+        component.confirmDelete(mockCompetitions[0])
+        expect(competitionsService.deleteCompetition).toHaveBeenCalledWith('comp1')
+        expect(notificationService.showSnackbar).toHaveBeenCalledWith('Competition deleted successfully')
+    })
+
+    it('should not delete the competition when cancelled', () => {
+        notificationService.showConfirm.and.returnValue({ afterClosed: () => of(false) } as any)
+        component.confirmDelete(mockCompetitions[0])
+        expect(competitionsService.deleteCompetition).not.toHaveBeenCalled()
+        expect(notificationService.showSnackbar).not.toHaveBeenCalled()
+    })
+
+    it('should show an error when deleting the competition fails', () => {
+        const mockError = new Error('Failed')
+        competitionsService.deleteCompetition.and.returnValue(throwError(() => mockError))
+
+        notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+        component.confirmDelete(mockCompetitions[0])
+
+        expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+            'Delete Error',
+            'Failed to delete competition',
+            mockError
+        )
     })
 })
