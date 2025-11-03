@@ -77,10 +77,16 @@ describe('SeasonListComponent', () => {
     ]
 
     beforeEach(async () => {
-        seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeasons'])
+        seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeasons', 'deleteSeason'])
         seasonsService.getSeasons.and.returnValue(of(mockSeasons))
+        seasonsService.deleteSeason.and.returnValue(of(undefined))
 
-        notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
+        notificationService = jasmine.createSpyObj('NotificationService', [
+            'showConfirm',
+            'showErrorAndLog',
+            'showWarnAndLog',
+            'showSnackbar'
+        ])
 
         await TestBed.configureTestingModule({
             imports: [SeasonListComponent],
@@ -170,8 +176,13 @@ describe('SeasonListComponent', () => {
         expect(tableRows[1].cells[3].textContent).toBe('3')
         expect(tableRows[2].cells[3].textContent).toBe('0')
 
-        expect(tableRows[1].cells[4].textContent).toBe('editcalendar_today')
-        expect(tableRows[2].cells[4].textContent).toBe('editcalendar_today')
+        expect(tableRows[1].cells[4].textContent).toContain('edit')
+        expect(tableRows[1].cells[4].textContent).toContain('calendar_today')
+        expect(tableRows[1].cells[4].textContent).toContain('delete')
+
+        expect(tableRows[2].cells[4].textContent).toContain('edit')
+        expect(tableRows[2].cells[4].textContent).toContain('calendar_today')
+        expect(tableRows[2].cells[4].textContent).toContain('delete')
     })
 
     it('should navigate correctly when edit and games buttons are clicked', () => {
@@ -188,5 +199,31 @@ describe('SeasonListComponent', () => {
         seasonsButton.click()
         const call2 = routerSpy.calls.all()[1].args[0].toString()
         expect(call2).toEqual('/admin/competitions/comp1/seasons/season1/games')
+    })
+
+    it('should call deleteSeason when confirmed', () => {
+        notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+        component.confirmDelete(mockSeasons[0])
+        expect(seasonsService.deleteSeason).toHaveBeenCalledWith('comp1', 'season1')
+        expect(notificationService.showSnackbar).toHaveBeenCalledWith('Season deleted successfully')
+    })
+
+    it('should not call deleteSeason when cancelled', () => {
+        notificationService.showConfirm.and.returnValue({ afterClosed: () => of(false) } as any)
+        component.confirmDelete(mockSeasons[0])
+        expect(seasonsService.deleteSeason).not.toHaveBeenCalled()
+        expect(notificationService.showSnackbar).not.toHaveBeenCalled()
+    })
+
+    it('should show error if deleteSeason fails', () => {
+        const mockError = new Error('Failed')
+        seasonsService.deleteSeason.and.returnValue(throwError(() => mockError))
+        notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+        component.confirmDelete(mockSeasons[0])
+        expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+            'Delete Error',
+            'Failed to delete season',
+            mockError
+        )
     })
 })
