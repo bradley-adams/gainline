@@ -42,4 +42,27 @@ export class SeasonListComponent {
             }
         })
     }
+
+    confirmDelete(season: Season): void {
+        this.notificationService
+            .showConfirm('Confirm Delete', 'Are you sure you want to delete this season?')
+            .afterClosed()
+            .subscribe((confirmed) => {
+                if (confirmed && this.competitionId) {
+                    this.deleteSeason(this.competitionId, season.id)
+                }
+            })
+    }
+
+    private deleteSeason(competitionId: string, seasonId: string): void {
+        this.seasonsService.deleteSeason(competitionId, seasonId).subscribe({
+            next: () => {
+                this.notificationService.showSnackbar('Season deleted successfully')
+                this.loadSeasons(competitionId)
+            },
+            error: (err) => {
+                this.notificationService.showErrorAndLog('Delete Error', 'Failed to delete season', err)
+            }
+        })
+    }
 }

@@ -47,6 +47,10 @@
                 [routerLink]="['/admin/competitions', competitionId, 'seasons', season.id, 'games']">
                 <mat-icon>calendar_today</mat-icon>
             </button>
+
+            <button data-testid="delete-button" mat-icon-button (click)="confirmDelete(season)">
+                <mat-icon>delete</mat-icon>
+            </button>
         </td>
     </ng-container>
 
@@ -54,6 +58,6 @@
     <tr mat-row *matRowDef="let row; columns: ['id', 'start', 'end', 'rounds', 'actions']"></tr>
 
     <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell text-center" colspan="3">No seasons found</td>
+        <td class="mat-cell text-center" colspan="5">No seasons found</td>
     </tr>
 </table>
