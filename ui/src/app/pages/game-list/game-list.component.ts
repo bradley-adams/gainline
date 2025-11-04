@@ -69,4 +69,29 @@ export class GameListComponent implements OnInit {
             }
         })
     }
+
+    confirmDelete(game: Game): void {
+        const confirmationMessage = `Are you sure you want to delete this game?`
+
+        this.notificationService
+            .showConfirm('Confirm Delete', confirmationMessage)
+            .afterClosed()
+            .subscribe((confirmed) => {
+                if (confirmed && this.competitionId && this.seasonId) {
+                    this.removeGame(this.competitionId, this.seasonId, game.id)
+                }
+            })
+    }
+
+    private removeGame(competitionId: string, seasonId: string, id: string): void {
+        this.gamesService.deleteGame(competitionId, seasonId, id).subscribe({
+            next: () => {
+                this.notificationService.showSnackbar('Game deleted successfully')
+                this.loadGames(competitionId, seasonId)
+            },
+            error: (err) => {
+                this.notificationService.showErrorAndLog('Delete Error', 'Failed to delete game', err)
+            }
+        })
+    }
 }
