@@ -51,6 +51,9 @@
                 [routerLink]="['/admin/competitions', competitionId, 'seasons', seasonId, 'games', game.id]">
                 <mat-icon>edit</mat-icon>
             </button>
+            <button data-testid="delete-button" mat-icon-button (click)="confirmDelete(game)">
+                <mat-icon>delete</mat-icon>
+            </button>
         </td>
     </ng-container>
 

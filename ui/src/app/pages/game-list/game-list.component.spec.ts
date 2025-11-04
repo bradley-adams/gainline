@@ -97,11 +97,17 @@ describe('GameListComponent', () => {
     ]
 
     beforeEach(async () => {
-        gamesService = jasmine.createSpyObj('GamesService', ['getGames'])
+        gamesService = jasmine.createSpyObj('GamesService', ['getGames', 'deleteGame'])
         seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeason'])
-        notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
+        notificationService = jasmine.createSpyObj('NotificationService', [
+            'showConfirm',
+            'showErrorAndLog',
+            'showWarnAndLog',
+            'showSnackbar'
+        ])
 
         gamesService.getGames.and.returnValue(of(mockGames))
+        gamesService.deleteGame.and.returnValue(of(undefined))
         seasonsService.getSeason.and.returnValue(of(mockSeason))
 
         await TestBed.configureTestingModule({
@@ -159,9 +165,9 @@ describe('GameListComponent', () => {
         expect(rows[2].textContent).toContain('scheduled')
     })
 
-    it('should render the games table with correct headers and rows', () => {
+    it('should display games table with correct headers and data', () => {
         const tableRows = fixture.nativeElement.querySelectorAll('tr')
-        expect(tableRows.length).toBe(mockGames.length + 1) // header + 2 games
+        expect(tableRows.length).toBe(mockGames.length + 1)
 
         const headerRow = tableRows[0]
         expect(headerRow.cells[0].innerHTML).toBe('Date')
@@ -173,20 +179,28 @@ describe('GameListComponent', () => {
         expect(headerRow.cells[6].innerHTML).toBe('Actions')
 
         expect(tableRows[1].cells[0].textContent).toBe('02/02/2025 04:00')
-        expect(tableRows[1].cells[1].textContent).toBe('Team One')
-        expect(tableRows[1].cells[2].textContent).toBe('2')
-        expect(tableRows[1].cells[3].textContent).toBe('1')
-        expect(tableRows[1].cells[4].textContent).toBe('Team Two')
-        expect(tableRows[1].cells[5].textContent).toBe('finished')
-        expect(tableRows[1].cells[6].textContent).toBe('edit')
-
         expect(tableRows[2].cells[0].textContent).toBe('02/03/2025 04:00')
+
+        expect(tableRows[1].cells[1].textContent).toBe('Team One')
         expect(tableRows[2].cells[1].textContent).toBe('Team Three')
+
+        expect(tableRows[1].cells[2].textContent).toBe('2')
         expect(tableRows[2].cells[2].textContent).toBe('0')
+
+        expect(tableRows[1].cells[3].textContent).toBe('1')
         expect(tableRows[2].cells[3].textContent).toBe('0')
+
+        expect(tableRows[1].cells[4].textContent).toBe('Team Two')
         expect(tableRows[2].cells[4].textContent).toBe('Team Four')
+
+        expect(tableRows[1].cells[5].textContent).toBe('finished')
         expect(tableRows[2].cells[5].textContent).toBe('scheduled')
-        expect(tableRows[2].cells[6].textContent).toBe('edit')
+
+        expect(tableRows[1].cells[6].textContent).toContain('edit')
+        expect(tableRows[1].cells[6].textContent).toContain('delete')
+
+        expect(tableRows[2].cells[6].textContent).toContain('edit')
+        expect(tableRows[2].cells[6].textContent).toContain('delete')
     })
 
     it('should display "No games found" row when dataSource is empty', () => {
@@ -241,5 +255,33 @@ describe('GameListComponent', () => {
 
         const call = routerSpy.calls.all()[0].args[0].toString()
         expect(call).toEqual('/admin/competitions/comp1/seasons/season1/games/game1')
+    })
+
+    it('should call deleteGame when confirmed', () => {
+        notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+        component.confirmDelete(mockGames[0])
+        expect(gamesService.deleteGame).toHaveBeenCalledWith('comp1', 'season1', 'game1')
+        expect(notificationService.showSnackbar).toHaveBeenCalledWith('Game deleted successfully')
+    })
+
+    it('should not call deleteGame when cancelled', () => {
+        notificationService.showConfirm.and.returnValue({ afterClosed: () => of(false) } as any)
+        component.confirmDelete(mockGames[0])
+        expect(gamesService.deleteGame).not.toHaveBeenCalled()
+        expect(notificationService.showSnackbar).not.toHaveBeenCalled()
+    })
+
+    it('should show error if deleteGame fails', () => {
+        const mockError = new Error('Failed')
+        gamesService.deleteGame.and.returnValue(throwError(() => mockError))
+
+        notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+        component.confirmDelete(mockGames[0])
+
+        expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+            'Delete Error',
+            'Failed to delete game',
+            mockError
+        )
     })
 })
