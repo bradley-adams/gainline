@@ -54,10 +54,15 @@ describe('TeamListComponent', () => {
     ]
 
     beforeEach(async () => {
-        teamsService = jasmine.createSpyObj('TeamsService', ['getTeams'])
+        teamsService = jasmine.createSpyObj('TeamsService', ['getTeams', 'deleteTeam'])
         teamsService.getTeams.and.returnValue(of(mockTeams))
+        teamsService.deleteTeam.and.returnValue(of(undefined))
 
-        notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
+        notificationService = jasmine.createSpyObj('NotificationService', [
+            'showConfirm',
+            'showErrorAndLog',
+            'showSnackbar'
+        ])
 
         await TestBed.configureTestingModule({
             imports: [TeamListComponent],
@@ -138,11 +143,10 @@ describe('TeamListComponent', () => {
         expect(call).toEqual('/admin/teams/create')
     })
 
-    it('should display team table with correct headers and rows', () => {
+    it('should display team table with correct headers and data', () => {
         const tableRows = fixture.nativeElement.querySelectorAll('tr')
         expect(tableRows.length).toBe(mockTeams.length + 1)
 
-        // Header row
         const headerRow = tableRows[0]
         expect(headerRow.cells[0].innerHTML).toBe('Team Name')
         expect(headerRow.cells[1].innerHTML).toBe('Team Abbreviation')
@@ -154,13 +158,15 @@ describe('TeamListComponent', () => {
         expect(tableRows[1].cells[1].textContent).toBe('T1')
         expect(tableRows[1].cells[2].textContent).toBe('City A')
         expect(tableRows[1].cells[3].textContent).toBe('Jan 1, 2024, 1:00:00 PM')
-        expect(tableRows[1].cells[4].textContent).toBe('edit')
+        expect(tableRows[1].cells[4].textContent).toContain('edit')
+        expect(tableRows[1].cells[4].textContent).toContain('delete')
 
         expect(tableRows[2].cells[0].textContent).toBe('Team Two')
         expect(tableRows[2].cells[1].textContent).toBe('T2')
         expect(tableRows[2].cells[2].textContent).toBe('City B')
         expect(tableRows[2].cells[3].textContent).toBe('Jan 2, 2024, 1:00:00 PM')
-        expect(tableRows[2].cells[4].textContent).toBe('edit')
+        expect(tableRows[2].cells[4].textContent).toContain('edit')
+        expect(tableRows[2].cells[4].textContent).toContain('delete')
     })
 
     it('should navigate correctly when edit button is clicked', () => {
@@ -171,5 +177,32 @@ describe('TeamListComponent', () => {
 
         const call = routerSpy.calls.all()[0].args[0].toString()
         expect(call).toEqual('/admin/teams/team1')
+    })
+
+    it('should call deleteTeam and show snackbar when deletion is confirmed', () => {
+        notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+        component.confirmDelete(mockTeams[0])
+        expect(teamsService.deleteTeam).toHaveBeenCalledWith('team1')
+        expect(notificationService.showSnackbar).toHaveBeenCalledWith('Team deleted successfully')
+    })
+
+    it('should not call deleteTeam or show snackbar when deletion is cancelled', () => {
+        notificationService.showConfirm.and.returnValue({ afterClosed: () => of(false) } as any)
+        component.confirmDelete(mockTeams[0])
+        expect(teamsService.deleteTeam).not.toHaveBeenCalled()
+        expect(notificationService.showSnackbar).not.toHaveBeenCalled()
+    })
+
+    it('should show error notification if deleteTeam fails', () => {
+        const mockError = new Error('Failed')
+        teamsService.deleteTeam.and.returnValue(throwError(() => mockError))
+        notificationService.showConfirm.and.returnValue({ afterClosed: () => of(true) } as any)
+
+        component.confirmDelete(mockTeams[0])
+        expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+            'Delete Error',
+            'Failed to delete team',
+            mockError
+        )
     })
 })
