@@ -31,6 +31,9 @@
             <button data-testid="edit-button" mat-icon-button [routerLink]="['/admin/teams', team.id]">
                 <mat-icon>edit</mat-icon>
             </button>
+            <button data-testid="delete-button" mat-icon-button color="warn" (click)="confirmDelete(team)">
+                <mat-icon>delete</mat-icon>
+            </button>
         </td>
     </ng-container>
 
@@ -40,6 +43,6 @@
         *matRowDef="let row; columns: ['name', 'abbreviation', 'location', 'created', 'actions']"></tr>
 
     <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell" colspan="5">No teams found.</td>
+        <td class="mat-cell text-center" colspan="5">No teams found.</td>
     </tr>
 </table>

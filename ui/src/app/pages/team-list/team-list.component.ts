@@ -34,4 +34,29 @@ export class TeamListComponent {
             }
         })
     }
+
+    confirmDelete(team: Team): void {
+        const confirmationMessage = `Are you sure you want to delete ${team.name}?`
+
+        this.notificationService
+            .showConfirm('Confirm Delete', confirmationMessage)
+            .afterClosed()
+            .subscribe((confirmed) => {
+                if (confirmed) {
+                    this.deleteTeam(team.id)
+                }
+            })
+    }
+
+    private deleteTeam(id: string): void {
+        this.teamsService.deleteTeam(id).subscribe({
+            next: () => {
+                this.notificationService.showSnackbar('Team deleted successfully')
+                this.loadTeams()
+            },
+            error: (err) => {
+                this.notificationService.showErrorAndLog('Delete Error', 'Failed to delete team', err)
+            }
+        })
+    }
 }
