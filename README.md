@@ -33,5 +33,5 @@ docker volume rm gainline-data
 - Authentication via Auth0 (basic login flow for admins).
 - Implement user setup (user + admin roles, role enforcement).
 - User setup. Just user and admin roles to start.
-- Decide on and implement deployment maybe?
-- Metrics and logs maybe?
+- Decide on and implement deployment maybe.
+- Metrics and logs somewhere.
