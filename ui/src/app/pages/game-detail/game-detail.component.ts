@@ -1,7 +1,14 @@
 import { CommonModule } from '@angular/common'
 import { Component, inject } from '@angular/core'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import {
+    AbstractControl,
+    FormBuilder,
+    FormGroup,
+    ReactiveFormsModule,
+    ValidationErrors,
+    Validators
+} from '@angular/forms'
 import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MatNativeDateModule } from '@angular/material/core'
 import { MatFormFieldModule } from '@angular/material/form-field'
@@ -14,17 +21,6 @@ import { Season, Team, Game } from '../../types/api'
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
 import { NotificationService } from '../../services/notifications/notifications.service'
 import { MatTimepickerModule } from '@angular/material/timepicker'
-
-interface GameForm {
-    round: number | null
-    date: Date | null
-    time: Date | string | null
-    home_team_id: string | null
-    away_team_id: string | null
-    home_score: number | null
-    away_score: number | null
-    status: 'scheduled' | 'playing' | 'finished' | 'cancelled'
-}
 
 @Component({
     selector: 'app-game-detail',
@@ -117,9 +113,10 @@ export class GameDetailComponent {
         })
     }
 
-    private dateWithinSeasonValidator = (controlGroup: FormGroup) => {
-        const date = controlGroup.get('date')?.value
-        const time = controlGroup.get('time')?.value
+    private dateWithinSeasonValidator = (control: AbstractControl): ValidationErrors | null => {
+        const group = control as FormGroup
+        const date = group.get('date')?.value
+        const time = group.get('time')?.value
 
         if (!date || !time || !this.seasonStart || !this.seasonEnd) return null
 
