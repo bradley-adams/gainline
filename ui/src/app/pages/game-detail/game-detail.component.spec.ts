@@ -185,6 +185,23 @@ describe('GameDetailComponent', () => {
             expect(statusControl?.valid).toBeTrue()
         })
 
+        it('should mark form as invalid if date is outside the season', () => {
+            component.seasonStart = new Date('2025-01-01T00:00:00Z')
+            component.seasonEnd = new Date('2025-11-31T23:59:59Z')
+
+            // Before season
+            component.gameForm.patchValue({ date: new Date('2024-12-31'), time: '12:00' })
+            expect(component.gameForm.errors).toEqual({ outOfSeason: true })
+
+            // After season
+            component.gameForm.patchValue({ date: new Date('2026-01-01'), time: '12:00' })
+            expect(component.gameForm.errors).toEqual({ outOfSeason: true })
+
+            // Within season
+            component.gameForm.patchValue({ date: new Date('2025-06-15'), time: '12:00' })
+            expect(component.gameForm.errors).toBeNull()
+        })
+
         it('should show warning if competitionId or seasonId is missing', () => {
             component.competitionId = null
             component.submitForm()

@@ -28,6 +28,10 @@
                 <mat-timepicker #timePicker [interval]="'5m'"></mat-timepicker>
                 <mat-error *ngIf="gameForm.get('time')?.hasError('required')">Time is required</mat-error>
             </mat-form-field>
+            <mat-error *ngIf="gameForm.hasError('outOfSeason')">
+                Game must be within the season dates:
+                {{ seasonStart | date: 'medium' }} – {{ seasonEnd | date: 'medium' }}
+            </mat-error>
         </div>
 
         <div class="form-row">

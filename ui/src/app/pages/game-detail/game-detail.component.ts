@@ -15,6 +15,17 @@ import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.comp
 import { NotificationService } from '../../services/notifications/notifications.service'
 import { MatTimepickerModule } from '@angular/material/timepicker'
 
+interface GameForm {
+    round: number | null
+    date: Date | null
+    time: Date | string | null
+    home_team_id: string | null
+    away_team_id: string | null
+    home_score: number | null
+    away_score: number | null
+    status: 'scheduled' | 'playing' | 'finished' | 'cancelled'
+}
+
 @Component({
     selector: 'app-game-detail',
     standalone: true,
@@ -49,6 +60,9 @@ export class GameDetailComponent {
     public teams: Team[] = []
     public rounds: number[] = []
 
+    public seasonStart?: Date
+    public seasonEnd?: Date
+
     ngOnInit(): void {
         const params = this.route.snapshot.paramMap
         this.competitionId = params.get('competition-id')
@@ -70,16 +84,19 @@ export class GameDetailComponent {
     private initForm(): void {
         const baseScoreValidators = [Validators.pattern(/^[0-9]+$/), Validators.min(0)]
 
-        this.gameForm = this.fb.group({
-            round: [null, Validators.required],
-            date: [null, Validators.required],
-            time: [null, Validators.required],
-            home_team_id: [null, Validators.required],
-            away_team_id: [null, Validators.required],
-            home_score: [null, baseScoreValidators],
-            away_score: [null, baseScoreValidators],
-            status: ['scheduled', Validators.required]
-        })
+        this.gameForm = this.fb.group(
+            {
+                round: [null, Validators.required],
+                date: [null, Validators.required],
+                time: [null, Validators.required],
+                home_team_id: [null, Validators.required],
+                away_team_id: [null, Validators.required],
+                home_score: [null, baseScoreValidators],
+                away_score: [null, baseScoreValidators],
+                status: ['scheduled', Validators.required]
+            },
+            { validators: this.dateWithinSeasonValidator }
+        )
 
         this.gameForm.get('status')?.valueChanges.subscribe((status) => {
             const homeScoreCtrl = this.gameForm.get('home_score')
@@ -98,6 +115,21 @@ export class GameDetailComponent {
             homeScoreCtrl?.updateValueAndValidity()
             awayScoreCtrl?.updateValueAndValidity()
         })
+    }
+
+    private dateWithinSeasonValidator = (controlGroup: FormGroup) => {
+        const date = controlGroup.get('date')?.value
+        const time = controlGroup.get('time')?.value
+
+        if (!date || !time || !this.seasonStart || !this.seasonEnd) return null
+
+        const combined = this.combineDateAndTime(date, time)
+
+        if (combined < this.seasonStart || combined > this.seasonEnd) {
+            return { outOfSeason: true }
+        }
+
+        return null
     }
 
     submitForm(): void {
@@ -166,6 +198,11 @@ export class GameDetailComponent {
                     typeof t === 'string' ? ({ id: t, name: t } as Team) : t
                 )
                 this.rounds = Array.from({ length: season.rounds }, (_, i) => i + 1)
+
+                this.seasonStart = new Date(season.start_date)
+                this.seasonEnd = new Date(season.end_date)
+
+                this.gameForm.updateValueAndValidity()
             },
             error: (err) => {
                 this.notificationService.showErrorAndLog('Load Error', 'Failed to load season', err)
