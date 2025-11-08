@@ -40,6 +40,8 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## ToDos:
 
+- Combine date and time pickers.
+- Game score ui validations for score seem broke.
 - Fix breadcrumbs logic/functionality.
 - Improve team selector in season form (e.g., multi-select with search instead of giant dropdown).
 - Improve display of teams in season (chips, tables, or tags).
