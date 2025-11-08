@@ -40,9 +40,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## ToDos:
 
-- Game date outside season bounds UI validation. Match API.
-- Combine date and time pickers.
-- Auto sort imports.
 - Fix breadcrumbs logic/functionality.
 - Improve team selector in season form (e.g., multi-select with search instead of giant dropdown).
 - Improve display of teams in season (chips, tables, or tags).
