@@ -1,18 +1,25 @@
 import { CommonModule } from '@angular/common'
 import { Component, inject, OnInit } from '@angular/core'
-import { ActivatedRoute, Router, RouterModule } from '@angular/router'
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { MatInputModule } from '@angular/material/input'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatDatepickerModule } from '@angular/material/datepicker'
+import {
+    AbstractControl,
+    FormBuilder,
+    FormGroup,
+    ReactiveFormsModule,
+    ValidationErrors,
+    Validators
+} from '@angular/forms'
 import { MatNativeDateModule } from '@angular/material/core'
+import { MatDatepickerModule } from '@angular/material/datepicker'
+import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatInputModule } from '@angular/material/input'
 import { MatTimepickerModule } from '@angular/material/timepicker'
+import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 
-import { MaterialModule } from '../../shared/material/material.module'
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
+import { NotificationService } from '../../services/notifications/notifications.service'
 import { SeasonsService } from '../../services/seasons/seasons.service'
 import { TeamsService } from '../../services/teams/teams.service'
-import { NotificationService } from '../../services/notifications/notifications.service'
+import { MaterialModule } from '../../shared/material/material.module'
 import { Season, Team } from '../../types/api'
 
 @Component({
@@ -79,7 +86,7 @@ export class SeasonDetailComponent implements OnInit {
                 teams: [[], [Validators.required, this.minMaxArrayValidator(2, this.teams.length)]]
             },
             {
-                validators: this.endDateAfterStartDateValidator()
+                validators: this.endDateAfterStartDateValidator
             }
         )
     }
@@ -215,34 +222,32 @@ export class SeasonDetailComponent implements OnInit {
             }
         })
     }
+    private endDateAfterStartDateValidator = (group: AbstractControl): ValidationErrors | null => {
+        const startDate = group.get('start_date')?.value
+        const startTime = group.get('start_time')?.value
+        const endDate = group.get('end_date')?.value
+        const endTime = group.get('end_time')?.value
 
-    private endDateAfterStartDateValidator() {
-        return (group: FormGroup) => {
-            const startDate = group.get('start_date')?.value
-            const startTime = group.get('start_time')?.value
-            const endDate = group.get('end_date')?.value
-            const endTime = group.get('end_time')?.value
+        if (!startDate || !startTime || !endDate || !endTime) return null
 
-            if (!startDate || !startTime || !endDate || !endTime) return null
+        const start = this.combineDateAndTime(startDate, startTime)
+        const end = this.combineDateAndTime(endDate, endTime)
 
-            const start = this.combineDateAndTime(startDate, startTime)
-            const end = this.combineDateAndTime(endDate, endTime)
-
-            if (end <= start) {
-                group.get('end_date')?.setErrors({ endBeforeStart: true })
-                group.get('end_time')?.setErrors({ endBeforeStart: true })
-            } else {
-                ;['end_date', 'end_time'].forEach((field) => {
-                    const errors = group.get(field)?.errors
-                    if (errors) {
-                        delete errors['endBeforeStart']
-                        if (Object.keys(errors).length === 0) group.get(field)?.setErrors(null)
-                    }
-                })
-            }
-
-            return null
+        if (end <= start) {
+            group.get('end_date')?.setErrors({ endBeforeStart: true })
+            group.get('end_time')?.setErrors({ endBeforeStart: true })
+            return { endBeforeStart: true } // optional, the group-level error
+        } else {
+            ;['end_date', 'end_time'].forEach((field) => {
+                const ctrlErrors = group.get(field)?.errors
+                if (ctrlErrors) {
+                    delete ctrlErrors['endBeforeStart']
+                    if (Object.keys(ctrlErrors).length === 0) group.get(field)?.setErrors(null)
+                }
+            })
         }
+
+        return null
     }
 
     private minMaxArrayValidator(min: number, max: number) {
