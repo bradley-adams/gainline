@@ -83,8 +83,7 @@ export class GameDetailComponent {
         this.gameForm = this.fb.group(
             {
                 round: [null, Validators.required],
-                date: [null, Validators.required],
-                time: [null, Validators.required],
+                datetime: [null, Validators.required],
                 home_team_id: [null, Validators.required],
                 away_team_id: [null, Validators.required],
                 home_score: [null, baseScoreValidators],
@@ -114,19 +113,11 @@ export class GameDetailComponent {
     }
 
     private dateWithinSeasonValidator = (control: AbstractControl): ValidationErrors | null => {
-        const group = control as FormGroup
-        const date = group.get('date')?.value
-        const time = group.get('time')?.value
+        const datetime = control.get('datetime')?.value
+        const { seasonStart, seasonEnd } = this
 
-        if (!date || !time || !this.seasonStart || !this.seasonEnd) return null
-
-        const combined = this.combineDateAndTime(date, time)
-
-        if (combined < this.seasonStart || combined > this.seasonEnd) {
-            return { outOfSeason: true }
-        }
-
-        return null
+        if (!datetime || !seasonStart || !seasonEnd) return null
+        return datetime < seasonStart || datetime > seasonEnd ? { outOfSeason: true } : null
     }
 
     submitForm(): void {
@@ -144,35 +135,21 @@ export class GameDetailComponent {
             return
         }
 
-        const { date, time, home_score, away_score, ...rest } = this.gameForm.value
+        const { datetime, home_score, away_score, ...rest } = this.gameForm.value
+
+        const parseScore = (score: any) => (score != null && score !== '' ? parseInt(score, 10) : null)
+
         const gameData: Game = {
             ...rest,
             season_id: this.seasonId,
-            date: this.combineDateAndTime(date, time),
-            home_score: home_score !== null && home_score !== '' ? parseInt(home_score, 10) : null,
-            away_score: away_score !== null && away_score !== '' ? parseInt(away_score, 10) : null
+            date: datetime,
+            home_score: parseScore(home_score),
+            away_score: parseScore(away_score)
         }
 
-        if (!this.isEditMode) {
-            this.createGame(this.competitionId, this.seasonId, gameData)
-        } else if (this.seasonId && this.gameId) {
-            this.updateGame(this.competitionId, this.seasonId, this.gameId, gameData)
-        }
-    }
-
-    private combineDateAndTime(date: Date | string, time: Date | string): Date {
-        const d = new Date(date)
-        let hours: number, minutes: number
-
-        if (time instanceof Date) {
-            hours = time.getHours()
-            minutes = time.getMinutes()
-        } else {
-            ;[hours, minutes] = time.split(':').map(Number)
-        }
-
-        d.setHours(hours, minutes, 0, 0)
-        return d
+        this.isEditMode
+            ? this.updateGame(this.competitionId, this.seasonId, this.gameId!, gameData)
+            : this.createGame(this.competitionId, this.seasonId, gameData)
     }
 
     confirmDelete(): void {
@@ -212,8 +189,7 @@ export class GameDetailComponent {
             next: (game) => {
                 this.gameForm.patchValue({
                     ...game,
-                    date: new Date(game.date),
-                    time: new Date(game.date)
+                    datetime: new Date(game.date)
                 })
             },
             error: (err) => {

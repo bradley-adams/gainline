@@ -6,28 +6,30 @@
     <form [formGroup]="gameForm" (ngSubmit)="submitForm()">
         <div class="form-row">
             <mat-form-field appearance="outline" class="wide-field">
-                <mat-label>Date</mat-label>
+                <mat-label>Game Date</mat-label>
                 <input
                     matInput
                     [matDatepicker]="datePicker"
-                    formControlName="date"
+                    formControlName="datetime"
                     placeholder="Choose game date" />
                 <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
                 <mat-datepicker #datePicker></mat-datepicker>
-                <mat-error *ngIf="gameForm.get('date')?.hasError('required')">Date is required</mat-error>
+                <mat-error *ngIf="gameForm.get('datetime')?.hasError('required')">
+                    Date and time are required
+                </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="wide-field">
-                <mat-label>Time</mat-label>
+                <mat-label>Game Time</mat-label>
                 <input
                     matInput
                     [matTimepicker]="timePicker"
-                    formControlName="time"
-                    placeholder="Choose time" />
+                    formControlName="datetime"
+                    placeholder="Choose game time" />
                 <mat-timepicker-toggle matSuffix [for]="timePicker"></mat-timepicker-toggle>
                 <mat-timepicker #timePicker [interval]="'5m'"></mat-timepicker>
-                <mat-error *ngIf="gameForm.get('time')?.hasError('required')">Time is required</mat-error>
             </mat-form-field>
+
             <mat-error *ngIf="gameForm.hasError('outOfSeason')">
                 Game must be within the season dates:
                 {{ seasonStart | date: 'medium' }} – {{ seasonEnd | date: 'medium' }}
