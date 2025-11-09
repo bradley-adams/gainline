@@ -146,10 +146,9 @@ describe('GameDetailComponent', () => {
             expect(component).toBeTruthy()
         })
 
-        it('should mark round, date, home_team_id, away_team_id and status as required', () => {
+        it('should mark round, datetime, home_team_id, away_team_id and status as required', () => {
             const roundControl = component.gameForm.get('round')
-            const dateControl = component.gameForm.get('date')
-            const timeControl = component.gameForm.get('time')
+            const datetimeControl = component.gameForm.get('datetime')
             const homeTeamControl = component.gameForm.get('home_team_id')
             const awayTeamControl = component.gameForm.get('away_team_id')
             const statusControl = component.gameForm.get('status')
@@ -159,15 +158,10 @@ describe('GameDetailComponent', () => {
             roundControl?.setValue(1)
             expect(roundControl?.valid).toBeTrue()
 
-            dateControl?.setValue(null)
-            expect(dateControl?.valid).toBeFalse()
-            dateControl?.setValue('2025-08-21')
-            expect(dateControl?.valid).toBeTrue()
-
-            timeControl?.setValue(null)
-            expect(timeControl?.valid).toBeFalse()
-            timeControl?.setValue('10:00')
-            expect(timeControl?.valid).toBeTrue()
+            datetimeControl?.setValue(null)
+            expect(datetimeControl?.valid).toBeFalse()
+            datetimeControl?.setValue(new Date('2025-08-21T10:00:00'))
+            expect(datetimeControl?.valid).toBeTrue()
 
             homeTeamControl?.setValue(null)
             expect(homeTeamControl?.valid).toBeFalse()
@@ -185,20 +179,20 @@ describe('GameDetailComponent', () => {
             expect(statusControl?.valid).toBeTrue()
         })
 
-        it('should mark form as invalid if date is outside the season', () => {
+        it('should mark form as invalid if datetime is outside the season', () => {
             component.seasonStart = new Date('2025-01-01T00:00:00Z')
-            component.seasonEnd = new Date('2025-11-31T23:59:59Z')
+            component.seasonEnd = new Date('2025-11-30T23:59:59Z')
 
             // Before season
-            component.gameForm.patchValue({ date: new Date('2024-12-31'), time: '12:00' })
+            component.gameForm.patchValue({ datetime: new Date('2024-12-31T12:00:00Z') })
             expect(component.gameForm.errors).toEqual({ outOfSeason: true })
 
             // After season
-            component.gameForm.patchValue({ date: new Date('2026-01-01'), time: '12:00' })
+            component.gameForm.patchValue({ datetime: new Date('2025-12-31T12:00:00Z') })
             expect(component.gameForm.errors).toEqual({ outOfSeason: true })
 
             // Within season
-            component.gameForm.patchValue({ date: new Date('2025-06-15'), time: '12:00' })
+            component.gameForm.patchValue({ datetime: new Date('2025-06-15T12:00:00Z') })
             expect(component.gameForm.errors).toBeNull()
         })
 
@@ -212,15 +206,13 @@ describe('GameDetailComponent', () => {
             )
         })
 
-        it('should combine date and time correctly on submit', () => {
-            const date = new Date('2025-01-01T00:00:00')
-            const time = new Date('1970-01-01T13:30:00')
+        it('should use datetime directly on submit', () => {
+            const datetime = new Date('2025-01-01T13:30:00')
 
             component.isEditMode = false
             component.gameForm.setValue({
                 round: mockGame1.round,
-                date: date,
-                time: time,
+                datetime: datetime,
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
                 home_score: 10,
@@ -228,20 +220,17 @@ describe('GameDetailComponent', () => {
                 status: GameStatus.SCHEDULED
             })
 
-            const expectedStart = (component as any).combineDateAndTime(date, time)
-
             component.submitForm()
 
             const calledGame = gamesService.createGame.calls.mostRecent().args[2]
-            expect(calledGame.date?.getTime()).toBe(expectedStart.getTime())
+            expect(calledGame.date?.getTime()).toBe(datetime.getTime())
         })
 
         it('should not submit if competitionId is null', () => {
             component.competitionId = null
             component.gameForm.setValue({
                 round: 1,
-                date: '2025-08-21',
-                time: '10:00',
+                datetime: new Date('2025-08-21T10:00:00'),
                 home_team_id: 'team1',
                 away_team_id: 'team2',
                 home_score: 0,
@@ -250,6 +239,7 @@ describe('GameDetailComponent', () => {
             })
 
             component.submitForm()
+
             expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
                 'Form Error',
                 'Game form is invalid or competition/season not selected'
@@ -298,8 +288,7 @@ describe('GameDetailComponent', () => {
             component.isEditMode = false
             component.gameForm.patchValue({
                 round: 1,
-                date: new Date('2025-01-01T00:00:00'),
-                time: new Date('2025-01-01T13:30:00'),
+                datetime: new Date('2025-01-01T13:30:00'),
                 home_team_id: 'team1',
                 away_team_id: 'team2',
                 home_score: 5,
@@ -318,8 +307,7 @@ describe('GameDetailComponent', () => {
             component.isEditMode = false
             component.gameForm.setValue({
                 round: mockGame1.round,
-                date: mockGame1.date,
-                time: mockGame1.date,
+                datetime: mockGame1.date,
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
                 home_score: 10,
@@ -348,8 +336,7 @@ describe('GameDetailComponent', () => {
             component.isEditMode = false
             component.gameForm.patchValue({
                 round: mockGame1.round,
-                date: mockGame1.date,
-                time: mockGame1.date,
+                datetime: mockGame1.date,
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
                 home_score: 10,
@@ -371,8 +358,7 @@ describe('GameDetailComponent', () => {
             component.isEditMode = false
             component.gameForm.setValue({
                 round: mockGame1.round,
-                date: mockGame1.date,
-                time: mockGame1.date,
+                datetime: mockGame1.date,
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
                 home_score: 10,
@@ -399,8 +385,7 @@ describe('GameDetailComponent', () => {
 
             expect(component.gameForm.value).toEqual({
                 round: mockGame1.round,
-                date: mockGame1.date,
-                time: mockGame1.date,
+                datetime: new Date(mockGame1.date),
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
                 home_score: mockGame1.home_score,
@@ -411,7 +396,7 @@ describe('GameDetailComponent', () => {
             expect(component.teams).toEqual(mockTeams)
         })
 
-        it('should separate date and time correctly when loading a game', () => {
+        it('should load datetime correctly when loading a game', () => {
             const gameFromApi: Game = {
                 id: 'game1',
                 season_id: 'season1',
@@ -431,12 +416,8 @@ describe('GameDetailComponent', () => {
 
             const formValue = component.gameForm.value
 
-            expect(formValue.date.getFullYear()).toBe(2025)
-            expect(formValue.date.getUTCMonth()).toBe(5)
-            expect(formValue.date.getUTCDate()).toBe(15)
-
-            expect(formValue.time.getHours()).toBe(new Date(gameFromApi.date).getHours())
-            expect(formValue.time.getMinutes()).toBe(new Date(gameFromApi.date).getMinutes())
+            expect(formValue.datetime instanceof Date).toBeTrue()
+            expect(formValue.datetime.toISOString()).toBe(gameFromApi.date.toISOString())
         })
 
         it('should show error if loadGame fails', () => {
