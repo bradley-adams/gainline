@@ -70,10 +70,8 @@ export class SeasonDetailComponent implements OnInit {
     private initForm(): void {
         this.seasonForm = this.formBuilder.group(
             {
-                start_date: [null, Validators.required],
-                start_time: [null, Validators.required],
-                end_date: [null, Validators.required],
-                end_time: [null, Validators.required],
+                start_datetime: [null, Validators.required],
+                end_datetime: [null, Validators.required],
                 rounds: [
                     '',
                     [
@@ -86,7 +84,7 @@ export class SeasonDetailComponent implements OnInit {
                 teams: [[], [Validators.required, this.minMaxArrayValidator(2, this.teams.length)]]
             },
             {
-                validators: this.endDateAfterStartDateValidator
+                validators: this.endAfterStartValidator
             }
         )
     }
@@ -102,11 +100,11 @@ export class SeasonDetailComponent implements OnInit {
             return
         }
 
-        const { start_date, start_time, end_date, end_time, rounds, teams } = this.seasonForm.value
+        const { start_datetime, end_datetime, rounds, teams } = this.seasonForm.value
 
         const seasonData: Partial<Season> = {
-            start_date: this.combineDateAndTime(start_date, start_time),
-            end_date: this.combineDateAndTime(end_date, end_time),
+            start_date: start_datetime,
+            end_date: end_datetime,
             rounds: parseInt(rounds, 10),
             teams
         }
@@ -116,21 +114,6 @@ export class SeasonDetailComponent implements OnInit {
         } else if (this.competitionId && this.seasonId) {
             this.updateSeason(this.competitionId, this.seasonId, seasonData)
         }
-    }
-
-    private combineDateAndTime(date: Date | string, time: Date | string): Date {
-        const d = new Date(date)
-        let hours: number, minutes: number
-
-        if (time instanceof Date) {
-            hours = time.getHours()
-            minutes = time.getMinutes()
-        } else {
-            ;[hours, minutes] = time.split(':').map(Number)
-        }
-
-        d.setHours(hours, minutes, 0, 0)
-        return d
     }
 
     confirmDelete(): void {
@@ -171,10 +154,8 @@ export class SeasonDetailComponent implements OnInit {
         this.seasonsService.getSeason(competitionId, id).subscribe({
             next: (season) => {
                 this.seasonForm.patchValue({
-                    start_date: new Date(season.start_date),
-                    start_time: new Date(season.start_date),
-                    end_date: new Date(season.end_date),
-                    end_time: new Date(season.end_date),
+                    start_datetime: new Date(season.start_date),
+                    end_datetime: new Date(season.end_date),
                     rounds: season.rounds.toString(),
                     teams: (season.teams as Team[]).map((t) => t.id)
                 })
@@ -222,32 +203,12 @@ export class SeasonDetailComponent implements OnInit {
             }
         })
     }
-    private endDateAfterStartDateValidator = (group: AbstractControl): ValidationErrors | null => {
-        const startDate = group.get('start_date')?.value
-        const startTime = group.get('start_time')?.value
-        const endDate = group.get('end_date')?.value
-        const endTime = group.get('end_time')?.value
+    private endAfterStartValidator = (group: AbstractControl): ValidationErrors | null => {
+        const start = group.get('start_datetime')?.value
+        const end = group.get('end_datetime')?.value
 
-        if (!startDate || !startTime || !endDate || !endTime) return null
-
-        const start = this.combineDateAndTime(startDate, startTime)
-        const end = this.combineDateAndTime(endDate, endTime)
-
-        if (end <= start) {
-            group.get('end_date')?.setErrors({ endBeforeStart: true })
-            group.get('end_time')?.setErrors({ endBeforeStart: true })
-            return { endBeforeStart: true } // optional, the group-level error
-        } else {
-            ;['end_date', 'end_time'].forEach((field) => {
-                const ctrlErrors = group.get(field)?.errors
-                if (ctrlErrors) {
-                    delete ctrlErrors['endBeforeStart']
-                    if (Object.keys(ctrlErrors).length === 0) group.get(field)?.setErrors(null)
-                }
-            })
-        }
-
-        return null
+        if (!start || !end) return null
+        return new Date(end) <= new Date(start) ? { endBeforeStart: true } : null
     }
 
     private minMaxArrayValidator(min: number, max: number) {
