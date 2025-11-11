@@ -1,26 +1,28 @@
 import { CommonModule } from '@angular/common'
 import { Component, inject } from '@angular/core'
-import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import {
     AbstractControl,
     FormBuilder,
+    FormControl,
     FormGroup,
     ReactiveFormsModule,
     ValidationErrors,
     Validators
 } from '@angular/forms'
-import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MatNativeDateModule } from '@angular/material/core'
+import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatInputModule } from '@angular/material/input'
+import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { MaterialModule } from '../../shared/material/material.module'
 
-import { GamesService } from '../../services/games/games.service'
-import { SeasonsService } from '../../services/seasons/seasons.service'
-import { Season, Team, Game } from '../../types/api'
-import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
-import { NotificationService } from '../../services/notifications/notifications.service'
 import { MatTimepickerModule } from '@angular/material/timepicker'
+import { combineLatest, map } from 'rxjs'
+import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
+import { GamesService } from '../../services/games/games.service'
+import { NotificationService } from '../../services/notifications/notifications.service'
+import { SeasonsService } from '../../services/seasons/seasons.service'
+import { Game, Season, Team } from '../../types/api'
 
 @Component({
     selector: 'app-game-detail',
@@ -49,6 +51,8 @@ export class GameDetailComponent {
     private readonly notificationService = inject(NotificationService)
 
     public gameForm!: FormGroup
+    public dateControl = new FormControl<Date | null>(null, Validators.required)
+    public timeControl = new FormControl<Date | null>(null, Validators.required)
     public isEditMode = false
     public seasonId: string | null = null
     public competitionId: string | null = null
@@ -67,6 +71,7 @@ export class GameDetailComponent {
 
         this.isEditMode = !!this.gameId
         this.initForm()
+        this.initDateTimeSync()
 
         if (this.competitionId && this.seasonId) {
             this.loadSeason(this.competitionId, this.seasonId)
@@ -110,6 +115,23 @@ export class GameDetailComponent {
             homeScoreCtrl?.updateValueAndValidity()
             awayScoreCtrl?.updateValueAndValidity()
         })
+    }
+
+    private initDateTimeSync(): void {
+        combineLatest([this.dateControl.valueChanges, this.timeControl.valueChanges])
+            .pipe(
+                map(([date, time]) => {
+                    if (date && time) {
+                        const combined = new Date(date)
+                        combined.setHours(time.getHours(), time.getMinutes(), 0)
+                        return combined
+                    }
+                    return null
+                })
+            )
+            .subscribe((combinedDateTime) => {
+                this.gameForm.get('datetime')?.setValue(combinedDateTime)
+            })
     }
 
     private dateWithinSeasonValidator = (control: AbstractControl): ValidationErrors | null => {
@@ -187,9 +209,12 @@ export class GameDetailComponent {
     private loadGame(competitionId: string, seasonId: string, gameId: string): void {
         this.gamesService.getGame(competitionId, seasonId, gameId).subscribe({
             next: (game) => {
+                const gameDate = new Date(game.date)
+                this.dateControl.setValue(gameDate)
+                this.timeControl.setValue(gameDate)
                 this.gameForm.patchValue({
                     ...game,
-                    datetime: new Date(game.date)
+                    datetime: gameDate
                 })
             },
             error: (err) => {

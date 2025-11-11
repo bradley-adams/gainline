@@ -10,13 +10,10 @@
                 <input
                     matInput
                     [matDatepicker]="datePicker"
-                    formControlName="datetime"
+                    [formControl]="dateControl"
                     placeholder="Choose game date" />
                 <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
                 <mat-datepicker #datePicker></mat-datepicker>
-                <mat-error *ngIf="gameForm.get('datetime')?.hasError('required')">
-                    Date and time are required
-                </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="wide-field">
@@ -24,7 +21,7 @@
                 <input
                     matInput
                     [matTimepicker]="timePicker"
-                    formControlName="datetime"
+                    [formControl]="timeControl"
                     placeholder="Choose game time" />
                 <mat-timepicker-toggle matSuffix [for]="timePicker"></mat-timepicker-toggle>
                 <mat-timepicker #timePicker [interval]="'5m'"></mat-timepicker>
