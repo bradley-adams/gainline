@@ -10,7 +10,7 @@
                 <input
                     matInput
                     [matDatepicker]="startDatePicker"
-                    formControlName="start_datetime"
+                    [formControl]="startDateControl"
                     placeholder="Choose start date" />
                 <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
                 <mat-datepicker #startDatePicker></mat-datepicker>
@@ -21,7 +21,7 @@
                 <input
                     matInput
                     [matTimepicker]="startTimePicker"
-                    formControlName="start_datetime"
+                    [formControl]="startTimeControl"
                     placeholder="Choose start time" />
                 <mat-timepicker-toggle matSuffix [for]="startTimePicker"></mat-timepicker-toggle>
                 <mat-timepicker #startTimePicker [interval]="'5m'"></mat-timepicker>
@@ -34,7 +34,7 @@
                 <input
                     matInput
                     [matDatepicker]="endDatePicker"
-                    formControlName="end_datetime"
+                    [formControl]="endDateControl"
                     placeholder="Choose end date" />
                 <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
                 <mat-datepicker #endDatePicker></mat-datepicker>
@@ -45,7 +45,7 @@
                 <input
                     matInput
                     [matTimepicker]="endTimePicker"
-                    formControlName="end_datetime"
+                    [formControl]="endTimeControl"
                     placeholder="Choose end time" />
                 <mat-timepicker-toggle matSuffix [for]="endTimePicker"></mat-timepicker-toggle>
                 <mat-timepicker #endTimePicker [interval]="'5m'"></mat-timepicker>

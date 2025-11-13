@@ -3,6 +3,7 @@ import { Component, inject, OnInit } from '@angular/core'
 import {
     AbstractControl,
     FormBuilder,
+    FormControl,
     FormGroup,
     ReactiveFormsModule,
     ValidationErrors,
@@ -15,6 +16,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatTimepickerModule } from '@angular/material/timepicker'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 
+import { combineLatest, map } from 'rxjs'
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
 import { NotificationService } from '../../services/notifications/notifications.service'
 import { SeasonsService } from '../../services/seasons/seasons.service'
@@ -48,11 +50,15 @@ export class SeasonDetailComponent implements OnInit {
     private readonly teamsService = inject(TeamsService)
     private readonly notificationService = inject(NotificationService)
 
-    seasonForm!: FormGroup
-    competitionId: string | null = null
-    private seasonId: string | null = null
-    isEditMode = false
-    teams: Team[] = []
+    public seasonForm!: FormGroup
+    public startDateControl = new FormControl<Date | null>(null, Validators.required)
+    public startTimeControl = new FormControl<Date | null>(null, Validators.required)
+    public endDateControl = new FormControl<Date | null>(null, Validators.required)
+    public endTimeControl = new FormControl<Date | null>(null, Validators.required)
+    public isEditMode = false
+    public competitionId: string | null = null
+    public seasonId: string | null = null
+    public teams: Team[] = []
 
     ngOnInit(): void {
         this.competitionId = this.route.snapshot.paramMap.get('competition-id')
@@ -60,6 +66,7 @@ export class SeasonDetailComponent implements OnInit {
         this.isEditMode = !!this.seasonId
 
         this.initForm()
+        this.initDateTimeSync()
         this.loadTeams()
 
         if (this.isEditMode && this.competitionId && this.seasonId) {
@@ -87,6 +94,25 @@ export class SeasonDetailComponent implements OnInit {
                 validators: this.endAfterStartValidator
             }
         )
+    }
+
+    private initDateTimeSync(): void {
+        // Combine start
+        combineLatest([this.startDateControl.valueChanges, this.startTimeControl.valueChanges])
+            .pipe(map(([date, time]) => this.combineDateTime(date, time)))
+            .subscribe((start) => this.seasonForm.get('start_datetime')?.setValue(start))
+
+        // Combine end
+        combineLatest([this.endDateControl.valueChanges, this.endTimeControl.valueChanges])
+            .pipe(map(([date, time]) => this.combineDateTime(date, time)))
+            .subscribe((end) => this.seasonForm.get('end_datetime')?.setValue(end))
+    }
+
+    private combineDateTime(date: Date | null, time: Date | null): Date | null {
+        if (!date || !time) return null
+        const combined = new Date(date)
+        combined.setHours(time.getHours(), time.getMinutes(), 0)
+        return combined
     }
 
     submitForm(): void {
@@ -153,9 +179,17 @@ export class SeasonDetailComponent implements OnInit {
     private loadSeason(competitionId: string, id: string): void {
         this.seasonsService.getSeason(competitionId, id).subscribe({
             next: (season) => {
+                const startDate = new Date(season.start_date)
+                const endDate = new Date(season.end_date)
+
+                this.startDateControl.setValue(startDate)
+                this.startTimeControl.setValue(startDate)
+                this.endDateControl.setValue(endDate)
+                this.endTimeControl.setValue(endDate)
+
                 this.seasonForm.patchValue({
-                    start_datetime: new Date(season.start_date),
-                    end_datetime: new Date(season.end_date),
+                    start_datetime: startDate,
+                    end_datetime: endDate,
                     rounds: season.rounds.toString(),
                     teams: (season.teams as Team[]).map((t) => t.id)
                 })
