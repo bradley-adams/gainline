@@ -95,7 +95,7 @@ export class GameDetailComponent {
                 away_score: [null, baseScoreValidators],
                 status: ['scheduled', Validators.required]
             },
-            { validators: this.dateWithinSeasonValidator }
+            { validators: [this.dateWithinSeasonValidator, this.teamsMustDifferValidator] }
         )
 
         this.gameForm.get('status')?.valueChanges.subscribe((status) => {
@@ -140,6 +140,17 @@ export class GameDetailComponent {
 
         if (!datetime || !seasonStart || !seasonEnd) return null
         return datetime < seasonStart || datetime > seasonEnd ? { outOfSeason: true } : null
+    }
+
+    private teamsMustDifferValidator = (group: AbstractControl): ValidationErrors | null => {
+        const homeTeamId = group.get('home_team_id')?.value
+        const awayTeamId = group.get('away_team_id')?.value
+
+        if (homeTeamId && awayTeamId && homeTeamId === awayTeamId) {
+            return { teamsMustDiffer: true }
+        }
+
+        return null
     }
 
     submitForm(): void {
