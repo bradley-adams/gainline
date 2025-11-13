@@ -5,13 +5,13 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { ActivatedRoute, provideRouter, Router } from '@angular/router'
 import { of, throwError } from 'rxjs'
 
-import { GameDetailComponent } from './game-detail.component'
-import { GameListComponent } from '../game-list/game-list.component'
+import { Validators } from '@angular/forms'
 import { GamesService } from '../../services/games/games.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
 import { SeasonsService } from '../../services/seasons/seasons.service'
 import { Game, GameStatus, Season, Team } from '../../types/api'
-import { Validators } from '@angular/forms'
+import { GameListComponent } from '../game-list/game-list.component'
+import { GameDetailComponent } from './game-detail.component'
 
 describe('GameDetailComponent', () => {
     let component: GameDetailComponent
@@ -255,6 +255,26 @@ describe('GameDetailComponent', () => {
             expect(component.teams.length).toBe(2)
             expect(component.teams[0].name).toBe('Team One')
             expect(component.teams[1].name).toBe('Team Two')
+        })
+
+        it('should mark form invalid if home and away teams are the same', () => {
+            component.seasonStart = new Date('2025-01-01T00:00:00Z')
+            component.seasonEnd = new Date('2025-12-31T23:59:59Z')
+
+            // Same teams → invalid
+            component.gameForm.patchValue({
+                round: 1,
+                datetime: new Date('2025-06-01T12:00:00Z'),
+                home_team_id: 'team1',
+                away_team_id: 'team1',
+                status: 'scheduled'
+            })
+
+            expect(component.gameForm.errors).toEqual({ teamsMustDiffer: true })
+
+            // Different teams → valid
+            component.gameForm.patchValue({ away_team_id: 'team2' })
+            expect(component.gameForm.errors).toBeNull()
         })
 
         it('should remove required validator from scores when status is "scheduled"', () => {
