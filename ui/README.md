@@ -40,7 +40,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## ToDos:
 
-- Date and Time picker cobmination not seamless with reactvive forms.
 - Game score ui validations for score seem broke.
 - Fix breadcrumbs logic/functionality.
 - Improve team selector in season form (e.g., multi-select with search instead of giant dropdown).
