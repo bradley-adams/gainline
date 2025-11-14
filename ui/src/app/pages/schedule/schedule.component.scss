@@ -1,0 +1,28 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 60rem;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+form.form-row {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    flex-wrap: nowrap;
+}
+
+.form-field {
+    min-width: 6rem;
+}
+
+.competition-field {
+    flex: 2;
+}
+
+.season-field {
+    flex: 3;
+}

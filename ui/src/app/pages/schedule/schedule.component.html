@@ -1,8 +1,8 @@
 <h1>Schedule</h1>
 
 <div class="container">
-    <form [formGroup]="scheduleForm">
-        <mat-form-field appearance="outline" class="form-field">
+    <form [formGroup]="scheduleForm" class="form-row">
+        <mat-form-field appearance="outline" class="form-field competition-field">
             <mat-label>Competition</mat-label>
             <mat-select formControlName="competition">
                 <mat-option *ngFor="let comp of competitions" [value]="comp.id">
@@ -11,17 +11,17 @@
             </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" class="form-field season-field">
             <mat-label>Season</mat-label>
             <mat-select formControlName="season">
                 <mat-option *ngFor="let s of seasons" [value]="s.id">
-                    {{ s.start_date | date : 'dd/MM/yyyy HH:mm' }} to
-                    {{ s.end_date | date : 'dd/MM/yyyy HH:mm' }}
+                    {{ s.start_date | date: 'dd/MM/yyyy HH:mm' }} to
+                    {{ s.end_date | date: 'dd/MM/yyyy HH:mm' }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
+        <mat-form-field appearance="outline" class="form-field">
             <mat-label>Rounds</mat-label>
             <mat-select formControlName="round">
                 <mat-option *ngFor="let round of rounds" [value]="round">
@@ -35,7 +35,7 @@
 <table mat-table [dataSource]="dataSource">
     <ng-container matColumnDef="date">
         <th mat-header-cell *matHeaderCellDef>Date</th>
-        <td mat-cell *matCellDef="let game">{{ game.date | date : 'dd/MM/yyyy HH:mm' }}</td>
+        <td mat-cell *matCellDef="let game">{{ game.date | date: 'dd/MM/yyyy HH:mm' }}</td>
     </ng-container>
 
     <ng-container matColumnDef="homeTeamId">
@@ -63,10 +63,10 @@
         <td mat-cell *matCellDef="let game">{{ game.status }}</td>
     </ng-container>
 
-    <!-- Header and Row Definitions -->
     <tr
         mat-header-row
         *matHeaderRowDef="['date', 'homeTeamId', 'homeScore', 'awayScore', 'awayTeamId', 'status']"></tr>
+
     <tr
         mat-row
         *matRowDef="
