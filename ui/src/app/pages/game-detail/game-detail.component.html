@@ -85,6 +85,10 @@
                     Enter a valid whole number (cannot be negative)
                 </mat-error>
             </mat-form-field>
+
+            <mat-error *ngIf="gameForm.hasError('teamsMustDiffer')">
+                Home and away teams must be different.
+            </mat-error>
         </div>
 
         <div class="form-row">
