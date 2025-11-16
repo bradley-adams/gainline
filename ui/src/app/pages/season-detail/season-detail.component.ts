@@ -69,6 +69,7 @@ export class SeasonDetailComponent implements OnInit {
     public teams: Team[] = []
     public filteredTeams: Team[] = []
     public separatorKeysCodes: number[] = [ENTER, COMMA]
+
     @ViewChild('teamInput') teamInput!: ElementRef<HTMLInputElement>
 
     ngOnInit(): void {
@@ -271,21 +272,20 @@ export class SeasonDetailComponent implements OnInit {
     }
 
     addTeamFromInput(event: MatChipInputEvent) {
-        const value = (event.value || '').trim()
+        const value = event.value?.trim()
         if (value) {
-            const team = this.teams.find((t) => t.name.toLowerCase() === value.toLowerCase())
-            if (team) this.addTeamById(team.id)
+            const match = this.teams.find((t) => t.name.toLowerCase() === value.toLowerCase())
+            if (match) this.addTeam(match.id)
         }
-        event.chipInput!.clear()
-        this.teamInput.nativeElement.value = ''
+        this.clearTeamInput()
     }
 
     selectTeam(teamId: string) {
-        this.addTeamById(teamId)
-        this.teamInput.nativeElement.value = ''
+        this.addTeam(teamId)
+        this.clearTeamInput()
     }
 
-    private addTeamById(teamId: string) {
+    private addTeam(teamId: string) {
         const current = this.teamsControl.value || []
         if (!current.includes(teamId)) {
             this.teamsControl.setValue([...current, teamId])
@@ -294,6 +294,10 @@ export class SeasonDetailComponent implements OnInit {
 
     removeTeam(teamId: string) {
         const current = this.teamsControl.value || []
-        this.teamsControl.setValue(current.filter((t: string) => t !== teamId))
+        this.teamsControl.setValue(current.filter((x: string) => x !== teamId))
+    }
+
+    private clearTeamInput() {
+        this.teamInput.nativeElement.value = ''
     }
 }
