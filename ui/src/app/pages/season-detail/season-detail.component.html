@@ -57,7 +57,7 @@
         </mat-error>
 
         <div class="form-row">
-            <mat-form-field appearance="outline" class="wide-field">
+            <mat-form-field appearance="outline">
                 <mat-label>Rounds</mat-label>
                 <input
                     matInput
@@ -76,18 +76,39 @@
                     Maximum number of rounds is 52
                 </mat-error>
             </mat-form-field>
+        </div>
 
+        <div class="form-row">
             <mat-form-field appearance="outline" class="wide-field">
                 <mat-label>Teams</mat-label>
-                <mat-select formControlName="teams" multiple>
-                    <mat-option *ngFor="let team of teams" [value]="team.id">
+
+                <mat-chip-grid #chipGrid [formControl]="teamsControl">
+                    <mat-chip-row *ngFor="let teamId of teamsControl.value" (removed)="removeTeam(teamId)">
+                        {{ getTeamName(teamId) }}
+                        <button matChipRemove>
+                            <mat-icon>cancel</mat-icon>
+                        </button>
+                    </mat-chip-row>
+                </mat-chip-grid>
+
+                <input
+                    matInput
+                    placeholder="Add team..."
+                    #teamInput
+                    [matChipInputFor]="chipGrid"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    [matChipInputAddOnBlur]="false"
+                    [matAutocomplete]="auto"
+                    (matChipInputTokenEnd)="addTeamFromInput($event)" />
+
+                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectTeam($event.option.value)">
+                    <mat-option *ngFor="let team of filteredTeams" [value]="team.id">
                         {{ team.name }}
                     </mat-option>
-                </mat-select>
-                <mat-error *ngIf="seasonForm.get('teams')?.hasError('minArray')">
-                    At least 2 teams are required
-                </mat-error>
-                <mat-error *ngIf="seasonForm.get('teams')?.hasError('maxArray')">
+                </mat-autocomplete>
+
+                <mat-error *ngIf="teamsControl.hasError('minArray')">At least 2 teams are required</mat-error>
+                <mat-error *ngIf="teamsControl.hasError('maxArray')">
                     Maximum number of teams allowed
                 </mat-error>
             </mat-form-field>

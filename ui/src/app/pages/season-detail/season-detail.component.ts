@@ -1,5 +1,6 @@
+import { COMMA, ENTER } from '@angular/cdk/keycodes'
 import { CommonModule } from '@angular/common'
-import { Component, inject, OnInit } from '@angular/core'
+import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core'
 import {
     AbstractControl,
     FormBuilder,
@@ -9,9 +10,12 @@ import {
     ValidationErrors,
     Validators
 } from '@angular/forms'
+import { MatAutocompleteModule } from '@angular/material/autocomplete'
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips'
 import { MatNativeDateModule } from '@angular/material/core'
 import { MatDatepickerModule } from '@angular/material/datepicker'
 import { MatFormFieldModule } from '@angular/material/form-field'
+import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatTimepickerModule } from '@angular/material/timepicker'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
@@ -37,10 +41,13 @@ import { Season, Team } from '../../types/api'
         MatFormFieldModule,
         MatInputModule,
         MatTimepickerModule,
+        MatChipsModule,
+        MatIconModule,
+        MatAutocompleteModule,
         BreadcrumbComponent
     ],
     templateUrl: './season-detail.component.html',
-    styleUrl: './season-detail.component.scss'
+    styleUrls: ['./season-detail.component.scss']
 })
 export class SeasonDetailComponent implements OnInit {
     private readonly formBuilder = inject(FormBuilder)
@@ -55,10 +62,14 @@ export class SeasonDetailComponent implements OnInit {
     public startTimeControl = new FormControl<Date | null>(null, Validators.required)
     public endDateControl = new FormControl<Date | null>(null, Validators.required)
     public endTimeControl = new FormControl<Date | null>(null, Validators.required)
+    public teamsControl = new FormControl<string[]>([], [Validators.required])
     public isEditMode = false
     public competitionId: string | null = null
     public seasonId: string | null = null
     public teams: Team[] = []
+    public filteredTeams: Team[] = []
+    public separatorKeysCodes: number[] = [ENTER, COMMA]
+    @ViewChild('teamInput') teamInput!: ElementRef<HTMLInputElement>
 
     ngOnInit(): void {
         this.competitionId = this.route.snapshot.paramMap.get('competition-id')
@@ -66,6 +77,8 @@ export class SeasonDetailComponent implements OnInit {
         this.isEditMode = !!this.seasonId
 
         this.initForm()
+        this.teamsControl = this.seasonForm.get('teams') as FormControl
+
         this.initDateTimeSync()
         this.loadTeams()
 
@@ -88,7 +101,7 @@ export class SeasonDetailComponent implements OnInit {
                         Validators.pattern(/^(?:[1-9]|[1-4][0-9]|50)$/)
                     ]
                 ],
-                teams: [[], [Validators.required, this.minMaxArrayValidator(2, this.teams.length)]]
+                teams: [[], [Validators.required, this.minMaxArrayValidator(2, 20)]]
             },
             {
                 validators: this.endAfterStartValidator
@@ -97,12 +110,10 @@ export class SeasonDetailComponent implements OnInit {
     }
 
     private initDateTimeSync(): void {
-        // Combine start
         combineLatest([this.startDateControl.valueChanges, this.startTimeControl.valueChanges])
             .pipe(map(([date, time]) => this.combineDateTime(date, time)))
             .subscribe((start) => this.seasonForm.get('start_datetime')?.setValue(start))
 
-        // Combine end
         combineLatest([this.endDateControl.valueChanges, this.endTimeControl.valueChanges])
             .pipe(map(([date, time]) => this.combineDateTime(date, time)))
             .subscribe((end) => this.seasonForm.get('end_datetime')?.setValue(end))
@@ -159,8 +170,8 @@ export class SeasonDetailComponent implements OnInit {
         this.teamsService.getTeams().subscribe({
             next: (teams) => {
                 this.teams = teams
+                this.filteredTeams = [...teams]
 
-                // Update teams control validator to reflect the real max
                 const teamsControl = this.seasonForm.get('teams')
                 if (teamsControl) {
                     teamsControl.setValidators([
@@ -226,7 +237,6 @@ export class SeasonDetailComponent implements OnInit {
 
     private removeSeason(competitionId: string, id: string): void {
         if (!competitionId || !id) return
-
         this.seasonsService.deleteSeason(competitionId, id).subscribe({
             next: () => {
                 this.notificationService.showSnackbar('Season deleted successfully')
@@ -237,10 +247,10 @@ export class SeasonDetailComponent implements OnInit {
             }
         })
     }
+
     private endAfterStartValidator = (group: AbstractControl): ValidationErrors | null => {
         const start = group.get('start_datetime')?.value
         const end = group.get('end_datetime')?.value
-
         if (!start || !end) return null
         return new Date(end) <= new Date(start) ? { endBeforeStart: true } : null
     }
@@ -253,5 +263,37 @@ export class SeasonDetailComponent implements OnInit {
             if (value.length > max) return { maxArray: true }
             return null
         }
+    }
+
+    getTeamName(id: string): string {
+        const team = this.teams.find((t) => t.id === id)
+        return team ? team.name : id
+    }
+
+    addTeamFromInput(event: MatChipInputEvent) {
+        const value = (event.value || '').trim()
+        if (value) {
+            const team = this.teams.find((t) => t.name.toLowerCase() === value.toLowerCase())
+            if (team) this.addTeamById(team.id)
+        }
+        event.chipInput!.clear()
+        this.teamInput.nativeElement.value = ''
+    }
+
+    selectTeam(teamId: string) {
+        this.addTeamById(teamId)
+        this.teamInput.nativeElement.value = ''
+    }
+
+    private addTeamById(teamId: string) {
+        const current = this.teamsControl.value || []
+        if (!current.includes(teamId)) {
+            this.teamsControl.setValue([...current, teamId])
+        }
+    }
+
+    removeTeam(teamId: string) {
+        const current = this.teamsControl.value || []
+        this.teamsControl.setValue(current.filter((t: string) => t !== teamId))
     }
 }
