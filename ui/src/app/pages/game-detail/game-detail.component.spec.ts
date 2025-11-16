@@ -277,6 +277,27 @@ describe('GameDetailComponent', () => {
             expect(component.gameForm.errors).toBeNull()
         })
 
+        it('should not include scores when status is "scheduled"', () => {
+            component.isEditMode = false
+
+            component.gameForm.patchValue({
+                round: 1,
+                datetime: new Date('2025-01-01T13:30:00'),
+                home_team_id: 'team1',
+                away_team_id: 'team2',
+                home_score: 7,
+                away_score: 3,
+                status: GameStatus.SCHEDULED
+            })
+
+            component.submitForm()
+
+            const sent = gamesService.createGame.calls.mostRecent().args[2]
+
+            expect(sent.home_score).toBeNull()
+            expect(sent.away_score).toBeNull()
+        })
+
         it('should remove required validator from scores when status is "scheduled"', () => {
             const homeScoreCtrl = component.gameForm.get('home_score')!
             const awayScoreCtrl = component.gameForm.get('away_score')!
