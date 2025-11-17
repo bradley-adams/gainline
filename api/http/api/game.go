@@ -15,6 +15,7 @@ const (
 	GameStatusScheduled GameStatus = "scheduled"
 	GameStatusPlaying   GameStatus = "playing"
 	GameStatusFinished  GameStatus = "finished"
+	GameStatusCancelled GameStatus = "cancelled"
 )
 
 func (gs GameStatus) String() string {
@@ -84,7 +85,7 @@ func ValidateGameStatus(fl validator.FieldLevel) bool {
 	}
 
 	switch status {
-	case GameStatusScheduled, GameStatusPlaying, GameStatusFinished:
+	case GameStatusScheduled, GameStatusPlaying, GameStatusFinished, GameStatusCancelled:
 		return true
 	default:
 		return false
@@ -104,6 +105,12 @@ func ValidateGameRequest(sl validator.StructLevel) {
 	if game.Status == GameStatusScheduled && (game.HomeScore != nil || game.AwayScore != nil) {
 		sl.ReportError(game.HomeScore, "HomeScore", "home_score", "no_scores_for_scheduled_games", "")
 		sl.ReportError(game.AwayScore, "AwayScore", "away_score", "no_scores_for_scheduled_games", "")
+	}
+
+	// Cancelled games must NOT have scores
+	if game.Status == GameStatusCancelled && (game.HomeScore != nil || game.AwayScore != nil) {
+		sl.ReportError(game.HomeScore, "HomeScore", "home_score", "no_scores_for_cancelled_games", "")
+		sl.ReportError(game.AwayScore, "AwayScore", "away_score", "no_scores_for_cancelled_games", "")
 	}
 
 	// Playing or Finished games must have scores
