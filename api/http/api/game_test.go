@@ -68,6 +68,19 @@ var _ = Describe("GameRequest validation", func() {
 		Expect(validate.Struct(&game)).NotTo(HaveOccurred())
 	})
 
+	It("passes with zero scores for canceled games", func() {
+		game := GameRequest{
+			Round:      5,
+			Date:       date1,
+			HomeTeamID: team1,
+			AwayTeamID: team2,
+			HomeScore:  nil,
+			AwayScore:  nil,
+			Status:     GameStatusCancelled,
+		}
+		Expect(validate.Struct(&game)).NotTo(HaveOccurred())
+	})
+
 	It("fails if AwayTeamID equals HomeTeamID", func() {
 		game := GameRequest{
 			Round:      1,
