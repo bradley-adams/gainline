@@ -1,11 +1,11 @@
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { Validators } from '@angular/forms'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { ActivatedRoute, provideRouter, Router } from '@angular/router'
 import { of, throwError } from 'rxjs'
 
-import { Validators } from '@angular/forms'
 import { GamesService } from '../../services/games/games.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
 import { SeasonsService } from '../../services/seasons/seasons.service'
@@ -196,8 +196,48 @@ describe('GameDetailComponent', () => {
             expect(component.gameForm.errors).toBeNull()
         })
 
+        it('should mark form invalid if home and away teams are the same', () => {
+            component.seasonStart = new Date('2025-01-01T00:00:00Z')
+            component.seasonEnd = new Date('2025-12-31T23:59:59Z')
+
+            // Same teams → invalid
+            component.gameForm.patchValue({
+                round: 1,
+                datetime: new Date('2025-06-01T12:00:00Z'),
+                home_team_id: 'team1',
+                away_team_id: 'team1',
+                status: 'scheduled'
+            })
+
+            expect(component.gameForm.errors).toEqual({ teamsMustDiffer: true })
+
+            // Different teams → valid
+            component.gameForm.patchValue({ away_team_id: 'team2' })
+            expect(component.gameForm.errors).toBeNull()
+        })
+
         it('should show warning if competitionId or seasonId is missing', () => {
             component.competitionId = null
+            component.submitForm()
+
+            expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
+                'Form Error',
+                'Game form is invalid or competition/season not selected'
+            )
+        })
+
+        it('should not submit if competitionId is null', () => {
+            component.competitionId = null
+            component.gameForm.setValue({
+                round: 1,
+                datetime: new Date('2025-08-21T10:00:00'),
+                home_team_id: 'team1',
+                away_team_id: 'team2',
+                home_score: 0,
+                away_score: 0,
+                status: 'scheduled'
+            })
+
             component.submitForm()
 
             expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
@@ -226,26 +266,6 @@ describe('GameDetailComponent', () => {
             expect(calledGame.date?.getTime()).toBe(datetime.getTime())
         })
 
-        it('should not submit if competitionId is null', () => {
-            component.competitionId = null
-            component.gameForm.setValue({
-                round: 1,
-                datetime: new Date('2025-08-21T10:00:00'),
-                home_team_id: 'team1',
-                away_team_id: 'team2',
-                home_score: 0,
-                away_score: 0,
-                status: 'scheduled'
-            })
-
-            component.submitForm()
-
-            expect(notificationService.showWarnAndLog).toHaveBeenCalledWith(
-                'Form Error',
-                'Game form is invalid or competition/season not selected'
-            )
-        })
-
         it('should populate rounds based on season', () => {
             expect(component.rounds).toEqual([1, 2, 3])
         })
@@ -257,24 +277,25 @@ describe('GameDetailComponent', () => {
             expect(component.teams[1].name).toBe('Team Two')
         })
 
-        it('should mark form invalid if home and away teams are the same', () => {
-            component.seasonStart = new Date('2025-01-01T00:00:00Z')
-            component.seasonEnd = new Date('2025-12-31T23:59:59Z')
+        it('should not include scores when status is "cancelled"', () => {
+            component.isEditMode = false
 
-            // Same teams → invalid
             component.gameForm.patchValue({
                 round: 1,
-                datetime: new Date('2025-06-01T12:00:00Z'),
+                datetime: new Date('2025-01-01T13:30:00'),
                 home_team_id: 'team1',
-                away_team_id: 'team1',
-                status: 'scheduled'
+                away_team_id: 'team2',
+                home_score: 7,
+                away_score: 3,
+                status: 'cancelled'
             })
 
-            expect(component.gameForm.errors).toEqual({ teamsMustDiffer: true })
+            component.submitForm()
 
-            // Different teams → valid
-            component.gameForm.patchValue({ away_team_id: 'team2' })
-            expect(component.gameForm.errors).toBeNull()
+            const sent = gamesService.createGame.calls.mostRecent().args[2]
+
+            expect(sent.home_score).toBeNull()
+            expect(sent.away_score).toBeNull()
         })
 
         it('should not include scores when status is "scheduled"', () => {
@@ -311,6 +332,19 @@ describe('GameDetailComponent', () => {
             expect(awayScoreCtrl.hasValidator(Validators.required)).toBeFalse()
         })
 
+        it('should remove required validator from scores when status is "cancelled"', () => {
+            const homeScoreCtrl = component.gameForm.get('home_score')!
+            const awayScoreCtrl = component.gameForm.get('away_score')!
+
+            component.gameForm.patchValue({ status: 'playing' })
+            expect(homeScoreCtrl.hasValidator(Validators.required)).toBeTrue()
+            expect(awayScoreCtrl.hasValidator(Validators.required)).toBeTrue()
+
+            component.gameForm.patchValue({ status: 'cancelled' })
+            expect(homeScoreCtrl.hasValidator(Validators.required)).toBeFalse()
+            expect(awayScoreCtrl.hasValidator(Validators.required)).toBeFalse()
+        })
+
         it('should add required validator when status is "playing" or "finished"', () => {
             const homeScoreCtrl = component.gameForm.get('home_score')!
             const awayScoreCtrl = component.gameForm.get('away_score')!
@@ -325,23 +359,32 @@ describe('GameDetailComponent', () => {
             expect(awayScoreCtrl.hasValidator(Validators.required)).toBeTrue()
         })
 
-        it('should not include scores when status is "scheduled"', () => {
-            component.isEditMode = false
+        it('should mark form invalid if status is "playing" but scores are null', () => {
             component.gameForm.patchValue({
                 round: 1,
-                datetime: new Date('2025-01-01T13:30:00'),
+                datetime: new Date('2025-06-15T12:00:00Z'),
                 home_team_id: 'team1',
                 away_team_id: 'team2',
-                home_score: 5,
-                away_score: 4,
-                status: 'scheduled'
+                home_score: null,
+                away_score: null,
+                status: 'playing'
             })
 
-            component.submitForm()
+            expect(component.gameForm.valid).toBeFalse()
+        })
 
-            const calledGame = gamesService.createGame.calls.mostRecent().args[2]
-            expect(calledGame.home_score).toBeNull()
-            expect(calledGame.away_score).toBeNull()
+        it('should mark form valid when scores exist and status is "finished"', () => {
+            component.gameForm.patchValue({
+                round: 1,
+                datetime: new Date('2025-06-15T12:00:00Z'),
+                home_team_id: 'team1',
+                away_team_id: 'team2',
+                home_score: 2,
+                away_score: 1,
+                status: 'finished'
+            })
+
+            expect(component.gameForm.valid).toBeTrue()
         })
 
         it('should call createGame when in create mode and form is valid', () => {

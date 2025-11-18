@@ -103,19 +103,21 @@ export class GameDetailComponent {
             const awayScoreCtrl = this.gameForm.get('away_score')
 
             if (status === 'playing' || status === 'finished') {
-                // Scores are required when game is in-progress or finished
+                // Scores ARE required
                 homeScoreCtrl?.setValidators([...baseScoreValidators, Validators.required])
                 awayScoreCtrl?.setValidators([...baseScoreValidators, Validators.required])
             } else if (status === 'scheduled') {
-                // Scheduled games cannot have scores
-                homeScoreCtrl?.setValidators([...baseScoreValidators])
-                awayScoreCtrl?.setValidators([...baseScoreValidators])
+                // Scores must NOT exist
+                homeScoreCtrl?.setValidators(baseScoreValidators)
+                awayScoreCtrl?.setValidators(baseScoreValidators)
                 homeScoreCtrl?.setValue(null)
                 awayScoreCtrl?.setValue(null)
-            } else {
-                // Cancelled games
-                homeScoreCtrl?.setValidators([...baseScoreValidators])
-                awayScoreCtrl?.setValidators([...baseScoreValidators])
+            } else if (status === 'cancelled') {
+                // Scores must NOT exist (same as scheduled)
+                homeScoreCtrl?.setValidators(baseScoreValidators)
+                awayScoreCtrl?.setValidators(baseScoreValidators)
+                homeScoreCtrl?.setValue(null)
+                awayScoreCtrl?.setValue(null)
             }
 
             homeScoreCtrl?.updateValueAndValidity()
