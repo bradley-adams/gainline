@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { BreadcrumbComponent } from './breadcrumb.component'
-import { ActivatedRoute, provideRouter, Router } from '@angular/router'
 import { By } from '@angular/platform-browser'
+import { ActivatedRoute, provideRouter, Router } from '@angular/router'
+import { BreadcrumbComponent } from './breadcrumb.component'
 
 describe('BreadcrumbComponent', () => {
     let component: BreadcrumbComponent
@@ -43,10 +43,11 @@ describe('BreadcrumbComponent', () => {
             expect(component).toBeTruthy()
         })
 
-        it('should render only "Admin" breadcrumb', () => {
+        it('should render Admin and Competitions breadcrumbs', () => {
             const items = fixture.debugElement.queryAll(By.css('.breadcrumb-item'))
-            expect(items.length).toBe(1)
+            expect(items.length).toBe(2)
             expect(items[0].nativeElement.textContent).toContain('Admin')
+            expect(items[1].nativeElement.textContent).toContain('Competitions')
         })
     })
 
@@ -58,11 +59,33 @@ describe('BreadcrumbComponent', () => {
             fixture.detectChanges()
         })
 
-        it('should render Admin and Competitions breadcrumbs', () => {
+        it('should render breadcrumbs up to Seasons', () => {
             const items = fixture.debugElement.queryAll(By.css('.breadcrumb-item'))
-            expect(items.length).toBe(2)
+            expect(items.length).toBe(4)
             expect(items[0].nativeElement.textContent).toContain('Admin')
             expect(items[1].nativeElement.textContent).toContain('Competitions')
+            expect(items[2].nativeElement.textContent).toContain('comp1')
+            expect(items[3].nativeElement.textContent).toContain('Seasons')
+        })
+    })
+
+    describe('with competitionID and seasonID', () => {
+        beforeEach(() => {
+            TestBed.overrideProvider(ActivatedRoute, { useValue: mockRoute('comp1', 'season1', null) })
+            fixture = TestBed.createComponent(BreadcrumbComponent)
+            component = fixture.componentInstance
+            fixture.detectChanges()
+        })
+
+        it('should render breadcrumbs up to Games', () => {
+            const items = fixture.debugElement.queryAll(By.css('.breadcrumb-item'))
+            expect(items.length).toBe(6)
+            expect(items[0].nativeElement.textContent).toContain('Admin')
+            expect(items[1].nativeElement.textContent).toContain('Competitions')
+            expect(items[2].nativeElement.textContent).toContain('comp1')
+            expect(items[3].nativeElement.textContent).toContain('Seasons')
+            expect(items[4].nativeElement.textContent).toContain('season1')
+            expect(items[5].nativeElement.textContent).toContain('Games')
         })
     })
 
@@ -75,38 +98,49 @@ describe('BreadcrumbComponent', () => {
             fixture.detectChanges()
         })
 
-        it('should render all four breadcrumbs', () => {
+        it('should render all breadcrumbs including current game', () => {
             const items = fixture.debugElement.queryAll(By.css('.breadcrumb-item'))
-            expect(items.length).toBe(4)
+            expect(items.length).toBe(7)
             expect(items[0].nativeElement.textContent).toContain('Admin')
             expect(items[1].nativeElement.textContent).toContain('Competitions')
-            expect(items[2].nativeElement.textContent).toContain('Seasons')
-            expect(items[3].nativeElement.textContent).toContain('Games')
+            expect(items[2].nativeElement.textContent).toContain('comp1')
+            expect(items[3].nativeElement.textContent).toContain('Seasons')
+            expect(items[4].nativeElement.textContent).toContain('season1')
+            expect(items[5].nativeElement.textContent).toContain('Games')
+            expect(items[6].nativeElement.textContent).toContain('game1')
         })
 
         it('should navigate correctly when breadcrumb links are clicked', () => {
             const routerSpy = spyOn(router, 'navigateByUrl')
-
             const links: HTMLElement[] = Array.from(
                 fixture.nativeElement.querySelectorAll('.breadcrumb-item a')
             )
 
-            // Admin link
             links[0].click()
             expect(routerSpy.calls.all()[0].args[0].toString()).toBe('/admin')
 
-            // Competitions link
             links[1].click()
             expect(routerSpy.calls.all()[1].args[0].toString()).toBe('/admin/competitions')
 
-            // Seasons link
             links[2].click()
-            expect(routerSpy.calls.all()[2].args[0].toString()).toBe('/admin/competitions/comp1/seasons')
+            expect(routerSpy.calls.all()[2].args[0].toString()).toBe('/admin/competitions/comp1')
 
-            // Games link
             links[3].click()
-            expect(routerSpy.calls.all()[3].args[0].toString()).toBe(
+            expect(routerSpy.calls.all()[3].args[0].toString()).toBe('/admin/competitions/comp1/seasons')
+
+            links[4].click()
+            expect(routerSpy.calls.all()[4].args[0].toString()).toBe(
+                '/admin/competitions/comp1/seasons/season1'
+            )
+
+            links[5].click()
+            expect(routerSpy.calls.all()[5].args[0].toString()).toBe(
                 '/admin/competitions/comp1/seasons/season1/games'
+            )
+
+            links[6].click()
+            expect(routerSpy.calls.all()[6].args[0].toString()).toBe(
+                '/admin/competitions/comp1/seasons/season1/games/game1'
             )
         })
     })

@@ -34,19 +34,46 @@ export class BreadcrumbComponent {
     private buildBreadcrumbs(): void {
         this.breadcrumbItems.push({ label: 'Admin', url: ['/admin'] })
 
-        if (!this.competitionID) return
-        this.breadcrumbItems.push({ label: 'Competitions', url: ['/admin/competitions'] })
+        // Competitions list is always included
+        this.breadcrumbItems.push({
+            label: 'Competitions',
+            url: ['/admin/competitions']
+        })
 
-        if (!this.seasonId) return
+        if (!this.competitionID) return
+
+        // Specific Competition
+        this.breadcrumbItems.push({
+            label: this.competitionID,
+            url: ['/admin/competitions', this.competitionID]
+        })
+
+        // Seasons list for this competition
         this.breadcrumbItems.push({
             label: 'Seasons',
-            url: ['/admin/competitions', this.competitionID!, 'seasons']
+            url: ['/admin/competitions', this.competitionID, 'seasons']
+        })
+
+        if (!this.seasonId) return
+
+        // Specific Season
+        this.breadcrumbItems.push({
+            label: this.seasonId,
+            url: ['/admin/competitions', this.competitionID, 'seasons', this.seasonId]
+        })
+
+        // Games list for this season
+        this.breadcrumbItems.push({
+            label: 'Games',
+            url: ['/admin/competitions', this.competitionID, 'seasons', this.seasonId, 'games']
         })
 
         if (!this.gameID) return
+
+        // Specific Game
         this.breadcrumbItems.push({
-            label: 'Games',
-            url: ['/admin/competitions', this.competitionID!, 'seasons', this.seasonId!, 'games']
+            label: this.gameID,
+            url: ['/admin/competitions', this.competitionID, 'seasons', this.seasonId, 'games', this.gameID]
         })
     }
 }

@@ -1,16 +1,17 @@
-import { Component, inject } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { RouterModule } from '@angular/router'
+import { Component, inject } from '@angular/core'
 import { MatTableDataSource } from '@angular/material/table'
-import { MaterialModule } from '../../shared/material/material.module'
+import { RouterModule } from '@angular/router'
+import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
 import { CompetitionsService } from '../../services/competitions/competitions.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { MaterialModule } from '../../shared/material/material.module'
 import { Competition } from '../../types/api'
 
 @Component({
     selector: 'app-competition-list',
     standalone: true,
-    imports: [CommonModule, MaterialModule, RouterModule],
+    imports: [CommonModule, MaterialModule, RouterModule, BreadcrumbComponent],
     templateUrl: './competition-list.component.html',
     styleUrl: './competition-list.component.scss'
 })
