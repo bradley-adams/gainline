@@ -8,7 +8,12 @@ describe('BreadcrumbComponent', () => {
     let fixture: ComponentFixture<BreadcrumbComponent>
     let router: Router
 
-    function mockRoute(competitionId: string | null, seasonId: string | null, gameId: string | null) {
+    function mockRoute(
+        competitionId: string | null,
+        seasonId: string | null,
+        gameId: string | null,
+        path = ''
+    ) {
         return {
             snapshot: {
                 paramMap: {
@@ -18,6 +23,9 @@ describe('BreadcrumbComponent', () => {
                         if (key === 'game-id') return gameId
                         return null
                     }
+                },
+                routeConfig: {
+                    path
                 }
             }
         }
@@ -32,7 +40,9 @@ describe('BreadcrumbComponent', () => {
 
     describe('with no route params', () => {
         beforeEach(() => {
-            TestBed.overrideProvider(ActivatedRoute, { useValue: mockRoute(null, null, null) })
+            TestBed.overrideProvider(ActivatedRoute, {
+                useValue: mockRoute(null, null, null, 'admin')
+            })
             fixture = TestBed.createComponent(BreadcrumbComponent)
             component = fixture.componentInstance
             router = TestBed.inject(Router)
@@ -53,7 +63,9 @@ describe('BreadcrumbComponent', () => {
 
     describe('with competitionID only', () => {
         beforeEach(() => {
-            TestBed.overrideProvider(ActivatedRoute, { useValue: mockRoute('comp1', null, null) })
+            TestBed.overrideProvider(ActivatedRoute, {
+                useValue: mockRoute('comp1', null, null, 'admin/competitions/:competition-id/seasons')
+            })
             fixture = TestBed.createComponent(BreadcrumbComponent)
             component = fixture.componentInstance
             fixture.detectChanges()
@@ -71,7 +83,14 @@ describe('BreadcrumbComponent', () => {
 
     describe('with competitionID and seasonID', () => {
         beforeEach(() => {
-            TestBed.overrideProvider(ActivatedRoute, { useValue: mockRoute('comp1', 'season1', null) })
+            TestBed.overrideProvider(ActivatedRoute, {
+                useValue: mockRoute(
+                    'comp1',
+                    'season1',
+                    null,
+                    'admin/competitions/:competition-id/seasons/:season-id/games'
+                )
+            })
             fixture = TestBed.createComponent(BreadcrumbComponent)
             component = fixture.componentInstance
             fixture.detectChanges()
@@ -91,7 +110,15 @@ describe('BreadcrumbComponent', () => {
 
     describe('with full route params', () => {
         beforeEach(() => {
-            TestBed.overrideProvider(ActivatedRoute, { useValue: mockRoute('comp1', 'season1', 'game1') })
+            TestBed.overrideProvider(ActivatedRoute, {
+                useValue: mockRoute(
+                    'comp1',
+                    'season1',
+                    'game1',
+                    'admin/competitions/:competition-id/seasons/:season-id/games/:game-id'
+                )
+            })
+
             fixture = TestBed.createComponent(BreadcrumbComponent)
             component = fixture.componentInstance
             router = TestBed.inject(Router)
