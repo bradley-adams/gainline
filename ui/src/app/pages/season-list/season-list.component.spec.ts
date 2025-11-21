@@ -1,14 +1,15 @@
+import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { By } from '@angular/platform-browser'
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router'
-import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { of, throwError } from 'rxjs'
 
-import { SeasonListComponent } from './season-list.component'
-import { SeasonDetailComponent } from '../season-detail/season-detail.component'
-import { SeasonsService } from '../../services/seasons/seasons.service'
+import { provideHttpClient } from '@angular/common/http'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { SeasonsService } from '../../services/seasons/seasons.service'
 import { Season, Team } from '../../types/api'
+import { SeasonDetailComponent } from '../season-detail/season-detail.component'
+import { SeasonListComponent } from './season-list.component'
 
 describe('SeasonListComponent', () => {
     let component: SeasonListComponent
@@ -91,6 +92,7 @@ describe('SeasonListComponent', () => {
         await TestBed.configureTestingModule({
             imports: [SeasonListComponent],
             providers: [
+                provideHttpClient(),
                 provideHttpClientTesting(),
                 provideRouter([
                     {
