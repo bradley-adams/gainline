@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
+import { CompetitionsService } from '../../services/competitions/competitions.service'
 
 interface BreadcrumbItem {
     label: string
@@ -15,66 +16,85 @@ interface BreadcrumbItem {
     styleUrls: ['./breadcrumb.component.scss']
 })
 export class BreadcrumbComponent {
-    private readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute)
+    private readonly route = inject(ActivatedRoute)
+    private readonly competitionsService = inject(CompetitionsService)
 
-    public competitionID: string | null = null
-    public seasonId: string | null = null
-    public gameID: string | null = null
+    public breadcrumbItems: BreadcrumbItem[] = []
 
-    public readonly breadcrumbItems: BreadcrumbItem[] = []
+    private competitionId: string = ''
+    private seasonId: string = ''
+    private gameId: string = ''
 
     ngOnInit(): void {
-        this.competitionID = this.activatedRoute.snapshot.paramMap.get('competition-id')
-        this.seasonId = this.activatedRoute.snapshot.paramMap.get('season-id')
-        this.gameID = this.activatedRoute.snapshot.paramMap.get('game-id')
-
-        this.buildBreadcrumbs()
-    }
-
-    private buildBreadcrumbs(): void {
-        const path = this.activatedRoute.snapshot.routeConfig?.path ?? ''
-
-        const isSeasonsListPage = path.endsWith('seasons') && !this.seasonId && !this.gameID
-        const isSeasonCreatePage = path.includes('seasons') && path.includes('create')
-        const isGamesListPage = path.endsWith('games') && !this.gameID
-        const isGameCreatePage = path.includes('games') && path.includes('create')
+        this.competitionId = this.route.snapshot.paramMap.get('competition-id') ?? ''
+        this.seasonId = this.route.snapshot.paramMap.get('season-id') ?? ''
+        this.gameId = this.route.snapshot.paramMap.get('game-id') ?? ''
 
         this.breadcrumbItems.push({ label: 'Admin', url: ['/admin'] })
         this.breadcrumbItems.push({ label: 'Competitions', url: ['/admin/competitions'] })
 
-        if (!this.competitionID) return
+        if (!this.competitionId) return
 
-        this.breadcrumbItems.push({
-            label: this.competitionID,
-            url: ['/admin/competitions', this.competitionID]
+        this.competitionsService.getCompetition(this.competitionId).subscribe({
+            next: (competition) => {
+                const compName = competition.name ?? this.competitionId
+                this.breadcrumbItems.push({
+                    label: compName,
+                    url: ['/admin/competitions', this.competitionId]
+                })
+                this.buildBreadcrumb()
+            },
+            error: () => {
+                this.breadcrumbItems.push({
+                    label: this.competitionId,
+                    url: ['/admin/competitions', this.competitionId]
+                })
+                this.buildBreadcrumb()
+            }
         })
+    }
 
-        if (isSeasonsListPage || isSeasonCreatePage || this.seasonId || this.gameID) {
+    private buildBreadcrumb(): void {
+        const path = this.route.snapshot.routeConfig?.path ?? ''
+
+        const isSeasonsListPage = path.endsWith('seasons') && !this.seasonId && !this.gameId
+        const isSeasonCreatePage = path.includes('seasons') && path.includes('create')
+        const isGamesListPage = path.endsWith('games') && !this.gameId
+        const isGameCreatePage = path.includes('games') && path.includes('create')
+
+        if (isSeasonsListPage || isSeasonCreatePage || this.seasonId || this.gameId) {
             this.breadcrumbItems.push({
                 label: 'Seasons',
-                url: ['/admin/competitions', this.competitionID, 'seasons']
+                url: ['/admin/competitions', this.competitionId, 'seasons']
             })
         }
 
-        if (!this.seasonId) return
+        if (this.seasonId) {
+            this.breadcrumbItems.push({
+                label: this.seasonId,
+                url: ['/admin/competitions', this.competitionId, 'seasons', this.seasonId]
+            })
+        }
 
-        this.breadcrumbItems.push({
-            label: this.seasonId,
-            url: ['/admin/competitions', this.competitionID, 'seasons', this.seasonId]
-        })
-
-        if (isGamesListPage || isGameCreatePage || this.gameID) {
+        if (isGamesListPage || isGameCreatePage || this.gameId) {
             this.breadcrumbItems.push({
                 label: 'Games',
-                url: ['/admin/competitions', this.competitionID, 'seasons', this.seasonId, 'games']
+                url: ['/admin/competitions', this.competitionId, 'seasons', this.seasonId, 'games']
             })
         }
 
-        if (!this.gameID) return
-
-        this.breadcrumbItems.push({
-            label: this.gameID,
-            url: ['/admin/competitions', this.competitionID, 'seasons', this.seasonId, 'games', this.gameID]
-        })
+        if (this.gameId) {
+            this.breadcrumbItems.push({
+                label: this.gameId,
+                url: [
+                    '/admin/competitions',
+                    this.competitionId,
+                    'seasons',
+                    this.seasonId,
+                    'games',
+                    this.gameId
+                ]
+            })
+        }
     }
 }

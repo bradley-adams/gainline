@@ -1,12 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { By } from '@angular/platform-browser'
 import { ActivatedRoute, provideRouter, Router } from '@angular/router'
+import { of } from 'rxjs'
+import { CompetitionsService } from '../../services/competitions/competitions.service'
 import { BreadcrumbComponent } from './breadcrumb.component'
 
 describe('BreadcrumbComponent', () => {
     let component: BreadcrumbComponent
     let fixture: ComponentFixture<BreadcrumbComponent>
     let router: Router
+
+    const mockCompetitionsService = {
+        getCompetition: (id: string) => of({ id, name: `Competition ${id}` })
+    }
 
     function mockRoute(
         competitionId: string | null,
@@ -34,7 +40,10 @@ describe('BreadcrumbComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [BreadcrumbComponent],
-            providers: [provideRouter([{ path: 'admin', component: BreadcrumbComponent }])]
+            providers: [
+                provideRouter([{ path: 'admin', component: BreadcrumbComponent }]),
+                { provide: CompetitionsService, useValue: mockCompetitionsService }
+            ]
         }).compileComponents()
     })
 
@@ -76,7 +85,7 @@ describe('BreadcrumbComponent', () => {
             expect(items.length).toBe(4)
             expect(items[0].nativeElement.textContent).toContain('Admin')
             expect(items[1].nativeElement.textContent).toContain('Competitions')
-            expect(items[2].nativeElement.textContent).toContain('comp1')
+            expect(items[2].nativeElement.textContent).toContain('Competition comp1')
             expect(items[3].nativeElement.textContent).toContain('Seasons')
         })
     })
@@ -101,7 +110,7 @@ describe('BreadcrumbComponent', () => {
             expect(items.length).toBe(6)
             expect(items[0].nativeElement.textContent).toContain('Admin')
             expect(items[1].nativeElement.textContent).toContain('Competitions')
-            expect(items[2].nativeElement.textContent).toContain('comp1')
+            expect(items[2].nativeElement.textContent).toContain('Competition comp1')
             expect(items[3].nativeElement.textContent).toContain('Seasons')
             expect(items[4].nativeElement.textContent).toContain('season1')
             expect(items[5].nativeElement.textContent).toContain('Games')
@@ -130,7 +139,7 @@ describe('BreadcrumbComponent', () => {
             expect(items.length).toBe(7)
             expect(items[0].nativeElement.textContent).toContain('Admin')
             expect(items[1].nativeElement.textContent).toContain('Competitions')
-            expect(items[2].nativeElement.textContent).toContain('comp1')
+            expect(items[2].nativeElement.textContent).toContain('Competition comp1')
             expect(items[3].nativeElement.textContent).toContain('Seasons')
             expect(items[4].nativeElement.textContent).toContain('season1')
             expect(items[5].nativeElement.textContent).toContain('Games')

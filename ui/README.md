@@ -40,9 +40,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## ToDos:
 
-- Team selector in season form now chips but looks/works a bit shit.
-- Game score ui validations for score seem broke.
-- Breadcrumb should show list and forms.
-- Improve display of teams in season (chips, tables, or tags).
+- Bradcrumb a back button under a certin width.
 - Improve team selection for games (searchable select or autocomplete).
+- What should we use in breadcrumb in place or season and game ids.
 - Look at Cypress/Playwright for e2e testing setup.
