@@ -19,7 +19,6 @@ import { MatIconModule } from '@angular/material/icon'
 import { MatInputModule } from '@angular/material/input'
 import { MatTimepickerModule } from '@angular/material/timepicker'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
-
 import { combineLatest, map } from 'rxjs'
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
 import { NotificationService } from '../../services/notifications/notifications.service'
@@ -62,13 +61,13 @@ export class SeasonDetailComponent implements OnInit {
     public startTimeControl = new FormControl<Date | null>(null, Validators.required)
     public endDateControl = new FormControl<Date | null>(null, Validators.required)
     public endTimeControl = new FormControl<Date | null>(null, Validators.required)
-    public teamsControl = new FormControl<string[]>([], [Validators.required])
     public isEditMode = false
     public competitionId: string | null = null
     public seasonId: string | null = null
     public teams: Team[] = []
     public filteredTeams: Team[] = []
     public separatorKeysCodes: number[] = [ENTER, COMMA]
+    public selectedTeamIds: string[] = []
 
     @ViewChild('teamInput') teamInput!: ElementRef<HTMLInputElement>
 
@@ -78,8 +77,6 @@ export class SeasonDetailComponent implements OnInit {
         this.isEditMode = !!this.seasonId
 
         this.initForm()
-        this.teamsControl = this.seasonForm.get('teams') as FormControl
-
         this.initDateTimeSync()
         this.loadTeams()
 
@@ -172,15 +169,6 @@ export class SeasonDetailComponent implements OnInit {
             next: (teams) => {
                 this.teams = teams
                 this.filteredTeams = [...teams]
-
-                const teamsControl = this.seasonForm.get('teams')
-                if (teamsControl) {
-                    teamsControl.setValidators([
-                        Validators.required,
-                        this.minMaxArrayValidator(2, this.teams.length)
-                    ])
-                    teamsControl.updateValueAndValidity()
-                }
             },
             error: (err) => {
                 this.notificationService.showErrorAndLog('Load Error', 'Failed to load teams', err)
@@ -277,27 +265,24 @@ export class SeasonDetailComponent implements OnInit {
             const match = this.teams.find((t) => t.name.toLowerCase() === value.toLowerCase())
             if (match) this.addTeam(match.id)
         }
-        this.clearTeamInput()
+
+        this.teamInput.nativeElement.value = ''
     }
 
     selectTeam(teamId: string) {
         this.addTeam(teamId)
-        this.clearTeamInput()
+        this.teamInput.nativeElement.value = ''
     }
 
     private addTeam(teamId: string) {
-        const current = this.teamsControl.value || []
-        if (!current.includes(teamId)) {
-            this.teamsControl.setValue([...current, teamId])
+        if (!this.selectedTeamIds.includes(teamId)) {
+            this.selectedTeamIds.push(teamId)
+            ;(this.seasonForm.get('teams') as FormControl).setValue([...this.selectedTeamIds])
         }
     }
 
     removeTeam(teamId: string) {
-        const current = this.teamsControl.value || []
-        this.teamsControl.setValue(current.filter((x: string) => x !== teamId))
-    }
-
-    private clearTeamInput() {
-        this.teamInput.nativeElement.value = ''
+        this.selectedTeamIds = this.selectedTeamIds.filter((id) => id !== teamId)
+        ;(this.seasonForm.get('teams') as FormControl).setValue([...this.selectedTeamIds])
     }
 }
