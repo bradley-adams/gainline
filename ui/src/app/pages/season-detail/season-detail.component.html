@@ -82,8 +82,8 @@
             <mat-form-field appearance="outline" class="wide-field">
                 <mat-label>Teams</mat-label>
 
-                <mat-chip-grid #chipGrid [formControl]="teamsControl">
-                    <mat-chip-row *ngFor="let teamId of teamsControl.value" (removed)="removeTeam(teamId)">
+                <mat-chip-grid #chipGrid>
+                    <mat-chip-row *ngFor="let teamId of selectedTeamIds" (removed)="removeTeam(teamId)">
                         {{ getTeamName(teamId) }}
                         <button matChipRemove>
                             <mat-icon>cancel</mat-icon>
@@ -107,8 +107,10 @@
                     </mat-option>
                 </mat-autocomplete>
 
-                <mat-error *ngIf="teamsControl.hasError('minArray')">At least 2 teams are required</mat-error>
-                <mat-error *ngIf="teamsControl.hasError('maxArray')">
+                <mat-error *ngIf="seasonForm.get('teams')?.hasError('minArray')">
+                    At least 2 teams are required
+                </mat-error>
+                <mat-error *ngIf="seasonForm.get('teams')?.hasError('maxArray')">
                     Maximum number of teams allowed
                 </mat-error>
             </mat-form-field>
