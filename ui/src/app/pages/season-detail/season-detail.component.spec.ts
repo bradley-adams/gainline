@@ -169,9 +169,15 @@ describe('SeasonDetailComponent', () => {
             expect(component.seasonForm.errors?.['endBeforeStart']).toBeTrue()
         })
 
-        it('should mark teams invalid if more than max available', () => {
-            const max = component.teams.length
-            component.seasonForm.get('teams')?.setValue(component.teams.map((t) => t.id).concat('extraTeam'))
+        it('should mark teams invalid if more than max allowed', () => {
+            const validList = Array.from({ length: 20 }, (_, i) => `${i}`)
+
+            component.seasonForm.get('teams')?.setValue(validList)
+            expect(component.seasonForm.get('teams')?.valid).toBeTrue()
+
+            const invalidList = [...validList, 'extra']
+
+            component.seasonForm.get('teams')?.setValue(invalidList)
             expect(component.seasonForm.get('teams')?.valid).toBeFalse()
         })
 
