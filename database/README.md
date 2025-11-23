@@ -8,5 +8,5 @@ migrate create -ext sql -dir database/migrations -seq a_new_migration
 
 ## Todo:
 
-- Split competition name and
+- Split competition name and season sponsor.
 - Seed the full 2025 NPC
