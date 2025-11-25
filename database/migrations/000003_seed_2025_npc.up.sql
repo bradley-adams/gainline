@@ -1,0 +1,84 @@
+-- Insert NPC competition
+INSERT INTO competitions (id, name, created_at, updated_at)
+VALUES (
+    '44dd315c-1abc-43aa-9843-642f920190d1', 'National Provincial Championship', now(), now()
+);
+
+-- Insert 2025 season
+INSERT INTO seasons (id, competition_id, start_date, end_date, rounds, sponsor, created_at, updated_at)
+VALUES (
+    '9300778f-cce0-4efe-af6c-e399d8170315',
+    '44dd315c-1abc-43aa-9843-642f920190d1',
+    TIMESTAMPTZ '2025-07-31 21:10:00+12',
+    TIMESTAMPTZ '2025-10-25 21:10:00+12',
+    12,
+    'Bunnings',
+    now(),
+    now()
+);
+
+-- Insert 2025 teams
+INSERT INTO teams (id, name, abbreviation, location, created_at, updated_at)
+VALUES
+('013952a5-87e1-4d26-a312-09b2aff54241', 'Auckland', 'AUK', 'Auckland', now(), now()),
+('b5c6e9d7-8f11-4ef2-acc6-2e5a97839532', 'Bay Of Plenty', 'BOP', 'Tauranga', now(), now()),
+('f192a9ce-dce2-4389-8491-1a193ac7699e', 'Canterbury', 'CAN', 'Christchurch', now(), now()),
+('6b5c3642-c026-4e89-81f7-024c40638f9a', 'Counties Manukau', 'CMK', 'Pukekohe', now(), now()),
+('dedb2044-1d2f-4dc7-84c6-509ec69c82e1', 'Hawke''s Bay', 'HKB', 'Napier', now(), now()),
+('636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', 'Manawatū', 'MAN', 'Palmerston North', now(), now()),
+('e2d6c2bb-eac6-42d6-8727-4d4cbeb3e3d7', 'North Harbour', 'NHB', 'Albany', now(), now()),
+('7e5abf68-8358-4c20-b6a4-f64ef264c13c', 'Northland', 'NOR', 'Whangārei', now(), now()),
+('a5d930c3-13aa-4a85-b5c9-8f40c2c61c8a', 'Otago', 'OTA', 'Dunedin', now(), now()),
+('15c76909-f78a-4d89-bc19-7c80265e1e08', 'Southland', 'STL', 'Invercargill', now(), now()),
+('bfe6ec41-e3f0-4f8f-90d2-d7bca66e1a1f', 'Taranaki', 'TAR', 'New Plymouth', now(), now()),
+('19b3ea1e-0c46-41f3-84ea-490b6b1db30f', 'Tasman', 'TAS', 'Nelson', now(), now()),
+('7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97', 'Waikato', 'WAI', 'Hamilton', now(), now()),
+('ab4c78b1-5dc6-4a14-8f15-d1f144b81d96', 'Wellington', 'WEL', 'Wellington', now(), now());
+
+-- Connect teams to 2025 season
+INSERT INTO season_teams (id, season_id, team_id, created_at, updated_at, deleted_at)
+VALUES
+('8fc1cc1b-7de1-464a-b3c5-7db1806f3661', '9300778f-cce0-4efe-af6c-e399d8170315', '013952a5-87e1-4d26-a312-09b2aff54241', now(), now(), NULL), -- Auckland
+('6e45c89b-ef37-4593-b6c1-1fe4a054deb7', '9300778f-cce0-4efe-af6c-e399d8170315', 'b5c6e9d7-8f11-4ef2-acc6-2e5a97839532', now(), now(), NULL), -- Bay Of Plenty
+('e587e373-986d-4be6-a894-70bf62367455', '9300778f-cce0-4efe-af6c-e399d8170315', 'f192a9ce-dce2-4389-8491-1a193ac7699e', now(), now(), NULL), -- Canterbury
+('ae444444-4444-4444-4444-444444444444', '9300778f-cce0-4efe-af6c-e399d8170315', '6b5c3642-c026-4e89-81f7-024c40638f9a', now(), now(), NULL), -- Counties Manukau
+('9a6d021d-1daa-4320-a6ea-4b62dd8ac5c5', '9300778f-cce0-4efe-af6c-e399d8170315', 'dedb2044-1d2f-4dc7-84c6-509ec69c82e1', now(), now(), NULL), -- Hawke's Bay
+('84d4696e-67ae-4836-a3a9-336c7bb4c4fe', '9300778f-cce0-4efe-af6c-e399d8170315', '636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', now(), now(), NULL), -- Manawatū
+('ad73b809-eb3b-48af-9d50-e26951f52702', '9300778f-cce0-4efe-af6c-e399d8170315', 'e2d6c2bb-eac6-42d6-8727-4d4cbeb3e3d7', now(), now(), NULL), -- North Harbour
+('575c1e41-04f4-47cc-9179-19cd0e0227a9', '9300778f-cce0-4efe-af6c-e399d8170315', '7e5abf68-8358-4c20-b6a4-f64ef264c13c', now(), now(), NULL), -- Northland
+('cbcf4c8a-4172-4a38-8ea0-19dd2282df1f', '9300778f-cce0-4efe-af6c-e399d8170315', 'a5d930c3-13aa-4a85-b5c9-8f40c2c61c8a', now(), now(), NULL), -- Otago
+('a3d1dd91-2bfc-4819-9e52-7e5cb7ea2fdd', '9300778f-cce0-4efe-af6c-e399d8170315', '15c76909-f78a-4d89-bc19-7c80265e1e08', now(), now(), NULL), -- Southland
+('3071577c-0130-4b75-b778-0f843981aff0', '9300778f-cce0-4efe-af6c-e399d8170315', 'bfe6ec41-e3f0-4f8f-90d2-d7bca66e1a1f', now(), now(), NULL), -- Taranaki
+('fdc63492-8ff1-4610-92f1-82f629524404', '9300778f-cce0-4efe-af6c-e399d8170315', '19b3ea1e-0c46-41f3-84ea-490b6b1db30f', now(), now(), NULL), -- Tasman
+('f414e700-8b43-4870-812d-783a5b9ddb2d', '9300778f-cce0-4efe-af6c-e399d8170315', '7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97', now(), now(), NULL), -- Waikato
+('869a0f34-f15d-45ef-b13f-eb551050a849', '9300778f-cce0-4efe-af6c-e399d8170315', 'ab4c78b1-5dc6-4a14-8f15-d1f144b81d96', now(), now(), NULL); -- Wellington
+
+-- Insert 2025 games
+INSERT INTO games (
+    id, season_id, round, date,
+    home_team_id, away_team_id,
+    home_score, away_score,
+    status, created_at, updated_at
+)
+VALUES
+-- Round 1
+('940ef044-fbaf-4e87-8026-6d0e33eab20f', '9300778f-cce0-4efe-af6c-e399d8170315', 1, '2025-07-31 21:10+12',
+ '013952a5-87e1-4d26-a312-09b2aff54241', '7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97', 35, 36, 'finished', now(), now()),
+
+('ce82f220-dcae-4b0a-a9ea-1e1b220a098d', '9300778f-cce0-4efe-af6c-e399d8170315', 1, '2025-08-01 21:10+12',
+ '636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', 'e2d6c2bb-eac6-42d6-8727-4d4cbeb3e3d7', 38, 25, 'finished', now(), now()),
+
+('1e966827-7f69-4274-8ee8-323d6276a47d', '9300778f-cce0-4efe-af6c-e399d8170315', 1, '2025-08-02 16:05+12',
+ 'ab4c78b1-5dc6-4a14-8f15-d1f144b81d96', 'f192a9ce-dce2-4389-8491-1a193ac7699e', 15, 33, 'finished', now(), now()),
+
+('3d34c43c-ba21-4cea-8964-a4c1df89faf9', '9300778f-cce0-4efe-af6c-e399d8170315', 1, '2025-08-02 18:35+12',
+ '15c76909-f78a-4d89-bc19-7c80265e1e08', 'a5d930c3-13aa-4a85-b5c9-8f40c2c61c8a', 15, 24, 'finished', now(), now()),
+
+('b26dc5a0-f061-4d23-bf19-cdc03b1d0787', '9300778f-cce0-4efe-af6c-e399d8170315', 1, '2025-08-02 21:10+12',
+ 'bfe6ec41-e3f0-4f8f-90d2-d7bca66e1a1f', '7e5abf68-8358-4c20-b6a4-f64ef264c13c', 23, 3, 'finished', now(), now()),
+
+('ca38f91b-17d2-4c01-9b8f-69b1a0923371', '9300778f-cce0-4efe-af6c-e399d8170315', 1, '2025-08-03 16:05+12',
+ 'b5c6e9d7-8f11-4ef2-acc6-2e5a97839532', '19b3ea1e-0c46-41f3-84ea-490b6b1db30f', 37, 7, 'finished', now(), now()),
+
+('d656fe21-abd3-4f1b-8e5b-7e560c519877', '9300778f-cce0-4efe-af6c-e399d8170315', 1, '2025-08-03 18:35+12',
+ 'dedb2044-1d2f-4dc7-84c6-509ec69c82e1', '6b5c3642-c026-4e89-81f7-024c40638f9a', 54, 14, 'finished', now(), now()),
