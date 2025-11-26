@@ -9,8 +9,8 @@ INSERT INTO seasons (id, competition_id, start_date, end_date, rounds, sponsor, 
 VALUES (
     '9300778f-cce0-4efe-af6c-e399d8170315',
     '44dd315c-1abc-43aa-9843-642f920190d1',
-    TIMESTAMPTZ '2025-07-31 21:10:00+12',
-    TIMESTAMPTZ '2025-10-25 21:10:00+12',
+    TIMESTAMPTZ '2025-07-31 21:10+12',
+    TIMESTAMPTZ '2025-10-25 23:10+12',
     12,
     'Bunnings',
     now(),
@@ -82,3 +82,25 @@ VALUES
 
 ('d656fe21-abd3-4f1b-8e5b-7e560c519877', '9300778f-cce0-4efe-af6c-e399d8170315', 1, '2025-08-03 18:35+12',
  'dedb2044-1d2f-4dc7-84c6-509ec69c82e1', '6b5c3642-c026-4e89-81f7-024c40638f9a', 54, 14, 'finished', now(), now()),
+
+ -- Round 2
+('9ba6c29c-63c7-468e-9c85-ff3a86bd2b8f', '9300778f-cce0-4efe-af6c-e399d8170315', 2, '2025-08-08 21:10+12',
+ '7e5abf68-8358-4c20-b6a4-f64ef264c13c', '15c76909-f78a-4d89-bc19-7c80265e1e08', 22, 17, 'finished', now(), now()),
+ 
+('d7b67afd-8e02-4880-9cda-f5db2ead6260', '9300778f-cce0-4efe-af6c-e399d8170315', 2, '2025-08-09 16:05+12',
+ '7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97', 'ab4c78b1-5dc6-4a14-8f15-d1f144b81d96', 24, 35, 'finished', now(), now()),
+
+('73d3e3a0-175b-44c9-bc19-3080d2da1b8a', '9300778f-cce0-4efe-af6c-e399d8170315', 2, '2025-08-09 16:05+12',
+ 'e2d6c2bb-eac6-42d6-8727-4d4cbeb3e3d7', 'bfe6ec41-e3f0-4f8f-90d2-d7bca66e1a1f', 24, 46, 'finished', now(), now()),
+
+('f796cef5-619e-4ec8-bfd1-2be4b748386b', '9300778f-cce0-4efe-af6c-e399d8170315', 2, '2025-08-09 18:35+12',
+ '19b3ea1e-0c46-41f3-84ea-490b6b1db30f', '636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', 49, 17, 'finished', now(), now()),
+
+('8dd237ae-623b-4fcf-8b55-aad2f2a76b1a', '9300778f-cce0-4efe-af6c-e399d8170315', 2, '2025-08-09 21:10+12',
+ 'f192a9ce-dce2-4389-8491-1a193ac7699e', '013952a5-87e1-4d26-a312-09b2aff54241', 19, 15, 'finished', now(), now()),
+
+('0b8c5035-389e-4fb3-9e39-e52260784285', '9300778f-cce0-4efe-af6c-e399d8170315', 2, '2025-08-10 16:05+12',
+ '6b5c3642-c026-4e89-81f7-024c40638f9a', 'b5c6e9d7-8f11-4ef2-acc6-2e5a97839532', 22, 39, 'finished', now(), now()),
+
+('cd4c92df-e18a-451d-af6b-2f120919d504', '9300778f-cce0-4efe-af6c-e399d8170315', 2, '2025-08-10 18:35+12',
+ 'a5d930c3-13aa-4a85-b5c9-8f40c2c61c8a', 'dedb2044-1d2f-4dc7-84c6-509ec69c82e1', 21, 27, 'finished', now(), now());
