@@ -147,4 +147,26 @@ VALUES
  'a5d930c3-13aa-4a85-b5c9-8f40c2c61c8a', '636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', 33, 19, 'finished', now(), now()),
 
 ('54cf1c34-c79d-48e2-92e6-ad195eea49e1', '9300778f-cce0-4efe-af6c-e399d8170315', 4, '2025-08-24 18:35+12',
- '636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', 'ab4c78b1-5dc6-4a14-8f15-d1f144b81d96', 38, 28, 'finished', now(), now());
+ '636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', 'ab4c78b1-5dc6-4a14-8f15-d1f144b81d96', 38, 28, 'finished', now(), now()),
+
+-- Round 5
+('87751cc2-1833-41f3-884d-f038335b39e5', '9300778f-cce0-4efe-af6c-e399d8170315', 5, '2025-08-08 21:10+12',
+ 'e2d6c2bb-eac6-42d6-8727-4d4cbeb3e3d7', 'b5c6e9d7-8f11-4ef2-acc6-2e5a97839532', 7, 19, 'finished', now(), now()),
+
+('5c38b91e-bf62-4db7-b8bf-e9f44cb9f148', '9300778f-cce0-4efe-af6c-e399d8170315', 5, '2025-08-08 21:10+12',
+ 'f192a9ce-dce2-4389-8491-1a193ac7699e', '636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', 53, 14, 'finished', now(), now()),
+
+('284af7c8-2d67-4f1a-bed6-ce8f01cefb51', '9300778f-cce0-4efe-af6c-e399d8170315', 5, '2025-08-08 21:10+12',
+ '6b5c3642-c026-4e89-81f7-024c40638f9a', 'bfe6ec41-e3f0-4f8f-90d2-d7bca66e1a1f', 22, 43, 'finished', now(), now()),
+
+('e88c6ca3-3d47-4318-85eb-637838b42ebf', '9300778f-cce0-4efe-af6c-e399d8170315', 5, '2025-08-08 21:10+12',
+ '7e5abf68-8358-4c20-b6a4-f64ef264c13c', 'dedb2044-1d2f-4dc7-84c6-509ec69c82e1', 27, 22, 'finished', now(), now()),
+
+('1093f483-8147-42f8-ac4c-f26468320f69', '9300778f-cce0-4efe-af6c-e399d8170315', 5, '2025-08-08 21:10+12',
+ '19b3ea1e-0c46-41f3-84ea-490b6b1db30f', 'a5d930c3-13aa-4a85-b5c9-8f40c2c61c8a', 31, 27, 'finished', now(), now()),
+
+('120edadc-472a-4798-a999-c1c5f7a9ff69', '9300778f-cce0-4efe-af6c-e399d8170315', 5, '2025-08-08 21:10+12',
+ 'ab4c78b1-5dc6-4a14-8f15-d1f144b81d96', '013952a5-87e1-4d26-a312-09b2aff54241', 36, 17, 'finished', now(), now()),
+
+('e5c0a0f9-6dad-46b6-9f51-eaf6e5598e07', '9300778f-cce0-4efe-af6c-e399d8170315', 5, '2025-08-08 21:10+12',
+ '7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97', '15c76909-f78a-4d89-bc19-7c80265e1e08', 10, 25, 'finished', now(), now());
