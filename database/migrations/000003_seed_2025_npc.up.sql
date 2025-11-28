@@ -83,7 +83,7 @@ VALUES
 ('d656fe21-abd3-4f1b-8e5b-7e560c519877', '9300778f-cce0-4efe-af6c-e399d8170315', 1, '2025-08-03 18:35+12',
  'dedb2044-1d2f-4dc7-84c6-509ec69c82e1', '6b5c3642-c026-4e89-81f7-024c40638f9a', 54, 14, 'finished', now(), now()),
 
- -- Round 2
+-- Round 2
 ('9ba6c29c-63c7-468e-9c85-ff3a86bd2b8f', '9300778f-cce0-4efe-af6c-e399d8170315', 2, '2025-08-08 21:10+12',
  '7e5abf68-8358-4c20-b6a4-f64ef264c13c', '15c76909-f78a-4d89-bc19-7c80265e1e08', 22, 17, 'finished', now(), now()),
  
@@ -105,7 +105,7 @@ VALUES
 ('cd4c92df-e18a-451d-af6b-2f120919d504', '9300778f-cce0-4efe-af6c-e399d8170315', 2, '2025-08-10 18:35+12',
  'a5d930c3-13aa-4a85-b5c9-8f40c2c61c8a', 'dedb2044-1d2f-4dc7-84c6-509ec69c82e1', 21, 27, 'finished', now(), now()),
 
-  -- Round 3
+-- Round 3
 ('15b6b6e2-2783-4d5d-b6f9-b1e8fac5298e', '9300778f-cce0-4efe-af6c-e399d8170315', 3, '2025-08-15 21:10+12',
  '15c76909-f78a-4d89-bc19-7c80265e1e08', '636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', 29, 22, 'finished', now(), now()),
 
@@ -126,3 +126,25 @@ VALUES
 
 ('ad43c079-9502-4033-9eb2-c7e030f0cac0', '9300778f-cce0-4efe-af6c-e399d8170315', 3, '2025-08-17 18:35+12',
  '7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97', '6b5c3642-c026-4e89-81f7-024c40638f9a', 27, 26, 'finished', now(), now()),
+
+-- Round 4
+('f7119686-8a76-4d67-ac91-53e121bbefdd', '9300778f-cce0-4efe-af6c-e399d8170315', 4, '2025-08-21 21:10+12',
+ 'b5c6e9d7-8f11-4ef2-acc6-2e5a97839532', '15c76909-f78a-4d89-bc19-7c80265e1e08', 25, 30, 'finished', now(), now()),
+
+('d5b1c2f1-fa32-4ff7-8f6d-c53f2159e7e6', '9300778f-cce0-4efe-af6c-e399d8170315', 4, '2025-08-22 21:10+12',
+ 'dedb2044-1d2f-4dc7-84c6-509ec69c82e1', 'f192a9ce-dce2-4389-8491-1a193ac7699e', 7, 26, 'finished', now(), now()),
+
+('9a2f7e0a-03d4-4cfa-bdca-5c7230fae60e', '9300778f-cce0-4efe-af6c-e399d8170315', 4, '2025-08-23 16:05+12',
+ 'bfe6ec41-e3f0-4f8f-90d2-d7bca66e1a1f', '7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97', 22, 23, 'finished', now(), now()),
+
+('47570ea7-e50f-4fd8-aca6-946ad07e58fb', '9300778f-cce0-4efe-af6c-e399d8170315', 4, '2025-08-23 18:35+12',
+ 'e2d6c2bb-eac6-42d6-8727-4d4cbeb3e3d7', '19b3ea1e-0c46-41f3-84ea-490b6b1db30f', 19, 43, 'finished', now(), now()),
+
+('fee66798-9326-4cc5-a0aa-b3df992b3b8a', '9300778f-cce0-4efe-af6c-e399d8170315', 4, '2025-08-23 21:10+12',
+ '013952a5-87e1-4d26-a312-09b2aff54241', '7e5abf68-8358-4c20-b6a4-f64ef264c13c', 24, 43, 'finished', now(), now()),
+
+('337db57b-55bd-4cfa-ab5a-55b38b6ddebf', '9300778f-cce0-4efe-af6c-e399d8170315', 4, '2025-08-24 15:35+12',
+ 'a5d930c3-13aa-4a85-b5c9-8f40c2c61c8a', '636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', 33, 19, 'finished', now(), now()),
+
+('54cf1c34-c79d-48e2-92e6-ad195eea49e1', '9300778f-cce0-4efe-af6c-e399d8170315', 4, '2025-08-24 18:35+12',
+ '636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', 'ab4c78b1-5dc6-4a14-8f15-d1f144b81d96', 38, 28, 'finished', now(), now());
