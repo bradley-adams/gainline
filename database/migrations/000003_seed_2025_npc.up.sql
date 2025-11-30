@@ -12,7 +12,6 @@ VALUES (
     TIMESTAMPTZ '2025-07-31 21:10+12',
     TIMESTAMPTZ '2025-10-25 23:10+12',
     12,
-    'Bunnings',
     now(),
     now()
 );
