@@ -191,4 +191,26 @@ VALUES
  'bfe6ec41-e3f0-4f8f-90d2-d7bca66e1a1f', 'b5c6e9d7-8f11-4ef2-acc6-2e5a97839532', 17, 43, 'finished', now(), now()),
 
 ('a2ee305f-0cb7-40f2-8473-171b54666cd6', '9300778f-cce0-4efe-af6c-e399d8170315', 6, '2025-09-08 16:35+12',
- '19b3ea1e-0c46-41f3-84ea-490b6b1db30f', '013952a5-87e1-4d26-a312-09b2aff54241', 21, 29, 'finished', now(), now());
+ '19b3ea1e-0c46-41f3-84ea-490b6b1db30f', '013952a5-87e1-4d26-a312-09b2aff54241', 21, 29, 'finished', now(), now()),
+
+-- Round 7
+('62ff6277-bc6c-4e2d-b311-a4f57b5bcd13', '9300778f-cce0-4efe-af6c-e399d8170315', 7, '2025-09-11 21:10+12',
+ '7e5abf68-8358-4c20-b6a4-f64ef264c13c', 'ab4c78b1-5dc6-4a14-8f15-d1f144b81d96', 43, 26, 'finished', now(), now()),
+
+('a862d5ab-1f2a-4277-8f91-589347f5fe1a', '9300778f-cce0-4efe-af6c-e399d8170315', 7, '2025-09-12 21:10+12',
+ '7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97', 'e2d6c2bb-eac6-42d6-8727-4d4cbeb3e3d7', 29, 28, 'finished', now(), now()),
+
+('75fde3c9-dd5c-43ea-8d78-3858dc76f704', '9300778f-cce0-4efe-af6c-e399d8170315', 7, '2025-09-13 16:05+12',
+ 'b5c6e9d7-8f11-4ef2-acc6-2e5a97839532', 'dedb2044-1d2f-4dc7-84c6-509ec69c82e1', 21, 24, 'finished', now(), now()),
+
+('406a2c92-df7d-4f63-ac64-52c1ee4d012b', '9300778f-cce0-4efe-af6c-e399d8170315', 7, '2025-09-13 18:05+12',
+ 'a5d930c3-13aa-4a85-b5c9-8f40c2c61c8a', 'bfe6ec41-e3f0-4f8f-90d2-d7bca66e1a1f', 28, 26, 'finished', now(), now()),
+
+('7e2a9a37-1ebf-4780-9dd7-38e55b387b5f', '9300778f-cce0-4efe-af6c-e399d8170315', 7, '2025-09-14 16:05+12',
+ '013952a5-87e1-4d26-a312-09b2aff54241', '636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', 52, 29, 'finished', now(), now()),
+
+('ff6be7f9-36b7-4f85-9915-70d301d668dd', '9300778f-cce0-4efe-af6c-e399d8170315', 7, '2025-09-14 16:05+12',
+ 'f192a9ce-dce2-4389-8491-1a193ac7699e', '19b3ea1e-0c46-41f3-84ea-490b6b1db30f', 31, 25, 'finished', now(), now()),
+
+('68101d89-673e-49ff-94ec-b33619dbeea7', '9300778f-cce0-4efe-af6c-e399d8170315', 7, '2025-09-14 18:35+12',
+ '15c76909-f78a-4d89-bc19-7c80265e1e08', '6b5c3642-c026-4e89-81f7-024c40638f9a', 10, 64, 'finished', now(), now());
