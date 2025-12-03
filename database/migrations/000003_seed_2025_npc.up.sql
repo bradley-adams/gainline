@@ -256,4 +256,26 @@ VALUES
  'b5c6e9d7-8f11-4ef2-acc6-2e5a97839532', '7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97', 41, 5, 'finished', now(), now()),
 
 ('9c849f9d-ce78-4bfd-8aeb-55b2b1914500', '9300778f-cce0-4efe-af6c-e399d8170315', 9, '2025-09-28 17:35+12',
- '7e5abf68-8358-4c20-b6a4-f64ef264c13c', 'f192a9ce-dce2-4389-8491-1a193ac7699e', 19, 19, 'finished', now(), now());
+ '7e5abf68-8358-4c20-b6a4-f64ef264c13c', 'f192a9ce-dce2-4389-8491-1a193ac7699e', 19, 19, 'finished', now(), now()),
+
+-- Round 10
+('3b4f97e0-ede4-40a2-a59b-254496d693a7', '9300778f-cce0-4efe-af6c-e399d8170315', 10, '2025-10-03 21:10+12',
+ 'e2d6c2bb-eac6-42d6-8727-4d4cbeb3e3d7', '15c76909-f78a-4d89-bc19-7c80265e1e08', 15, 14, 'finished', now(), now()),
+
+('762b84d8-17fe-43cf-81af-ac2bd56faa8e', '9300778f-cce0-4efe-af6c-e399d8170315', 10, '2025-10-04 15:05+12',
+ 'ab4c78b1-5dc6-4a14-8f15-d1f144b81d96', 'b5c6e9d7-8f11-4ef2-acc6-2e5a97839532', 26, 33, 'finished', now(), now()),
+
+('98f6e1bf-be79-4952-bf8a-4924c3872bcb', '9300778f-cce0-4efe-af6c-e399d8170315', 10, '2025-10-04 15:05+12',
+ '013952a5-87e1-4d26-a312-09b2aff54241', 'a5d930c3-13aa-4a85-b5c9-8f40c2c61c8a', 17, 51, 'finished', now(), now()),
+
+('0d60bdcc-effc-458c-b0bf-1a87a089684a', '9300778f-cce0-4efe-af6c-e399d8170315', 10, '2025-10-04 17:35+12',
+ '7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97', '7e5abf68-8358-4c20-b6a4-f64ef264c13c', 25, 19, 'finished', now(), now()),
+
+('c03d6ccb-ef22-490a-90d0-77e710bb65d0', '9300778f-cce0-4efe-af6c-e399d8170315', 10, '2025-10-04 21:10+12',
+ '636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', 'dedb2044-1d2f-4dc7-84c6-509ec69c82e1', 10, 38, 'finished', now(), now()),
+
+('bce365a1-b6f2-454a-842a-2c5c51b79a15', '9300778f-cce0-4efe-af6c-e399d8170315', 10, '2025-10-05 15:05+12',
+ '19b3ea1e-0c46-41f3-84ea-490b6b1db30f', '6b5c3642-c026-4e89-81f7-024c40638f9a', 41, 49, 'finished', now(), now()),
+
+('1dfcadb0-de4d-4be0-a4e7-443aa766a526', '9300778f-cce0-4efe-af6c-e399d8170315', 10, '2025-10-05 17:35+12',
+ 'f192a9ce-dce2-4389-8491-1a193ac7699e', 'bfe6ec41-e3f0-4f8f-90d2-d7bca66e1a1f', 34, 14, 'finished', now(), now());
