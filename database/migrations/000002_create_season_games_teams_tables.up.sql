@@ -44,13 +44,22 @@ CREATE TABLE season_teams (
     UNIQUE (season_id, team_id)
 );
 
+CREATE TYPE stage_type AS ENUM ('scheduled', 'playing', 'finished');
+
+CREATE TABLE stages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  season_id UUID NOT NULL REFERENCES seasons(id),
+  name TEXT NOT NULL,
+  stage_type TEXT NOT NULL,
+  order_index INT NOT NULL
+);
 
 CREATE TYPE game_status AS ENUM ('scheduled', 'playing', 'finished');
 
 CREATE TABLE games (
     id UUID PRIMARY KEY,
     season_id UUID NOT NULL,
-    round INTEGER NOT NULL,
+    stage_id UUID NOT NULL,
     date TIMESTAMP WITH TIME ZONE NOT NULL,
     home_team_id UUID NOT NULL,
     away_team_id UUID NOT NULL,
@@ -61,6 +70,7 @@ CREATE TABLE games (
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
     deleted_at TIMESTAMP WITH TIME ZONE,
     CONSTRAINT fk_games_seasons FOREIGN KEY (season_id) REFERENCES seasons(id) ON DELETE CASCADE,
+    CONSTRAINT fk_games_stage FOREIGN KEY (stage_id) REFERENCES stages(id) ON DELETE CASCADE,
     CONSTRAINT fk_games_home_team FOREIGN KEY (home_team_id) REFERENCES teams(id) ON DELETE CASCADE,
     CONSTRAINT fk_games_away_team FOREIGN KEY (away_team_id) REFERENCES teams(id) ON DELETE CASCADE
 );
