@@ -5,13 +5,13 @@ VALUES (
 );
 
 -- Insert 2025 season
-INSERT INTO seasons (id, competition_id, start_date, end_date, rounds, sponsor, created_at, updated_at)
+INSERT INTO seasons (id, competition_id, start_date, end_date, rounds, created_at, updated_at)
 VALUES (
     '9300778f-cce0-4efe-af6c-e399d8170315',
     '44dd315c-1abc-43aa-9843-642f920190d1',
     TIMESTAMPTZ '2025-07-31 21:10+12',
     TIMESTAMPTZ '2025-10-25 23:10+12',
-    12,
+    10,
     now(),
     now()
 );
@@ -40,7 +40,7 @@ VALUES
 ('8fc1cc1b-7de1-464a-b3c5-7db1806f3661', '9300778f-cce0-4efe-af6c-e399d8170315', '013952a5-87e1-4d26-a312-09b2aff54241', now(), now(), NULL), -- Auckland
 ('6e45c89b-ef37-4593-b6c1-1fe4a054deb7', '9300778f-cce0-4efe-af6c-e399d8170315', 'b5c6e9d7-8f11-4ef2-acc6-2e5a97839532', now(), now(), NULL), -- Bay Of Plenty
 ('e587e373-986d-4be6-a894-70bf62367455', '9300778f-cce0-4efe-af6c-e399d8170315', 'f192a9ce-dce2-4389-8491-1a193ac7699e', now(), now(), NULL), -- Canterbury
-('ae444444-4444-4444-4444-444444444444', '9300778f-cce0-4efe-af6c-e399d8170315', '6b5c3642-c026-4e89-81f7-024c40638f9a', now(), now(), NULL), -- Counties Manukau
+('9bc1d9b6-73e5-479d-9152-7bbeb73b0411', '9300778f-cce0-4efe-af6c-e399d8170315', '6b5c3642-c026-4e89-81f7-024c40638f9a', now(), now(), NULL), -- Counties Manukau
 ('9a6d021d-1daa-4320-a6ea-4b62dd8ac5c5', '9300778f-cce0-4efe-af6c-e399d8170315', 'dedb2044-1d2f-4dc7-84c6-509ec69c82e1', now(), now(), NULL), -- Hawke's Bay
 ('84d4696e-67ae-4836-a3a9-336c7bb4c4fe', '9300778f-cce0-4efe-af6c-e399d8170315', '636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', now(), now(), NULL), -- Manawatū
 ('ad73b809-eb3b-48af-9d50-e26951f52702', '9300778f-cce0-4efe-af6c-e399d8170315', 'e2d6c2bb-eac6-42d6-8727-4d4cbeb3e3d7', now(), now(), NULL), -- North Harbour
@@ -177,7 +177,7 @@ VALUES
 ('79878f7e-769e-441e-8710-b379df20f730', '9300778f-cce0-4efe-af6c-e399d8170315', 6, '2025-09-05 21:10+12',
  'a5d930c3-13aa-4a85-b5c9-8f40c2c61c8a', '7e5abf68-8358-4c20-b6a4-f64ef264c13c', 29, 10, 'finished', now(), now()),
 
-('cc8b240a-9508-4217-a167-43c575ab23ef', '9300778f-cce0-4efe-af6c-e399d8170315', 6, '2025-09-06 16.05:10+12',
+('cc8b240a-9508-4217-a167-43c575ab23ef', '9300778f-cce0-4efe-af6c-e399d8170315', 6, '2025-09-06 16:05:10+12',
  '636f1f87-bc47-4e63-a3de-bf7cb8eb0c22', '7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97', 36, 26, 'finished', now(), now()),
 
 ('262c7e9b-74cb-4df8-a390-f4e3af8a38cb', '9300778f-cce0-4efe-af6c-e399d8170315', 6, '2025-09-06 16:05+12',
