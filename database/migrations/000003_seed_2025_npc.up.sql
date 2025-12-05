@@ -1102,4 +1102,4 @@ VALUES
     'finished', 
     now(), 
     now()
-),
+);
