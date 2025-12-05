@@ -44,7 +44,7 @@ CREATE TABLE season_teams (
     UNIQUE (season_id, team_id)
 );
 
-CREATE TYPE stage_type AS ENUM ('scheduled', 'playing', 'finished');
+CREATE TYPE stage_type AS ENUM ('regular', 'finals');
 
 CREATE TABLE stages (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
