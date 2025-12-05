@@ -1005,4 +1005,58 @@ VALUES
     'finished', 
     now(), 
     now()
+),
+
+-- Quarterfinals
+(
+    '2aac44fc-b7dd-48ff-8211-569543ac078f', 
+    '9300778f-cce0-4efe-af6c-e399d8170315', 
+    '6ad67327-958b-491d-bcd2-f9cc50f0330a', 
+    '2025-10-10 21:10+12',
+    'a5d930c3-13aa-4a85-b5c9-8f40c2c61c8a', 
+    '7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97', 
+    44,
+    41,
+    'finished', 
+    now(), 
+    now()
+),
+(
+    '0757454f-3586-440e-bfc4-1250b647cbcf', 
+    '9300778f-cce0-4efe-af6c-e399d8170315', 
+    '6ad67327-958b-491d-bcd2-f9cc50f0330a', 
+    '2025-10-11 17:10+12',
+    'b5c6e9d7-8f11-4ef2-acc6-2e5a97839532', 
+    '19b3ea1e-0c46-41f3-84ea-490b6b1db30f', 
+    27,
+    7,
+    'finished', 
+    now(), 
+    now()
+),
+(
+    '44fbc8b7-f653-43f2-ac05-2c6baabe5ef1', 
+    '9300778f-cce0-4efe-af6c-e399d8170315', 
+    '6ad67327-958b-491d-bcd2-f9cc50f0330a', 
+    '2025-10-11 21:10+12',
+    'dedb2044-1d2f-4dc7-84c6-509ec69c82e1', 
+    'bfe6ec41-e3f0-4f8f-90d2-d7bca66e1a1f', 
+    26,
+    12,
+    'finished', 
+    now(), 
+    now()
+),
+(
+    '213dfa4c-96ce-4bcb-8a17-e07da9e4a3b5', 
+    '9300778f-cce0-4efe-af6c-e399d8170315', 
+    '6ad67327-958b-491d-bcd2-f9cc50f0330a', 
+    '2025-10-12 15:10+12',
+    'f192a9ce-dce2-4389-8491-1a193ac7699e', 
+    '6b5c3642-c026-4e89-81f7-024c40638f9a', 
+    23,
+    15,
+    'finished', 
+    now(), 
+    now()
 );
