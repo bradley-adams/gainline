@@ -25,4 +25,4 @@ migrate -path database/migrations -database "postgres://gainline:gainline@localh
 - Split competition name and season sponsor.
 - Rounds and Finals seperations.
 - Shield challenges (side comps)
-- Bonus points
+- Poionts and Bonus points
