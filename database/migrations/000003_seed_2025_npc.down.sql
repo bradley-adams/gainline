@@ -6,6 +6,10 @@ WHERE season_id = '9300778f-cce0-4efe-af6c-e399d8170315';
 DELETE FROM season_teams
 WHERE season_id = '9300778f-cce0-4efe-af6c-e399d8170315';
 
+-- Remove 2025 stages (regular + finals)
+DELETE FROM stages
+WHERE season_id = '9300778f-cce0-4efe-af6c-e399d8170315';
+
 -- Remove 2025 teams
 DELETE FROM teams
 WHERE id IN (
