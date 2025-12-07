@@ -23,7 +23,7 @@ func (gs GameStatus) String() string {
 }
 
 type GameRequest struct {
-	Round      int32      `json:"round" validate:"required,min=1,max=52" example:"10"`
+	StageID    uuid.UUID  `json:"stage_id" validate:"required,uuid" swaggertype:"string" example:"eab15533-dea6-4a3d-8a95-d38e4fba2d5a"`
 	Date       time.Time  `json:"date" validate:"required" example:"2025-08-02T00:00:00Z"`
 	HomeTeamID uuid.UUID  `json:"home_team_id" validate:"required,uuid" swaggertype:"string" example:"013952a5-87e1-4d26-a312-09b2aff54241"`
 	AwayTeamID uuid.UUID  `json:"away_team_id" validate:"required,uuid" swaggertype:"string" example:"7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97"`
@@ -35,7 +35,7 @@ type GameRequest struct {
 type GameResponse struct {
 	ID         uuid.UUID  `json:"id"`
 	SeasonID   uuid.UUID  `json:"season_id"`
-	Round      int32      `json:"round"`
+	StageID    uuid.UUID  `json:"stage_id"`
 	Date       time.Time  `json:"date"`
 	HomeTeamID uuid.UUID  `json:"home_team_id"`
 	AwayTeamID uuid.UUID  `json:"away_team_id"`
@@ -65,7 +65,7 @@ func ToGameResponse(g db.Game) GameResponse {
 	return GameResponse{
 		ID:         g.ID,
 		SeasonID:   g.SeasonID,
-		Round:      g.Round,
+		StageID:    g.StageID,
 		Date:       g.Date,
 		HomeTeamID: g.HomeTeamID,
 		AwayTeamID: g.AwayTeamID,

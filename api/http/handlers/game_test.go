@@ -110,11 +110,11 @@ var _ = Describe("game handlers", func() {
 	Describe("create game", func() {
 		It("returns 201 for valid request", func() {
 			mockSvc.CreateFn = func(ctx context.Context, req *api.GameRequest, s service.SeasonWithTeams) (db.Game, error) {
-				return db.Game{ID: uuid.New(), SeasonID: s.ID, Round: req.Round}, nil
+				return db.Game{ID: uuid.New(), SeasonID: s.ID, StageID: req.StageID}, nil
 			}
 
-			reqBody := fmt.Sprintf(`{"round":1,"date":"%s","home_team_id":"%s","away_team_id":"%s"}`,
-				time.Now().Format(time.RFC3339), season.Teams[0].ID, season.Teams[1].ID)
+			reqBody := fmt.Sprintf(`{"stage_id":"%s","date":"%s","home_team_id":"%s","away_team_id":"%s"}`,
+				uuid.New(), time.Now().Format(time.RFC3339), season.Teams[0].ID, season.Teams[1].ID)
 
 			req := httptest.NewRequest(http.MethodPost, "/seasons/"+season.ID.String()+"/games", bytes.NewBufferString(reqBody))
 			req.Header.Set("Content-Type", "application/json")
@@ -138,8 +138,8 @@ var _ = Describe("game handlers", func() {
 				return db.Game{}, fmt.Errorf("db failure")
 			}
 
-			reqBody := fmt.Sprintf(`{"round":1,"date":"%s","home_team_id":"%s","away_team_id":"%s"}`,
-				time.Now().Format(time.RFC3339), season.Teams[0].ID, season.Teams[1].ID)
+			reqBody := fmt.Sprintf(`{"stage_id":"%s","date":"%s","home_team_id":"%s","away_team_id":"%s"}`,
+				uuid.New(), time.Now().Format(time.RFC3339), season.Teams[0].ID, season.Teams[1].ID)
 
 			req := httptest.NewRequest(http.MethodPost, "/seasons/"+season.ID.String()+"/games", bytes.NewBufferString(reqBody))
 			req.Header.Set("Content-Type", "application/json")
@@ -206,11 +206,11 @@ var _ = Describe("game handlers", func() {
 		It("returns 200 for valid update", func() {
 			gameID := uuid.New()
 			mockSvc.UpdateFn = func(ctx context.Context, req *api.GameRequest, gID uuid.UUID, s service.SeasonWithTeams) (db.Game, error) {
-				return db.Game{ID: gID, Round: req.Round, SeasonID: s.ID}, nil
+				return db.Game{ID: gID, StageID: req.StageID, SeasonID: s.ID}, nil
 			}
 
-			reqBody := fmt.Sprintf(`{"round":2,"date":"%s","home_team_id":"%s","away_team_id":"%s"}`,
-				time.Now().Format(time.RFC3339), season.Teams[0].ID, season.Teams[1].ID)
+			reqBody := fmt.Sprintf(`{"stage_id":"%s","date":"%s","home_team_id":"%s","away_team_id":"%s"}`,
+				uuid.New(), time.Now().Format(time.RFC3339), season.Teams[0].ID, season.Teams[1].ID)
 
 			req := httptest.NewRequest(http.MethodPut, "/seasons/"+season.ID.String()+"/games/"+gameID.String(), bytes.NewBufferString(reqBody))
 			req.Header.Set("Content-Type", "application/json")
@@ -235,8 +235,8 @@ var _ = Describe("game handlers", func() {
 				return db.Game{}, fmt.Errorf("db failure")
 			}
 
-			reqBody := fmt.Sprintf(`{"round":2,"date":"%s","home_team_id":"%s","away_team_id":"%s"}`,
-				time.Now().Format(time.RFC3339), season.Teams[0].ID, season.Teams[1].ID)
+			reqBody := fmt.Sprintf(`{"stage_id":"%s","date":"%s","home_team_id":"%s","away_team_id":"%s"}`,
+				uuid.New(), time.Now().Format(time.RFC3339), season.Teams[0].ID, season.Teams[1].ID)
 
 			req := httptest.NewRequest(http.MethodPut, "/seasons/"+season.ID.String()+"/games/"+gameID.String(), bytes.NewBufferString(reqBody))
 			req.Header.Set("Content-Type", "application/json")

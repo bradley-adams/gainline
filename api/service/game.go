@@ -121,7 +121,7 @@ func createGame(
 	createParams := db.CreateGameParams{
 		ID:         uuid.New(),
 		SeasonID:   season.ID,
-		Round:      req.Round,
+		StageID:    req.StageID,
 		Date:       req.Date,
 		HomeTeamID: req.HomeTeamID,
 		AwayTeamID: req.AwayTeamID,
@@ -165,7 +165,7 @@ func updateGame(
 	}
 
 	updateParams := db.UpdateGameParams{
-		Round:      req.Round,
+		StageID:    req.StageID,
 		Date:       req.Date,
 		HomeTeamID: req.HomeTeamID,
 		AwayTeamID: req.AwayTeamID,
@@ -209,11 +209,6 @@ func validateGameRequest(req *api.GameRequest, season SeasonWithTeams) error {
 	teamIDs := make(map[uuid.UUID]struct{}, len(season.Teams))
 	for _, t := range season.Teams {
 		teamIDs[t.ID] = struct{}{}
-	}
-
-	// Round in season bounds
-	if req.Round < 1 || req.Round > season.Rounds {
-		return errors.Errorf("round %d is out of bounds (1-%d)", req.Round, season.Rounds)
 	}
 
 	// Team in season

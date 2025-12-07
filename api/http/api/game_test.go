@@ -15,6 +15,7 @@ var _ = Describe("GameRequest validation", func() {
 		team1    uuid.UUID
 		team2    uuid.UUID
 		date1    time.Time
+		stage    uuid.UUID
 	)
 
 	BeforeEach(func() {
@@ -25,11 +26,13 @@ var _ = Describe("GameRequest validation", func() {
 		team1 = uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
 		team2 = uuid.MustParse("7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97")
 		date1 = time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
+
+		stage = uuid.MustParse("123e4567-e89b-12d3-a456-426614174000")
 	})
 
 	It("passes with valid scheduled game", func() {
 		game := GameRequest{
-			Round:      1,
+			StageID:    stage,
 			Date:       date1,
 			HomeTeamID: team1,
 			AwayTeamID: team2,
@@ -42,7 +45,7 @@ var _ = Describe("GameRequest validation", func() {
 		home := int32(3)
 		away := int32(2)
 		game := GameRequest{
-			Round:      10,
+			StageID:    stage,
 			Date:       date1,
 			HomeTeamID: team1,
 			AwayTeamID: team2,
@@ -57,7 +60,7 @@ var _ = Describe("GameRequest validation", func() {
 		home := int32(0)
 		away := int32(0)
 		game := GameRequest{
-			Round:      5,
+			StageID:    stage,
 			Date:       date1,
 			HomeTeamID: team1,
 			AwayTeamID: team2,
@@ -70,7 +73,7 @@ var _ = Describe("GameRequest validation", func() {
 
 	It("passes with zero scores for canceled games", func() {
 		game := GameRequest{
-			Round:      5,
+			StageID:    stage,
 			Date:       date1,
 			HomeTeamID: team1,
 			AwayTeamID: team2,
@@ -83,7 +86,7 @@ var _ = Describe("GameRequest validation", func() {
 
 	It("fails if AwayTeamID equals HomeTeamID", func() {
 		game := GameRequest{
-			Round:      1,
+			StageID:    stage,
 			Date:       date1,
 			HomeTeamID: team1,
 			AwayTeamID: team1,
@@ -96,7 +99,7 @@ var _ = Describe("GameRequest validation", func() {
 		home := int32(1)
 		away := int32(2)
 		game := GameRequest{
-			Round:      1,
+			StageID:    stage,
 			Date:       date1,
 			HomeTeamID: team1,
 			AwayTeamID: team2,
@@ -109,7 +112,7 @@ var _ = Describe("GameRequest validation", func() {
 
 	It("fails if playing game has nil scores", func() {
 		game := GameRequest{
-			Round:      1,
+			StageID:    stage,
 			Date:       date1,
 			HomeTeamID: team1,
 			AwayTeamID: team2,
@@ -120,7 +123,7 @@ var _ = Describe("GameRequest validation", func() {
 
 	It("fails if finished game has nil scores", func() {
 		game := GameRequest{
-			Round:      1,
+			StageID:    stage,
 			Date:       date1,
 			HomeTeamID: team1,
 			AwayTeamID: team2,
@@ -133,7 +136,7 @@ var _ = Describe("GameRequest validation", func() {
 		home := int32(-1)
 		away := int32(2)
 		game := GameRequest{
-			Round:      1,
+			StageID:    stage,
 			Date:       date1,
 			HomeTeamID: team1,
 			AwayTeamID: team2,
@@ -144,45 +147,9 @@ var _ = Describe("GameRequest validation", func() {
 		Expect(validate.Struct(&game)).To(HaveOccurred())
 	})
 
-	It("fails if round is below minimum", func() {
-		game := GameRequest{
-			Round:      0,
-			Date:       date1,
-			HomeTeamID: team1,
-			AwayTeamID: team2,
-			Status:     GameStatusScheduled,
-		}
-		Expect(validate.Struct(&game)).To(HaveOccurred())
-	})
-
-	It("fails if round exceeds maximum", func() {
-		game := GameRequest{
-			Round:      53,
-			Date:       date1,
-			HomeTeamID: team1,
-			AwayTeamID: team2,
-			Status:     GameStatusScheduled,
-		}
-		Expect(validate.Struct(&game)).To(HaveOccurred())
-	})
-
-	It("passes at round boundaries", func() {
-		game := GameRequest{
-			Round:      1,
-			Date:       date1,
-			HomeTeamID: team1,
-			AwayTeamID: team2,
-			Status:     GameStatusScheduled,
-		}
-		Expect(validate.Struct(&game)).NotTo(HaveOccurred())
-
-		game.Round = 52
-		Expect(validate.Struct(&game)).NotTo(HaveOccurred())
-	})
-
 	It("fails if date is missing", func() {
 		game := GameRequest{
-			Round:      1,
+			StageID:    stage,
 			HomeTeamID: team1,
 			AwayTeamID: team2,
 			Status:     GameStatusScheduled,
@@ -192,7 +159,7 @@ var _ = Describe("GameRequest validation", func() {
 
 	It("fails with invalid game status", func() {
 		game := GameRequest{
-			Round:      1,
+			StageID:    stage,
 			Date:       date1,
 			HomeTeamID: team1,
 			AwayTeamID: team2,
@@ -203,7 +170,7 @@ var _ = Describe("GameRequest validation", func() {
 
 	It("passes if Status is empty and game is scheduled (omitempty)", func() {
 		game := GameRequest{
-			Round:      1,
+			StageID:    stage,
 			Date:       date1,
 			HomeTeamID: team1,
 			AwayTeamID: team2,

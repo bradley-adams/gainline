@@ -29,8 +29,9 @@ var _ = Describe("game", func() {
 		svc = NewGameService(mockDB)
 	})
 
-	validSeasonID := uuid.MustParse("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
 	validGameID := uuid.MustParse("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb")
+	validSeasonID := uuid.MustParse("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
+	validStageID := uuid.MustParse("cccccccc-cccc-cccc-cccc-cccccccccccc")
 	validHomeTeamID := uuid.MustParse("11111111-1111-4111-8111-111111111111")
 	validAwayTeamID := uuid.MustParse("22222222-2222-4222-8222-222222222222")
 
@@ -40,7 +41,7 @@ var _ = Describe("game", func() {
 	awayScoreVal := int32(1)
 
 	validGameRequest := &api.GameRequest{
-		Round:      3,
+		StageID:    validStageID,
 		Date:       validTimeNow,
 		HomeTeamID: validHomeTeamID,
 		AwayTeamID: validAwayTeamID,
@@ -55,7 +56,7 @@ var _ = Describe("game", func() {
 	validGameFromDB := db.Game{
 		ID:         validGameID,
 		SeasonID:   validSeasonID,
-		Round:      3,
+		StageID:    validStageID,
 		Date:       validTimeNow,
 		HomeTeamID: validHomeTeamID,
 		AwayTeamID: validAwayTeamID,
@@ -70,7 +71,7 @@ var _ = Describe("game", func() {
 	validUpdatedGameFromDB := db.Game{
 		ID:         validGameID,
 		SeasonID:   validSeasonID,
-		Round:      4,
+		StageID:    validStageID,
 		Date:       validTimeNow.Add(2 * time.Hour),
 		HomeTeamID: validHomeTeamID,
 		AwayTeamID: validAwayTeamID,
@@ -87,7 +88,7 @@ var _ = Describe("game", func() {
 		{
 			ID:         uuid.MustParse("736521aa-5332-405f-95ab-cc6beca13f95"),
 			SeasonID:   validSeasonID,
-			Round:      1,
+			StageID:    validStageID,
 			Date:       validTimeNow,
 			HomeTeamID: validHomeTeamID,
 			AwayTeamID: validAwayTeamID,
@@ -172,7 +173,7 @@ var _ = Describe("game", func() {
 
 			Expect(game.ID).To(Equal(validGameResponse.ID))
 			Expect(game.SeasonID).To(Equal(validGameResponse.SeasonID))
-			Expect(game.Round).To(Equal(validGameResponse.Round))
+			Expect(game.StageID).To(Equal(validGameResponse.StageID))
 			Expect(game.Date).To(Equal(validGameResponse.Date))
 			Expect(game.HomeTeamID).To(Equal(validGameResponse.HomeTeamID))
 			Expect(game.AwayTeamID).To(Equal(validGameResponse.AwayTeamID))
@@ -296,7 +297,7 @@ var _ = Describe("game", func() {
 
 			Expect(games[0].ID).To(Equal(validGamesResponse[0].ID))
 			Expect(games[0].SeasonID).To(Equal(validGamesResponse[0].SeasonID))
-			Expect(games[0].Round).To(Equal(validGamesResponse[0].Round))
+			Expect(games[0].StageID).To(Equal(validGamesResponse[0].StageID))
 			Expect(games[0].Date).To(Equal(validGamesResponse[0].Date))
 			Expect(games[0].HomeTeamID).To(Equal(validGamesResponse[0].HomeTeamID))
 			Expect(games[0].AwayTeamID).To(Equal(validGamesResponse[0].AwayTeamID))
@@ -311,7 +312,7 @@ var _ = Describe("game", func() {
 
 			Expect(games[1].ID).To(Equal(validGamesResponse[1].ID))
 			Expect(games[1].SeasonID).To(Equal(validGamesResponse[1].SeasonID))
-			Expect(games[1].Round).To(Equal(validGamesResponse[1].Round))
+			Expect(games[1].StageID).To(Equal(validGamesResponse[1].StageID))
 			Expect(games[1].Date).To(Equal(validGamesResponse[1].Date))
 			Expect(games[1].HomeTeamID).To(Equal(validGamesResponse[1].HomeTeamID))
 			Expect(games[1].AwayTeamID).To(Equal(validGamesResponse[1].AwayTeamID))
@@ -356,7 +357,7 @@ var _ = Describe("game", func() {
 
 			Expect(game.ID).To(Equal(validGameResponse.ID))
 			Expect(game.SeasonID).To(Equal(validGameResponse.SeasonID))
-			Expect(game.Round).To(Equal(validGameResponse.Round))
+			Expect(game.StageID).To(Equal(validGameResponse.StageID))
 			Expect(game.Date).To(Equal(validGameResponse.Date))
 			Expect(game.HomeTeamID).To(Equal(validGameResponse.HomeTeamID))
 			Expect(game.AwayTeamID).To(Equal(validGameResponse.AwayTeamID))
@@ -417,7 +418,7 @@ var _ = Describe("game", func() {
 
 			Expect(game.ID).To(Equal(validUpdatedGameResponse.ID))
 			Expect(game.SeasonID).To(Equal(validUpdatedGameResponse.SeasonID))
-			Expect(game.Round).To(Equal(validUpdatedGameResponse.Round))
+			Expect(game.StageID).To(Equal(validUpdatedGameResponse.StageID))
 			Expect(game.Date).To(Equal(validUpdatedGameResponse.Date))
 			Expect(game.HomeTeamID).To(Equal(validUpdatedGameResponse.HomeTeamID))
 			Expect(game.AwayTeamID).To(Equal(validUpdatedGameResponse.AwayTeamID))
@@ -612,13 +613,6 @@ var _ = Describe("game", func() {
 		It("should allow a valid game request", func() {
 			err := validateGameRequest(validGameRequest, validSeasonWithTeams)
 			Expect(err).NotTo(HaveOccurred())
-		})
-
-		It("should reject if round is greater than season rounds", func() {
-			badReq := *validGameRequest
-			badReq.Round = 16
-			err := validateGameRequest(&badReq, validSeasonWithTeams)
-			Expect(err).To(MatchError("round 16 is out of bounds (1-15)"))
 		})
 
 		It("should reject if home team not in season", func() {

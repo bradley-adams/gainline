@@ -292,7 +292,7 @@ AND
 INSERT INTO games (
     id,
     season_id,
-    round,
+    stage_id,
     date,
     home_team_id,
     away_team_id,
@@ -306,7 +306,7 @@ INSERT INTO games (
 VALUES (
     @id,
     @season_id,
-    @round,
+    @stage_id,
     @date,
     @home_team_id,
     @away_team_id,
@@ -323,7 +323,7 @@ VALUES (
 SELECT
     id,
     season_id,
-    round,
+    stage_id,
     date,
     home_team_id,
     away_team_id,
@@ -345,7 +345,7 @@ AND
 SELECT
     id,
     season_id,
-    round,
+    stage_id,
     date,
     home_team_id,
     away_team_id,
@@ -366,7 +366,7 @@ AND
 -- Update an existing game by id
 UPDATE games
 SET
-    round = @round,
+    stage_id = @stage_id,
     date = @date,
     home_team_id = @home_team_id,
     away_team_id = @away_team_id,

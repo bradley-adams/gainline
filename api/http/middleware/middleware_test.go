@@ -81,6 +81,8 @@ var _ = Describe("middleware", func() {
 
 	validGameID := uuid.MustParse("68bf7fb7-89cb-4c71-8e80-c34b8b7fdcde")
 
+	validStageID := uuid.MustParse("33333333-3333-4333-8333-333333333333")
+
 	validHomeTeamID := uuid.MustParse("11111111-1111-4111-8111-111111111111")
 	validAwayTeamID := uuid.MustParse("22222222-2222-4222-8222-222222222222")
 
@@ -143,7 +145,7 @@ var _ = Describe("middleware", func() {
 	validGameFromDB := db.Game{
 		ID:         validGameID,
 		SeasonID:   validSeasonID,
-		Round:      3,
+		StageID:    validStageID,
 		Date:       validTimeNow,
 		HomeTeamID: validHomeTeamID,
 		AwayTeamID: validAwayTeamID,
