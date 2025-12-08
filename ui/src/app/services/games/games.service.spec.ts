@@ -1,9 +1,9 @@
-import { TestBed } from '@angular/core/testing'
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
-import { GamesService } from './games.service'
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing'
+import { TestBed } from '@angular/core/testing'
 import { environment } from '../../../environments/environment'
 import { Game, GameStatus } from '../../types/api'
+import { GamesService } from './games.service'
 
 describe('GamesService', () => {
     let service: GamesService
@@ -17,7 +17,7 @@ describe('GamesService', () => {
     const mockGame: Game = {
         id: mockGameID,
         season_id: mockSeasonID,
-        round: 1,
+        stage_id: 'stage1',
         date: new Date('2025-05-01T15:00:00Z'),
         home_team_id: 'team1',
         away_team_id: 'team2',
@@ -33,7 +33,7 @@ describe('GamesService', () => {
         {
             id: 'game2',
             season_id: mockSeasonID,
-            round: 2,
+            stage_id: 'stage1',
             date: new Date('2025-05-08T15:00:00Z'),
             home_team_id: 'team3',
             away_team_id: 'team4',
@@ -87,7 +87,7 @@ describe('GamesService', () => {
 
     it('should create a game', () => {
         const newGame: Partial<Game> = {
-            round: 1,
+            stage_id: 'stage1',
             date: new Date('2025-05-01T15:00:00Z'),
             home_team_id: 'team1',
             away_team_id: 'team2',

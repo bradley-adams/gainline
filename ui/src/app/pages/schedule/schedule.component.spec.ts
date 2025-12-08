@@ -1,15 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
 import { of, throwError } from 'rxjs'
 
-import { ScheduleComponent } from './schedule.component'
 import { CompetitionsService } from '../../services/competitions/competitions.service'
-import { SeasonsService } from '../../services/seasons/seasons.service'
 import { GamesService } from '../../services/games/games.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { SeasonsService } from '../../services/seasons/seasons.service'
 import { Competition, Game, GameStatus, Season, Team } from '../../types/api'
+import { ScheduleComponent } from './schedule.component'
 
 describe('ScheduleComponent', () => {
     let component: ScheduleComponent
@@ -97,7 +97,7 @@ describe('ScheduleComponent', () => {
         {
             id: 'game1',
             season_id: 'season1',
-            round: 1,
+            stage_id: 'stage1',
             date: new Date('2025-02-01T15:00:00Z'),
             home_team_id: 'team1',
             away_team_id: 'team2',
@@ -110,7 +110,7 @@ describe('ScheduleComponent', () => {
         {
             id: 'game2',
             season_id: 'season1',
-            round: 2,
+            stage_id: 'stage1',
             date: new Date('2025-03-01T15:00:00Z'),
             home_team_id: 'team3',
             away_team_id: 'team4',
@@ -169,42 +169,6 @@ describe('ScheduleComponent', () => {
         expect(seasonsService.getSeasons).toHaveBeenCalledWith(compId)
         expect(component.seasons.length).toBe(mockSeasons.length)
         expect(component.scheduleForm.get('season')!.value).toBe(mockSeasons[0].id)
-    })
-
-    it('should load games and update dataSource when season or round changes', () => {
-        const compId = mockCompetitions[0].id
-        const seasonId = mockSeasons[0].id
-        const round = 1
-
-        component.scheduleForm.get('competition')!.setValue(compId)
-        component.scheduleForm.get('season')!.setValue(seasonId)
-        component.scheduleForm.get('round')!.setValue(round)
-
-        expect(gamesService.getGames).toHaveBeenCalledWith(compId, seasonId)
-        const filteredGames = component.games.filter((g) => g.round === round)
-        expect(filteredGames.length).toBeGreaterThan(0)
-        expect(component.games.every((g) => g.round === round)).toBeTrue()
-        expect(component.dataSource.data.length).toBe(filteredGames.length)
-        expect(component.dataSource.data).toEqual(filteredGames)
-    })
-
-    it('should reset rounds and clear round selection when season has zero rounds', () => {
-        const compId = 'new-comp-id'
-
-        seasonsService.getSeasons.and.callFake((id: string) => {
-            if (id === 'comp1' || id === 'comp2') return of(mockSeasons)
-            return of([])
-        })
-
-        component.scheduleForm.get('competition')!.setValue(compId)
-
-        expect(seasonsService.getSeasons).toHaveBeenCalledWith(compId)
-        expect(component.seasons.length).toBe(0)
-        expect(component.rounds.length).toBe(0)
-        expect(component.scheduleForm.get('round')!.value).toBe('')
-        expect(component.games.length).toBe(0)
-        expect(component.dataSource.data.length).toBe(0)
-        expect(component.dataSource.data).toEqual([])
     })
 
     it('should display "No games found" message when no games are available', () => {

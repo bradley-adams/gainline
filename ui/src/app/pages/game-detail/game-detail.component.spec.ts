@@ -55,7 +55,7 @@ describe('GameDetailComponent', () => {
     const mockGame1: Game = {
         id: 'game1',
         season_id: 'season1',
-        round: 1,
+        stage_id: 'stage1',
         date: new Date('2025-02-01T15:00:00Z'),
         home_team_id: 'team1',
         away_team_id: 'team2',
@@ -69,7 +69,7 @@ describe('GameDetailComponent', () => {
     const mockGame2: Game = {
         id: 'game2',
         season_id: 'season1',
-        round: 2,
+        stage_id: 'stage1',
         date: new Date('2025-03-01T15:00:00Z'),
         home_team_id: 'team3',
         away_team_id: 'team4',
@@ -146,17 +146,11 @@ describe('GameDetailComponent', () => {
             expect(component).toBeTruthy()
         })
 
-        it('should mark round, datetime, home_team_id, away_team_id and status as required', () => {
-            const roundControl = component.gameForm.get('round')
+        it('should mark datetime, home_team_id, away_team_id and status as required', () => {
             const datetimeControl = component.gameForm.get('datetime')
             const homeTeamControl = component.gameForm.get('home_team_id')
             const awayTeamControl = component.gameForm.get('away_team_id')
             const statusControl = component.gameForm.get('status')
-
-            roundControl?.setValue(null)
-            expect(roundControl?.valid).toBeFalse()
-            roundControl?.setValue(1)
-            expect(roundControl?.valid).toBeTrue()
 
             datetimeControl?.setValue(null)
             expect(datetimeControl?.valid).toBeFalse()
@@ -202,7 +196,6 @@ describe('GameDetailComponent', () => {
 
             // Same teams → invalid
             component.gameForm.patchValue({
-                round: 1,
                 datetime: new Date('2025-06-01T12:00:00Z'),
                 home_team_id: 'team1',
                 away_team_id: 'team1',
@@ -229,7 +222,6 @@ describe('GameDetailComponent', () => {
         it('should not submit if competitionId is null', () => {
             component.competitionId = null
             component.gameForm.setValue({
-                round: 1,
                 datetime: new Date('2025-08-21T10:00:00'),
                 home_team_id: 'team1',
                 away_team_id: 'team2',
@@ -251,7 +243,6 @@ describe('GameDetailComponent', () => {
 
             component.isEditMode = false
             component.gameForm.setValue({
-                round: mockGame1.round,
                 datetime: datetime,
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
@@ -266,10 +257,6 @@ describe('GameDetailComponent', () => {
             expect(calledGame.date?.getTime()).toBe(datetime.getTime())
         })
 
-        it('should populate rounds based on season', () => {
-            expect(component.rounds).toEqual([1, 2, 3])
-        })
-
         it('should populate home and away teams', () => {
             component.ngOnInit()
             expect(component.teams.length).toBe(2)
@@ -281,7 +268,6 @@ describe('GameDetailComponent', () => {
             component.isEditMode = false
 
             component.gameForm.patchValue({
-                round: 1,
                 datetime: new Date('2025-01-01T13:30:00'),
                 home_team_id: 'team1',
                 away_team_id: 'team2',
@@ -302,7 +288,6 @@ describe('GameDetailComponent', () => {
             component.isEditMode = false
 
             component.gameForm.patchValue({
-                round: 1,
                 datetime: new Date('2025-01-01T13:30:00'),
                 home_team_id: 'team1',
                 away_team_id: 'team2',
@@ -361,7 +346,6 @@ describe('GameDetailComponent', () => {
 
         it('should mark form invalid if status is "playing" but scores are null', () => {
             component.gameForm.patchValue({
-                round: 1,
                 datetime: new Date('2025-06-15T12:00:00Z'),
                 home_team_id: 'team1',
                 away_team_id: 'team2',
@@ -375,7 +359,6 @@ describe('GameDetailComponent', () => {
 
         it('should mark form valid when scores exist and status is "finished"', () => {
             component.gameForm.patchValue({
-                round: 1,
                 datetime: new Date('2025-06-15T12:00:00Z'),
                 home_team_id: 'team1',
                 away_team_id: 'team2',
@@ -390,7 +373,6 @@ describe('GameDetailComponent', () => {
         it('should call createGame when in create mode and form is valid', () => {
             component.isEditMode = false
             component.gameForm.setValue({
-                round: mockGame1.round,
                 datetime: mockGame1.date,
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
@@ -402,7 +384,6 @@ describe('GameDetailComponent', () => {
             component.submitForm()
 
             expect(gamesService.createGame).toHaveBeenCalledWith('comp1', 'season1', {
-                round: mockGame1.round,
                 date: mockGame1.date,
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
@@ -419,7 +400,6 @@ describe('GameDetailComponent', () => {
 
             component.isEditMode = false
             component.gameForm.patchValue({
-                round: mockGame1.round,
                 datetime: mockGame1.date,
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
@@ -441,7 +421,6 @@ describe('GameDetailComponent', () => {
 
             component.isEditMode = false
             component.gameForm.setValue({
-                round: mockGame1.round,
                 datetime: mockGame1.date,
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
@@ -468,7 +447,6 @@ describe('GameDetailComponent', () => {
             expect(gamesService.getGame).toHaveBeenCalledWith('comp1', 'season1', 'game1')
 
             expect(component.gameForm.value).toEqual({
-                round: mockGame1.round,
                 datetime: new Date(mockGame1.date),
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
@@ -484,7 +462,7 @@ describe('GameDetailComponent', () => {
             const gameFromApi: Game = {
                 id: 'game1',
                 season_id: 'season1',
-                round: 1,
+                stage_id: 'stage1',
                 date: new Date('2025-06-15T14:45:00Z'),
                 home_team_id: 'team1',
                 away_team_id: 'team2',
@@ -531,18 +509,17 @@ describe('GameDetailComponent', () => {
         })
 
         it('should update game when in edit mode and form is valid', () => {
-            component.gameForm.patchValue({ round: 5 })
+            component.gameForm.patchValue({ status: GameStatus.PLAYING })
 
             component.submitForm()
 
             expect(gamesService.updateGame).toHaveBeenCalledWith('comp1', 'season1', 'game1', {
-                round: 5,
                 date: mockGame1.date,
                 home_team_id: mockGame1.home_team_id,
                 away_team_id: mockGame1.away_team_id,
                 home_score: mockGame1.home_score,
                 away_score: mockGame1.away_score,
-                status: mockGame1.status,
+                status: GameStatus.PLAYING,
                 season_id: mockGame1.season_id
             })
         })
@@ -551,7 +528,7 @@ describe('GameDetailComponent', () => {
             const mockError = new Error('Failed to update')
             gamesService.updateGame.and.returnValue(throwError(() => mockError))
 
-            component.gameForm.patchValue({ round: 'Bad Update' })
+            component.gameForm.patchValue({ status: 1 })
             component.submitForm()
 
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
