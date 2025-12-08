@@ -1,16 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { By } from '@angular/platform-browser'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { By } from '@angular/platform-browser'
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router'
 import { of, throwError } from 'rxjs'
 
-import { GameListComponent } from './game-list.component'
-import { GameDetailComponent } from '../game-detail/game-detail.component'
 import { GamesService } from '../../services/games/games.service'
-import { SeasonsService } from '../../services/seasons/seasons.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { SeasonsService } from '../../services/seasons/seasons.service'
 import { Game, GameStatus, Season, Team } from '../../types/api'
+import { GameDetailComponent } from '../game-detail/game-detail.component'
+import { GameListComponent } from './game-list.component'
 
 describe('GameListComponent', () => {
     let component: GameListComponent
@@ -71,7 +71,7 @@ describe('GameListComponent', () => {
         {
             id: 'game1',
             season_id: 'season1',
-            round: 1,
+            stage_id: 'stage1',
             date: new Date('2025-02-01T15:00:00Z'),
             home_team_id: 'team1',
             away_team_id: 'team2',
@@ -84,7 +84,7 @@ describe('GameListComponent', () => {
         {
             id: 'game2',
             season_id: 'season1',
-            round: 2,
+            stage_id: 'stage1',
             date: new Date('2025-03-01T15:00:00Z'),
             home_team_id: 'team3',
             away_team_id: 'team4',

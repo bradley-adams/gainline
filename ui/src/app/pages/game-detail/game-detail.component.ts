@@ -58,7 +58,6 @@ export class GameDetailComponent {
     public competitionId: string | null = null
     public gameId: string | null = null
     public teams: Team[] = []
-    public rounds: number[] = []
 
     public seasonStart?: Date
     public seasonEnd?: Date
@@ -87,7 +86,6 @@ export class GameDetailComponent {
 
         this.gameForm = this.fb.group(
             {
-                round: [null, Validators.required],
                 datetime: [null, Validators.required],
                 home_team_id: [null, Validators.required],
                 away_team_id: [null, Validators.required],
@@ -212,7 +210,6 @@ export class GameDetailComponent {
                 this.teams = season.teams.map((t) =>
                     typeof t === 'string' ? ({ id: t, name: t } as Team) : t
                 )
-                this.rounds = Array.from({ length: season.rounds }, (_, i) => i + 1)
 
                 this.seasonStart = new Date(season.start_date)
                 this.seasonEnd = new Date(season.end_date)
