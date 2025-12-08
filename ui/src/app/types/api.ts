@@ -37,7 +37,7 @@ export enum GameStatus {
 export interface Game {
     id: string
     season_id: string
-    round: number
+    stage_id: string
     date: Date
     home_team_id: string
     away_team_id: string

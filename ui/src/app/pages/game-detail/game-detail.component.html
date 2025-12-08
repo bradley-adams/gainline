@@ -93,14 +93,6 @@
 
         <div class="form-row">
             <mat-form-field appearance="outline" class="wide-field">
-                <mat-label>Round</mat-label>
-                <mat-select formControlName="round">
-                    <mat-option *ngFor="let round of rounds" [value]="round">Round {{ round }}</mat-option>
-                </mat-select>
-                <mat-error *ngIf="gameForm.get('round')?.hasError('required')">Round is required</mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="wide-field">
                 <mat-label>Status</mat-label>
                 <mat-select formControlName="status">
                     <mat-option value="scheduled">Scheduled</mat-option>

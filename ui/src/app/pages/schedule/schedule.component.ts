@@ -1,14 +1,14 @@
-import { Component, OnInit, inject } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { RouterModule } from '@angular/router'
-import { MatTableDataSource } from '@angular/material/table'
-import { MaterialModule } from '../../shared/material/material.module'
-import { Game, Competition, Season } from '../../types/api'
-import { GamesService } from '../../services/games/games.service'
+import { Component, OnInit, inject } from '@angular/core'
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms'
-import { SeasonsService } from '../../services/seasons/seasons.service'
+import { MatTableDataSource } from '@angular/material/table'
+import { RouterModule } from '@angular/router'
 import { CompetitionsService } from '../../services/competitions/competitions.service'
+import { GamesService } from '../../services/games/games.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { SeasonsService } from '../../services/seasons/seasons.service'
+import { MaterialModule } from '../../shared/material/material.module'
+import { Competition, Game, Season } from '../../types/api'
 
 @Component({
     selector: 'app-schedule',
@@ -28,15 +28,13 @@ export class ScheduleComponent implements OnInit {
     public games: Game[] = []
     public seasons: Season[] = []
     public competitions: Competition[] = []
-    public rounds: number[] = []
 
     scheduleForm!: FormGroup
 
     ngOnInit(): void {
         this.scheduleForm = this.formBuilder.group({
             competition: [''],
-            season: [''],
-            round: ['']
+            season: ['']
         })
 
         this.initFormListeners()
@@ -46,11 +44,10 @@ export class ScheduleComponent implements OnInit {
     private initFormListeners(): void {
         this.scheduleForm.get('competition')!.valueChanges.subscribe(this.onCompetitionChange.bind(this))
         this.scheduleForm.get('season')!.valueChanges.subscribe(this.onSeasonChange.bind(this))
-        this.scheduleForm.get('round')!.valueChanges.subscribe(this.onRoundChange.bind(this))
     }
 
     private onCompetitionChange(compId: string): void {
-        this.resetSeasonsAndRounds()
+        this.resetSeasons()
         if (compId) {
             this.loadSeasons(compId)
         }
@@ -60,36 +57,16 @@ export class ScheduleComponent implements OnInit {
         const compId = this.scheduleForm.get('competition')!.value
         const season = this.seasons.find((s) => s.id === seasonId)
 
-        if (!season) {
-            this.rounds = []
-            this.scheduleForm.patchValue({ round: '' }, { emitEvent: false })
-            return
-        }
-
-        if (season.rounds > 0) {
-            this.rounds = Array.from({ length: season.rounds }, (_, i) => i + 1)
-            this.scheduleForm.patchValue({ round: 1 }, { emitEvent: true })
-        }
-
         if (compId) {
-            this.loadGames(compId, seasonId, 1)
+            this.loadGames(compId, seasonId)
         }
     }
 
-    private onRoundChange(round: number): void {
-        const compId = this.scheduleForm.get('competition')!.value
-        const seasonId = this.scheduleForm.get('season')!.value
-        if (compId && seasonId && round) {
-            this.loadGames(compId, seasonId, round)
-        }
-    }
-
-    private resetSeasonsAndRounds(): void {
+    private resetSeasons(): void {
         this.seasons = []
-        this.rounds = []
         this.games = []
         this.dataSource.data = []
-        this.scheduleForm.patchValue({ season: '', round: '' }, { emitEvent: false })
+        this.scheduleForm.patchValue({ season: '' }, { emitEvent: false })
     }
 
     private loadCompetitions(): void {
@@ -120,11 +97,10 @@ export class ScheduleComponent implements OnInit {
         })
     }
 
-    private loadGames(competitionId: string, seasonId: string, round: number): void {
+    private loadGames(competitionId: string, seasonId: string): void {
         this.gamesService.getGames(competitionId, seasonId).subscribe({
             next: (games) => {
-                this.games = games.filter((g) => g.round === round)
-                this.dataSource.data = this.games
+                this.dataSource.data = games
             },
             error: (err) => {
                 this.notificationService.showErrorAndLog('Load Error', 'Failed to load games', err)
