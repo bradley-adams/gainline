@@ -5,13 +5,12 @@ VALUES (
 );
 
 -- Insert 2025 season
-INSERT INTO seasons (id, competition_id, start_date, end_date, rounds, created_at, updated_at)
+INSERT INTO seasons (id, competition_id, start_date, end_date, created_at, updated_at)
 VALUES (
     '9300778f-cce0-4efe-af6c-e399d8170315',
     '44dd315c-1abc-43aa-9843-642f920190d1',
     TIMESTAMPTZ '2025-07-31 21:10+12',
     TIMESTAMPTZ '2025-10-25 23:10+12',
-    10,
     now(),
     now()
 );
@@ -52,7 +51,7 @@ VALUES
 ('f414e700-8b43-4870-812d-783a5b9ddb2d', '9300778f-cce0-4efe-af6c-e399d8170315', '7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97', now(), now(), NULL), -- Waikato
 ('869a0f34-f15d-45ef-b13f-eb551050a849', '9300778f-cce0-4efe-af6c-e399d8170315', 'ab4c78b1-5dc6-4a14-8f15-d1f144b81d96', now(), now(), NULL); -- Wellington
 
--- Create 10 round stages for 2025 season
+-- Create 10 regular rounds and 3 finals stages for 2025 season
 INSERT INTO stages (id, season_id, name, stage_type, order_index)
 VALUES
 ('eab15533-dea6-4a3d-8a95-d38e4fba2d5a', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 1', 'regular', 1),

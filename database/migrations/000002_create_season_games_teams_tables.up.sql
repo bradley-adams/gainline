@@ -15,7 +15,6 @@ CREATE TABLE seasons (
     competition_id UUID NOT NULL,
     start_date TIMESTAMP WITH TIME ZONE NOT NULL,
     end_date TIMESTAMP WITH TIME ZONE NOT NULL,
-    rounds INTEGER NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
     deleted_at TIMESTAMP WITH TIME ZONE,
@@ -51,7 +50,10 @@ CREATE TABLE stages (
   season_id UUID NOT NULL REFERENCES seasons(id),
   name TEXT NOT NULL,
   stage_type stage_type NOT NULL,
-  order_index INT NOT NULL
+  order_index INT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE
 );
 
 CREATE TYPE game_status AS ENUM ('scheduled', 'playing', 'finished');
