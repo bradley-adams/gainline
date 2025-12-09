@@ -22,7 +22,6 @@ migrate -path database/migrations -database "postgres://gainline:gainline@localh
 
 ## Todo:
 
-- Split competition name and season sponsor.
-- Rounds and Finals seperations.
-- Shield challenges (side comps)
-- Poionts and Bonus points
+- Adding season sponsor column. (Remove from competition name).
+- Handle shield challenge games (Side competitions/trophies).
+- Points tables and bonus points.
