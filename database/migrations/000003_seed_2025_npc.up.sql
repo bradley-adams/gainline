@@ -52,21 +52,21 @@ VALUES
 ('869a0f34-f15d-45ef-b13f-eb551050a849', '9300778f-cce0-4efe-af6c-e399d8170315', 'ab4c78b1-5dc6-4a14-8f15-d1f144b81d96', now(), now(), NULL); -- Wellington
 
 -- Create 10 regular rounds and 3 finals stages for 2025 season
-INSERT INTO stages (id, season_id, name, stage_type, order_index)
+INSERT INTO stages (id, season_id, name, stage_type, order_index, created_at, updated_at)
 VALUES
-('eab15533-dea6-4a3d-8a95-d38e4fba2d5a', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 1', 'regular', 1),
-('847bcffb-30f1-42c6-be61-2807c3032566', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 2', 'regular', 2),
-('559272f0-94a2-4909-b5ac-b09a26b8f8b8', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 3', 'regular', 3),
-('18b9655c-1eee-41f9-999b-1254abad43d6', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 4', 'regular', 4),
-('5bc23a00-153d-42f6-be4c-558210ea541b', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 5', 'regular', 5),
-('85767fc4-5bc0-4e3f-87cb-1e05dc1981f6', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 6', 'regular', 6),
-('e53435fc-717e-4fce-9b85-c99c606ae3ce', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 7', 'regular', 7),
-('f6a305fb-c036-404a-9a48-0bf9f4c2ac39', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 8', 'regular', 8),
-('cd95a74b-d643-4913-b391-77b933edbd8f', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 9', 'regular', 9),
-('eff747cf-af9a-44d4-a348-efa5e1c099a3', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 10', 'regular', 10),
-('6ad67327-958b-491d-bcd2-f9cc50f0330a', '9300778f-cce0-4efe-af6c-e399d8170315', 'Quarterfinal', 'finals', 11),
-('a1ce69e8-838e-49f3-b222-0820750dc292', '9300778f-cce0-4efe-af6c-e399d8170315', 'Semifinal', 'finals', 12),
-('c8b2bbf9-dc43-4834-a8a3-722090d857c2', '9300778f-cce0-4efe-af6c-e399d8170315', 'Final', 'finals', 13);
+('eab15533-dea6-4a3d-8a95-d38e4fba2d5a', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 1', 'regular', 1, NOW(), NOW()),
+('847bcffb-30f1-42c6-be61-2807c3032566', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 2', 'regular', 2, NOW(), NOW()),
+('559272f0-94a2-4909-b5ac-b09a26b8f8b8', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 3', 'regular', 3, NOW(), NOW()),
+('18b9655c-1eee-41f9-999b-1254abad43d6', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 4', 'regular', 4, NOW(), NOW()),
+('5bc23a00-153d-42f6-be4c-558210ea541b', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 5', 'regular', 5, NOW(), NOW()),
+('85767fc4-5bc0-4e3f-87cb-1e05dc1981f6', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 6', 'regular', 6, NOW(), NOW()),
+('e53435fc-717e-4fce-9b85-c99c606ae3ce', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 7', 'regular', 7, NOW(), NOW()),
+('f6a305fb-c036-404a-9a48-0bf9f4c2ac39', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 8', 'regular', 8, NOW(), NOW()),
+('cd95a74b-d643-4913-b391-77b933edbd8f', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 9', 'regular', 9, NOW(), NOW()),
+('eff747cf-af9a-44d4-a348-efa5e1c099a3', '9300778f-cce0-4efe-af6c-e399d8170315', 'Round 10', 'regular', 10, NOW(), NOW()),
+('6ad67327-958b-491d-bcd2-f9cc50f0330a', '9300778f-cce0-4efe-af6c-e399d8170315', 'Quarterfinal', 'finals', 11, NOW(), NOW()),
+('a1ce69e8-838e-49f3-b222-0820750dc292', '9300778f-cce0-4efe-af6c-e399d8170315', 'Semifinal', 'finals', 12, NOW(), NOW()),
+('c8b2bbf9-dc43-4834-a8a3-722090d857c2', '9300778f-cce0-4efe-af6c-e399d8170315', 'Final', 'finals', 13, NOW(), NOW());
 
 
 -- Insert 2025 games
