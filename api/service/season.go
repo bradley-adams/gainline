@@ -98,7 +98,6 @@ type SeasonWithTeams struct {
 	CompetitionID uuid.UUID
 	StartDate     time.Time
 	EndDate       time.Time
-	Rounds        int32
 	Teams         []db.Team
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
@@ -116,7 +115,6 @@ func ToSeasonResponse(s SeasonWithTeams) api.SeasonResponse {
 		CompetitionID: s.CompetitionID,
 		StartDate:     s.StartDate,
 		EndDate:       s.EndDate,
-		Rounds:        s.Rounds,
 		Teams:         teams,
 		CreatedAt:     s.CreatedAt,
 		UpdatedAt:     s.UpdatedAt,
@@ -150,7 +148,6 @@ func insertSeason(ctx context.Context, queries db_handler.Queries, seasonID, com
 		CompetitionID: competitionID,
 		StartDate:     req.StartDate,
 		EndDate:       req.EndDate,
-		Rounds:        req.Rounds,
 		CreatedAt:     now,
 		UpdatedAt:     now,
 		DeletedAt:     sql.NullTime{Time: time.Time{}, Valid: false},
@@ -222,7 +219,6 @@ func buildSeasonWithTeams(ctx context.Context, queries db_handler.Queries, seaso
 		CompetitionID: season.CompetitionID,
 		StartDate:     season.StartDate,
 		EndDate:       season.EndDate,
-		Rounds:        season.Rounds,
 		Teams:         teams,
 		CreatedAt:     season.CreatedAt,
 		UpdatedAt:     season.UpdatedAt,
@@ -275,7 +271,6 @@ func updateSeasonFields(ctx context.Context, queries db_handler.Queries, req *ap
 		CompetitionID: competitionID,
 		StartDate:     req.StartDate,
 		EndDate:       req.EndDate,
-		Rounds:        req.Rounds,
 		UpdatedAt:     now,
 		ID:            seasonID,
 	}

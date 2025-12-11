@@ -70,7 +70,6 @@ INSERT INTO seasons (
 	competition_id,
 	start_date,
 	end_date,
-	rounds,
 	created_at,
 	updated_at,
 	deleted_at
@@ -80,7 +79,6 @@ VALUES (
 	@competition_id,
 	@start_date,
 	@end_date,
-	@rounds,
 	@created_at,
 	@updated_at,
 	@deleted_at
@@ -93,7 +91,6 @@ SELECT
 	competition_id,
 	start_date,
 	end_date,
-	rounds,
 	created_at,
 	updated_at,
 	deleted_at
@@ -111,7 +108,6 @@ SELECT
 	competition_id,
 	start_date,
 	end_date,
-	rounds,
 	created_at,
 	updated_at,
 	deleted_at
@@ -129,7 +125,6 @@ SET
 	competition_id = @competition_id,
 	start_date = @start_date,
 	end_date = @end_date,
-	rounds = @rounds,
 	updated_at = @updated_at
 WHERE
 	id = @id
