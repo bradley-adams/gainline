@@ -121,7 +121,6 @@ INSERT INTO seasons (
 	competition_id,
 	start_date,
 	end_date,
-	rounds,
 	created_at,
 	updated_at,
 	deleted_at
@@ -133,8 +132,7 @@ VALUES (
 	$4,
 	$5,
 	$6,
-	$7,
-	$8
+	$7
 )
 `
 
@@ -143,7 +141,6 @@ type CreateSeasonParams struct {
 	CompetitionID uuid.UUID
 	StartDate     time.Time
 	EndDate       time.Time
-	Rounds        int32
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	DeletedAt     sql.NullTime
@@ -156,7 +153,6 @@ func (q *Queries) CreateSeason(ctx context.Context, arg CreateSeasonParams) erro
 		arg.CompetitionID,
 		arg.StartDate,
 		arg.EndDate,
-		arg.Rounds,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 		arg.DeletedAt,
@@ -624,7 +620,6 @@ SELECT
 	competition_id,
 	start_date,
 	end_date,
-	rounds,
 	created_at,
 	updated_at,
 	deleted_at
@@ -645,7 +640,6 @@ func (q *Queries) GetSeason(ctx context.Context, id uuid.UUID) (Season, error) {
 		&i.CompetitionID,
 		&i.StartDate,
 		&i.EndDate,
-		&i.Rounds,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -715,7 +709,6 @@ SELECT
 	competition_id,
 	start_date,
 	end_date,
-	rounds,
 	created_at,
 	updated_at,
 	deleted_at
@@ -742,7 +735,6 @@ func (q *Queries) GetSeasons(ctx context.Context, competitionID uuid.UUID) ([]Se
 			&i.CompetitionID,
 			&i.StartDate,
 			&i.EndDate,
-			&i.Rounds,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
@@ -912,10 +904,9 @@ SET
 	competition_id = $1,
 	start_date = $2,
 	end_date = $3,
-	rounds = $4,
-	updated_at = $5
+	updated_at = $4
 WHERE
-	id = $6
+	id = $5
 AND	
 	deleted_at IS NULL
 `
@@ -924,7 +915,6 @@ type UpdateSeasonParams struct {
 	CompetitionID uuid.UUID
 	StartDate     time.Time
 	EndDate       time.Time
-	Rounds        int32
 	UpdatedAt     time.Time
 	ID            uuid.UUID
 }
@@ -935,7 +925,6 @@ func (q *Queries) UpdateSeason(ctx context.Context, arg UpdateSeasonParams) erro
 		arg.CompetitionID,
 		arg.StartDate,
 		arg.EndDate,
-		arg.Rounds,
 		arg.UpdatedAt,
 		arg.ID,
 	)

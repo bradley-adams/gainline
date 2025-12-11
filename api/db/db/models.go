@@ -126,7 +126,6 @@ type Season struct {
 	CompetitionID uuid.UUID
 	StartDate     time.Time
 	EndDate       time.Time
-	Rounds        int32
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	DeletedAt     sql.NullTime
@@ -147,6 +146,9 @@ type Stage struct {
 	Name       string
 	StageType  StageType
 	OrderIndex int32
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	DeletedAt  sql.NullTime
 }
 
 type Team struct {

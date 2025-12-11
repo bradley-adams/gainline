@@ -34,7 +34,6 @@ var _ = Describe("SeasonRequest validation", func() {
 		season := &SeasonRequest{
 			StartDate: date1,
 			EndDate:   date2,
-			Rounds:    10,
 			Teams:     []uuid.UUID{team1, team2},
 		}
 		Expect(validate.Struct(season)).To(Succeed())
@@ -43,7 +42,6 @@ var _ = Describe("SeasonRequest validation", func() {
 	It("fails when StartDate is missing", func() {
 		season := &SeasonRequest{
 			EndDate: date2,
-			Rounds:  10,
 			Teams:   []uuid.UUID{team1, team2},
 		}
 		err := validate.Struct(season)
@@ -56,7 +54,6 @@ var _ = Describe("SeasonRequest validation", func() {
 	It("fails when EndDate is missing", func() {
 		season := &SeasonRequest{
 			StartDate: date1,
-			Rounds:    10,
 			Teams:     []uuid.UUID{team1, team2},
 		}
 		err := validate.Struct(season)
@@ -70,7 +67,6 @@ var _ = Describe("SeasonRequest validation", func() {
 		season := &SeasonRequest{
 			StartDate: date2,
 			EndDate:   date1,
-			Rounds:    10,
 			Teams:     []uuid.UUID{team1, team2},
 		}
 		err := validate.Struct(season)
@@ -80,39 +76,10 @@ var _ = Describe("SeasonRequest validation", func() {
 		Expect(validationErrors[0].Tag()).To(Equal("gtfield"))
 	})
 
-	It("fails when Rounds < 1", func() {
-		season := &SeasonRequest{
-			StartDate: date1,
-			EndDate:   date2,
-			Rounds:    0,
-			Teams:     []uuid.UUID{team1, team2},
-		}
-		err := validate.Struct(season)
-		Expect(err).To(HaveOccurred())
-		validationErrors, ok := err.(validator.ValidationErrors)
-		Expect(ok).To(BeTrue())
-		Expect(validationErrors[0].Tag()).To(Equal("min"))
-	})
-
-	It("fails when Rounds > 52", func() {
-		season := &SeasonRequest{
-			StartDate: date1,
-			EndDate:   date2,
-			Rounds:    53,
-			Teams:     []uuid.UUID{team1, team2},
-		}
-		err := validate.Struct(season)
-		Expect(err).To(HaveOccurred())
-		validationErrors, ok := err.(validator.ValidationErrors)
-		Expect(ok).To(BeTrue())
-		Expect(validationErrors[0].Tag()).To(Equal("max"))
-	})
-
 	It("fails when Teams < 2", func() {
 		season := &SeasonRequest{
 			StartDate: date1,
 			EndDate:   date2,
-			Rounds:    10,
 			Teams:     []uuid.UUID{team1},
 		}
 		Expect(validate.Struct(season)).To(HaveOccurred())
@@ -126,7 +93,6 @@ var _ = Describe("SeasonRequest validation", func() {
 		season := &SeasonRequest{
 			StartDate: date1,
 			EndDate:   date2,
-			Rounds:    10,
 			Teams:     teams,
 		}
 		err := validate.Struct(season)
@@ -137,7 +103,6 @@ var _ = Describe("SeasonRequest validation", func() {
 		season := &SeasonRequest{
 			StartDate: date1,
 			EndDate:   date2,
-			Rounds:    10,
 			Teams:     []uuid.UUID{team1, team1},
 		}
 		err := validate.Struct(season)
@@ -148,7 +113,6 @@ var _ = Describe("SeasonRequest validation", func() {
 		season := &SeasonRequest{
 			StartDate: date1,
 			EndDate:   date2,
-			Rounds:    10,
 			Teams:     []uuid.UUID{team1, uuid.Nil},
 		}
 		err := validate.Struct(season)

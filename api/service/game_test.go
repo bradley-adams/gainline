@@ -135,7 +135,6 @@ var _ = Describe("game", func() {
 		CompetitionID: validCompetitionID,
 		StartDate:     validTimeNow.AddDate(0, -1, 0),
 		EndDate:       validTimeNow.AddDate(0, 10, 0),
-		Rounds:        15,
 		Teams:         []db.Team{validTeamFromDB, validTeamFromDB2},
 		CreatedAt:     validTimeNow,
 		UpdatedAt:     validTimeNow,
