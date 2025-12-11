@@ -91,7 +91,7 @@ var _ = Describe("season handlers", func() {
 	Describe("create season", func() {
 		It("returns 201 for valid request", func() {
 			mockSvc.CreateFn = func(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (service.SeasonWithTeams, error) {
-				return service.SeasonWithTeams{ID: uuid.New(), Rounds: req.Rounds}, nil
+				return service.SeasonWithTeams{ID: uuid.New()}, nil
 			}
 
 			compID := uuid.New()
@@ -157,7 +157,7 @@ var _ = Describe("season handlers", func() {
 		It("returns 200 and list of seasons", func() {
 			compID := uuid.New()
 			mockSvc.GetAllFn = func(ctx context.Context, competitionID uuid.UUID) ([]service.SeasonWithTeams, error) {
-				return []service.SeasonWithTeams{{ID: uuid.New(), Rounds: 5}}, nil
+				return []service.SeasonWithTeams{{ID: uuid.New()}}, nil
 			}
 
 			req := httptest.NewRequest(http.MethodGet, "/competitions/"+compID.String()+"/seasons", nil)
@@ -185,7 +185,7 @@ var _ = Describe("season handlers", func() {
 			compID := uuid.New()
 			seasonID := uuid.New()
 			mockSvc.UpdateFn = func(ctx context.Context, req *api.SeasonRequest, competitionID, sID uuid.UUID) (service.SeasonWithTeams, error) {
-				return service.SeasonWithTeams{ID: sID, Rounds: req.Rounds}, nil
+				return service.SeasonWithTeams{ID: sID}, nil
 			}
 
 			reqBody := `{

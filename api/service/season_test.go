@@ -49,7 +49,6 @@ var _ = Describe("season", func() {
 	validSeasonRequest := &api.SeasonRequest{
 		StartDate: validTimeNow,
 		EndDate:   validTimeNow.AddDate(0, 5, 0),
-		Rounds:    15,
 		Teams:     validTeamIDs,
 	}
 
@@ -60,7 +59,6 @@ var _ = Describe("season", func() {
 		CompetitionID: validCompetitionID,
 		StartDate:     validTimeNow,
 		EndDate:       validTimeNow.AddDate(0, 5, 0),
-		Rounds:        15,
 		CreatedAt:     validTimeNow,
 		UpdatedAt:     validTimeNow,
 		DeletedAt:     sql.NullTime{Time: time.Time{}, Valid: false},
@@ -71,7 +69,6 @@ var _ = Describe("season", func() {
 		CompetitionID: validCompetitionID,
 		StartDate:     validTimeNow,
 		EndDate:       validTimeNow.AddDate(0, 5, 0),
-		Rounds:        15,
 		CreatedAt:     validTimeNow,
 		UpdatedAt:     validTimeNow,
 		DeletedAt:     sql.NullTime{Time: time.Time{}, Valid: false},
@@ -147,7 +144,6 @@ var _ = Describe("season", func() {
 		CompetitionID: validSeasonFromDB.CompetitionID,
 		StartDate:     validSeasonFromDB.StartDate,
 		EndDate:       validSeasonFromDB.EndDate,
-		Rounds:        validSeasonFromDB.Rounds,
 		Teams:         []db.Team{},
 		CreatedAt:     validSeasonFromDB.CreatedAt,
 		UpdatedAt:     validSeasonFromDB.UpdatedAt,
@@ -159,7 +155,6 @@ var _ = Describe("season", func() {
 		CompetitionID: validSeasonFromDB2.CompetitionID,
 		StartDate:     validSeasonFromDB2.StartDate,
 		EndDate:       validSeasonFromDB2.EndDate,
-		Rounds:        validSeasonFromDB2.Rounds,
 		Teams:         []db.Team{},
 		CreatedAt:     validSeasonFromDB2.CreatedAt,
 		UpdatedAt:     validSeasonFromDB2.UpdatedAt,
@@ -236,7 +231,6 @@ var _ = Describe("season", func() {
 			Expect(season.CompetitionID).To(Equal(validSeasonResponse.CompetitionID))
 			Expect(season.StartDate).To(Equal(validSeasonResponse.StartDate))
 			Expect(season.EndDate).To(Equal(validSeasonResponse.EndDate))
-			Expect(season.Rounds).To(Equal(validSeasonResponse.Rounds))
 			Expect(season.CreatedAt).To(Equal(validSeasonResponse.CreatedAt))
 			Expect(season.UpdatedAt).To(Equal(validSeasonResponse.UpdatedAt))
 			Expect(season.DeletedAt.Time).To(Equal(validSeasonResponse.DeletedAt.Time))
@@ -458,7 +452,6 @@ var _ = Describe("season", func() {
 			Expect(seasons[0].CompetitionID).To(Equal(validSeasonsResponse[0].CompetitionID))
 			Expect(seasons[0].StartDate).To(Equal(validSeasonsResponse[0].StartDate))
 			Expect(seasons[0].EndDate).To(Equal(validSeasonsResponse[0].EndDate))
-			Expect(seasons[0].Rounds).To(Equal(validSeasonsResponse[0].Rounds))
 			Expect(seasons[0].CreatedAt).To(Equal(validSeasonsResponse[0].CreatedAt))
 			Expect(seasons[0].UpdatedAt).To(Equal(validSeasonsResponse[0].UpdatedAt))
 			Expect(seasons[0].DeletedAt.Time).To(Equal(validSeasonsResponse[0].DeletedAt.Time))
@@ -467,7 +460,6 @@ var _ = Describe("season", func() {
 			Expect(seasons[1].CompetitionID).To(Equal(validSeasonsResponse[1].CompetitionID))
 			Expect(seasons[1].StartDate).To(Equal(validSeasonsResponse[1].StartDate))
 			Expect(seasons[1].EndDate).To(Equal(validSeasonsResponse[1].EndDate))
-			Expect(seasons[1].Rounds).To(Equal(validSeasonsResponse[1].Rounds))
 			Expect(seasons[1].CreatedAt).To(Equal(validSeasonsResponse[1].CreatedAt))
 			Expect(seasons[1].UpdatedAt).To(Equal(validSeasonsResponse[1].UpdatedAt))
 			Expect(seasons[1].DeletedAt.Time).To(Equal(validSeasonsResponse[1].DeletedAt.Time))
@@ -530,7 +522,6 @@ var _ = Describe("season", func() {
 			Expect(season.CompetitionID).To(Equal(validSeasonResponse.CompetitionID))
 			Expect(season.StartDate).To(Equal(validSeasonResponse.StartDate))
 			Expect(season.EndDate).To(Equal(validSeasonResponse.EndDate))
-			Expect(season.Rounds).To(Equal(validSeasonResponse.Rounds))
 			Expect(season.CreatedAt).To(Equal(validSeasonResponse.CreatedAt))
 			Expect(season.UpdatedAt).To(Equal(validSeasonResponse.UpdatedAt))
 			Expect(season.DeletedAt.Time).To(Equal(validSeasonResponse.DeletedAt.Time))
@@ -639,7 +630,6 @@ var _ = Describe("season", func() {
 			Expect(season.CompetitionID).To(Equal(validSeasonResponse.CompetitionID))
 			Expect(season.StartDate).To(Equal(validSeasonResponse.StartDate))
 			Expect(season.EndDate).To(Equal(validSeasonResponse.EndDate))
-			Expect(season.Rounds).To(Equal(validSeasonResponse.Rounds))
 			Expect(season.CreatedAt).To(Equal(validSeasonResponse.CreatedAt))
 			Expect(season.UpdatedAt).To(Equal(validSeasonResponse.UpdatedAt))
 			Expect(season.DeletedAt.Time).To(Equal(validSeasonResponse.DeletedAt.Time))

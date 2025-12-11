@@ -93,7 +93,6 @@ var _ = Describe("middleware", func() {
 		CompetitionID: validCompetitionID,
 		StartDate:     validTimeNow,
 		EndDate:       validTimeNow.AddDate(0, 5, 0),
-		Rounds:        15,
 		CreatedAt:     validTimeNow,
 		UpdatedAt:     validTimeNow,
 		DeletedAt:     sql.NullTime{Time: time.Time{}, Valid: false},

@@ -84,7 +84,6 @@ var _ = Describe("game handlers", func() {
 
 		season = service.SeasonWithTeams{
 			ID:        uuid.New(),
-			Rounds:    3,
 			StartDate: time.Now().Add(-time.Hour * 24),
 			EndDate:   time.Now().Add(time.Hour * 24 * 30),
 			Teams: []db.Team{
