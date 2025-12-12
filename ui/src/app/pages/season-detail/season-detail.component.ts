@@ -90,15 +90,6 @@ export class SeasonDetailComponent implements OnInit {
             {
                 start_datetime: [null, Validators.required],
                 end_datetime: [null, Validators.required],
-                rounds: [
-                    '',
-                    [
-                        Validators.required,
-                        Validators.min(1),
-                        Validators.max(52),
-                        Validators.pattern(/^(?:[1-9]|[1-4][0-9]|50)$/)
-                    ]
-                ],
                 teams: [[], [Validators.required, this.minMaxArrayValidator(2, 20)]]
             },
             {
@@ -135,12 +126,11 @@ export class SeasonDetailComponent implements OnInit {
             return
         }
 
-        const { start_datetime, end_datetime, rounds, teams } = this.seasonForm.value
+        const { start_datetime, end_datetime, teams } = this.seasonForm.value
 
         const seasonData: Partial<Season> = {
             start_date: start_datetime,
             end_date: end_datetime,
-            rounds: parseInt(rounds, 10),
             teams
         }
 
@@ -190,7 +180,6 @@ export class SeasonDetailComponent implements OnInit {
                 this.seasonForm.patchValue({
                     start_datetime: startDate,
                     end_datetime: endDate,
-                    rounds: season.rounds.toString(),
                     teams: (season.teams as Team[]).map((t) => t.id)
                 })
             },

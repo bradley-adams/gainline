@@ -57,28 +57,6 @@
         </mat-error>
 
         <div class="form-row">
-            <mat-form-field appearance="outline">
-                <mat-label>Rounds</mat-label>
-                <input
-                    matInput
-                    type="text"
-                    formControlName="rounds"
-                    inputmode="numeric"
-                    pattern="[0-9]*"
-                    placeholder="Enter number of rounds" />
-                <mat-error *ngIf="seasonForm.get('rounds')?.hasError('pattern')">
-                    Please enter a whole number only
-                </mat-error>
-                <mat-error *ngIf="seasonForm.get('rounds')?.hasError('min')">
-                    Minimum number of rounds is 1
-                </mat-error>
-                <mat-error *ngIf="seasonForm.get('rounds')?.hasError('max')">
-                    Maximum number of rounds is 52
-                </mat-error>
-            </mat-form-field>
-        </div>
-
-        <div class="form-row">
             <mat-form-field appearance="outline" class="wide-field">
                 <mat-label>Teams</mat-label>
 

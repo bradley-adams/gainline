@@ -1,9 +1,9 @@
-import { TestBed } from '@angular/core/testing'
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
-import { SeasonsService } from './seasons.service'
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing'
+import { TestBed } from '@angular/core/testing'
 import { environment } from '../../../environments/environment'
 import { Season, Team } from '../../types/api'
+import { SeasonsService } from './seasons.service'
 
 describe('SeasonsService', () => {
     let service: SeasonsService
@@ -51,7 +51,6 @@ describe('SeasonsService', () => {
     const mockSeason: Season = {
         id: 'season1',
         competition_id: 'comp1',
-        rounds: 3,
         start_date: new Date('2025-01-01T00:00:00Z'),
         end_date: new Date('2025-12-31T23:59:59Z'),
         teams: mockTeams,
@@ -64,7 +63,6 @@ describe('SeasonsService', () => {
         {
             id: 'season2',
             competition_id: 'comp1',
-            rounds: 0,
             start_date: new Date('2024-01-01T00:00:00Z'),
             end_date: new Date('2024-12-31T23:59:59Z'),
             teams: mockTeams,
@@ -114,7 +112,6 @@ describe('SeasonsService', () => {
     it('should create a season', () => {
         const newSeason: Partial<Season> = {
             competition_id: 'comp1',
-            rounds: 0,
             start_date: new Date('2024-01-01T00:00:00Z'),
             end_date: new Date('2024-12-31T23:59:59Z'),
             teams: ['team1', 'team2', 'team3', 'team4']
@@ -133,7 +130,6 @@ describe('SeasonsService', () => {
     it('should update a season', () => {
         const update: Partial<Season> = {
             competition_id: 'comp1',
-            rounds: 0,
             start_date: new Date('2024-01-01T00:00:00Z'),
             end_date: new Date('2024-12-31T23:59:59Z'),
             teams: ['team1', 'team2', 'team3', 'team4']

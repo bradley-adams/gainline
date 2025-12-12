@@ -12,7 +12,6 @@ export interface Season {
     deleted_at?: Date
     end_date: Date
     id: string
-    rounds: number
     start_date: Date
     teams: (string | Team)[]
     updated_at: Date
