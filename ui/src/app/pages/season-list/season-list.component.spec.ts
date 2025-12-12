@@ -58,7 +58,6 @@ describe('SeasonListComponent', () => {
         {
             id: 'season1',
             competition_id: 'comp1',
-            rounds: 3,
             start_date: new Date('2025-01-01T00:00:00Z'),
             end_date: new Date('2025-12-31T23:59:59Z'),
             teams: mockTeams,
@@ -68,7 +67,6 @@ describe('SeasonListComponent', () => {
         {
             id: 'season2',
             competition_id: 'comp1',
-            rounds: 0,
             start_date: new Date('2024-01-01T00:00:00Z'),
             end_date: new Date('2024-12-31T23:59:59Z'),
             teams: mockTeams,
@@ -163,7 +161,6 @@ describe('SeasonListComponent', () => {
         expect(headerRow.cells[0].innerHTML).toBe('Season ID')
         expect(headerRow.cells[1].innerHTML).toBe('Starts')
         expect(headerRow.cells[2].innerHTML).toBe('Ends')
-        expect(headerRow.cells[3].innerHTML).toBe('Rounds')
         expect(headerRow.cells[4].innerHTML).toBe('Actions')
 
         expect(tableRows[1].cells[0].textContent).toBe('season1')
@@ -174,9 +171,6 @@ describe('SeasonListComponent', () => {
 
         expect(tableRows[1].cells[2].textContent).toBe('Jan 1, 2026, 12:59:59 PM')
         expect(tableRows[2].cells[2].textContent).toBe('Jan 1, 2025, 12:59:59 PM')
-
-        expect(tableRows[1].cells[3].textContent).toBe('3')
-        expect(tableRows[2].cells[3].textContent).toBe('0')
 
         expect(tableRows[1].cells[4].textContent).toContain('edit')
         expect(tableRows[1].cells[4].textContent).toContain('calendar_today')

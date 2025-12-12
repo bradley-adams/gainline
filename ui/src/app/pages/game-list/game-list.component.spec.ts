@@ -59,7 +59,6 @@ describe('GameListComponent', () => {
     const mockSeason: Season = {
         id: 'season1',
         competition_id: 'comp1',
-        rounds: 3,
         start_date: new Date('2025-01-01T00:00:00Z'),
         end_date: new Date('2025-12-31T23:59:59Z'),
         teams: mockTeams,

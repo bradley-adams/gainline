@@ -59,7 +59,6 @@ describe('SeasonDetailComponent', () => {
     const mockSeason1: Season = {
         id: 'season1',
         competition_id: 'comp1',
-        rounds: 3,
         start_date: new Date('2025-01-01T00:00:00Z'),
         end_date: new Date('2026-01-01T12:59:00Z'),
         teams: mockTeams,
@@ -70,7 +69,6 @@ describe('SeasonDetailComponent', () => {
     const mockSeason2: Season = {
         id: 'season2',
         competition_id: 'comp1',
-        rounds: 0,
         start_date: new Date('2024-01-01T00:00:00Z'),
         end_date: new Date('2024-12-31T23:59:59Z'),
         teams: mockTeams,
@@ -161,7 +159,6 @@ describe('SeasonDetailComponent', () => {
             component.seasonForm.setValue({
                 start_datetime: start,
                 end_datetime: end,
-                rounds: 10,
                 teams: ['team1', 'team2']
             })
 
@@ -184,7 +181,6 @@ describe('SeasonDetailComponent', () => {
         it('should require start/end datetimes and rounds', () => {
             const startControl = component.seasonForm.get('start_datetime')
             const endControl = component.seasonForm.get('end_datetime')
-            const roundsControl = component.seasonForm.get('rounds')
 
             // Start datetime required
             startControl?.setValue(null)
@@ -197,19 +193,12 @@ describe('SeasonDetailComponent', () => {
             expect(endControl?.valid).toBeFalse()
             endControl?.setValue(new Date('2025-01-02T10:00:00'))
             expect(endControl?.valid).toBeTrue()
-
-            // Rounds required
-            roundsControl?.setValue('')
-            expect(roundsControl?.valid).toBeFalse()
-            roundsControl?.setValue(10)
-            expect(roundsControl?.valid).toBeTrue()
         })
 
         it('should not call createSeason or updateSeason if form is invalid', () => {
             component.seasonForm.setValue({
                 start_datetime: null,
                 end_datetime: null,
-                rounds: '',
                 teams: []
             })
             component.isEditMode = false
@@ -229,7 +218,6 @@ describe('SeasonDetailComponent', () => {
             component.seasonForm.setValue({
                 start_datetime: startDatetime,
                 end_datetime: endDatetime,
-                rounds: 20,
                 teams: ['team1', 'team2']
             })
 
@@ -240,20 +228,11 @@ describe('SeasonDetailComponent', () => {
             expect(calledSeason.end_date?.getTime()).toBe(endDatetime.getTime())
         })
 
-        it('should mark rounds invalid if less than 1 or greater than 50', () => {
-            const rounds = component.seasonForm.get('rounds')
-            rounds?.setValue(0)
-            expect(rounds?.valid).toBeFalse()
-            rounds?.setValue(51)
-            expect(rounds?.valid).toBeFalse()
-        })
-
         it('should not submit if competitionId is null', () => {
             component.competitionId = null
             component.seasonForm.setValue({
                 start_datetime: mockSeason1.start_date,
                 end_datetime: mockSeason1.end_date,
-                rounds: mockSeason1.rounds,
                 teams: ['team1', 'team2']
             })
 
@@ -273,7 +252,6 @@ describe('SeasonDetailComponent', () => {
             component.seasonForm.setValue({
                 start_datetime: startDatetime,
                 end_datetime: endDatetime,
-                rounds: 20,
                 teams: ['team1', 'team2']
             })
 
@@ -284,7 +262,6 @@ describe('SeasonDetailComponent', () => {
                 jasmine.objectContaining({
                     start_date: startDatetime,
                     end_date: endDatetime,
-                    rounds: 20,
                     teams: ['team1', 'team2']
                 })
             )
@@ -299,7 +276,6 @@ describe('SeasonDetailComponent', () => {
             component.seasonForm.patchValue({
                 start_datetime: mockSeason1.start_date,
                 end_datetime: mockSeason1.end_date,
-                rounds: mockSeason1.rounds,
                 teams: ['team1', 'team2']
             })
 
@@ -319,7 +295,6 @@ describe('SeasonDetailComponent', () => {
             component.seasonForm.setValue({
                 start_datetime: mockSeason1.start_date,
                 end_datetime: mockSeason1.end_date,
-                rounds: mockSeason1.rounds,
                 teams: ['team1', 'team2']
             })
 
@@ -341,7 +316,6 @@ describe('SeasonDetailComponent', () => {
             expect(seasonsService.getSeason).toHaveBeenCalledWith('comp1', 'season1')
             expect(component.seasonForm.value.start_datetime).toEqual(mockSeason1.start_date)
             expect(component.seasonForm.value.end_datetime).toEqual(mockSeason1.end_date)
-            expect(component.seasonForm.value.rounds).toEqual(mockSeason1.rounds.toString())
             expect(component.teams).toEqual(mockTeams)
         })
 
@@ -349,7 +323,6 @@ describe('SeasonDetailComponent', () => {
             const seasonFromApi: Season = {
                 id: 'season1',
                 competition_id: 'comp1',
-                rounds: 3,
                 start_date: new Date('2025-01-01T09:30:00Z'),
                 end_date: new Date('2025-12-31T18:45:00Z'),
                 teams: mockTeams,
@@ -404,7 +377,6 @@ describe('SeasonDetailComponent', () => {
             component.seasonForm.setValue({
                 start_datetime: startDatetime,
                 end_datetime: endDatetime,
-                rounds: 20,
                 teams: ['team1', 'team2']
             })
 
@@ -416,7 +388,6 @@ describe('SeasonDetailComponent', () => {
                 jasmine.objectContaining({
                     start_date: startDatetime,
                     end_date: endDatetime,
-                    rounds: 20,
                     teams: ['team1', 'team2']
                 })
             )
@@ -430,7 +401,6 @@ describe('SeasonDetailComponent', () => {
                 start_time: new Date('1970-01-01T13:30:00Z'),
                 end_date: mockSeason1.end_date,
                 end_time: new Date('1970-01-01T15:30:00Z'),
-                rounds: mockSeason1.rounds,
                 teams: ['team1', 'team2']
             })
             component.submitForm()
