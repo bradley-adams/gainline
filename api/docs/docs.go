@@ -1011,7 +1011,7 @@ const docTemplate = `{
                 "away_team_id",
                 "date",
                 "home_team_id",
-                "round"
+                "stage_id"
             ],
             "properties": {
                 "away_score": {
@@ -1034,11 +1034,9 @@ const docTemplate = `{
                     "type": "string",
                     "example": "013952a5-87e1-4d26-a312-09b2aff54241"
                 },
-                "round": {
-                    "type": "integer",
-                    "maximum": 52,
-                    "minimum": 1,
-                    "example": 10
+                "stage_id": {
+                    "type": "string",
+                    "example": "eab15533-dea6-4a3d-8a95-d38e4fba2d5a"
                 },
                 "status": {
                     "allOf": [
@@ -1077,10 +1075,10 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "round": {
-                    "type": "integer"
-                },
                 "season_id": {
+                    "type": "string"
+                },
+                "stage_id": {
                     "type": "string"
                 },
                 "status": {
@@ -1096,18 +1094,21 @@ const docTemplate = `{
             "enum": [
                 "scheduled",
                 "playing",
-                "finished"
+                "finished",
+                "cancelled"
             ],
             "x-enum-varnames": [
                 "GameStatusScheduled",
                 "GameStatusPlaying",
-                "GameStatusFinished"
+                "GameStatusFinished",
+                "GameStatusCancelled"
             ]
         },
         "api.SeasonRequest": {
             "type": "object",
             "required": [
                 "end_date",
+                "stages",
                 "start_date",
                 "teams"
             ],
@@ -1116,10 +1117,13 @@ const docTemplate = `{
                     "type": "string",
                     "example": "2025-12-31T23:59:59Z"
                 },
-                "rounds": {
-                    "type": "integer",
-                    "maximum": 52,
-                    "minimum": 1
+                "stages": {
+                    "type": "array",
+                    "maxItems": 50,
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/api.StageRequest"
+                    }
                 },
                 "start_date": {
                     "type": "string",
@@ -1157,8 +1161,11 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "rounds": {
-                    "type": "integer"
+                "stages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.StageResponse"
+                    }
                 },
                 "start_date": {
                     "type": "string"
@@ -1173,6 +1180,68 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "api.StageRequest": {
+            "type": "object",
+            "required": [
+                "name",
+                "order_index",
+                "stage_type"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 3
+                },
+                "order_index": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "stage_type": {
+                    "$ref": "#/definitions/api.StageType"
+                }
+            }
+        },
+        "api.StageResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "order_index": {
+                    "type": "integer"
+                },
+                "season_id": {
+                    "type": "string"
+                },
+                "stage_type": {
+                    "$ref": "#/definitions/api.StageType"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.StageType": {
+            "type": "string",
+            "enum": [
+                "regular",
+                "finals"
+            ],
+            "x-enum-varnames": [
+                "StageTypeGroup",
+                "StageTypeFinals"
+            ]
         },
         "api.TeamRequest": {
             "type": "object",

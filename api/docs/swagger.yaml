@@ -38,11 +38,9 @@ definitions:
       home_team_id:
         example: 013952a5-87e1-4d26-a312-09b2aff54241
         type: string
-      round:
-        example: 10
-        maximum: 52
-        minimum: 1
-        type: integer
+      stage_id:
+        example: eab15533-dea6-4a3d-8a95-d38e4fba2d5a
+        type: string
       status:
         allOf:
         - $ref: '#/definitions/api.GameStatus'
@@ -51,7 +49,7 @@ definitions:
     - away_team_id
     - date
     - home_team_id
-    - round
+    - stage_id
     type: object
   api.GameResponse:
     properties:
@@ -71,9 +69,9 @@ definitions:
         type: string
       id:
         type: string
-      round:
-        type: integer
       season_id:
+        type: string
+      stage_id:
         type: string
       status:
         $ref: '#/definitions/api.GameStatus'
@@ -85,20 +83,24 @@ definitions:
     - scheduled
     - playing
     - finished
+    - cancelled
     type: string
     x-enum-varnames:
     - GameStatusScheduled
     - GameStatusPlaying
     - GameStatusFinished
+    - GameStatusCancelled
   api.SeasonRequest:
     properties:
       end_date:
         example: "2025-12-31T23:59:59Z"
         type: string
-      rounds:
-        maximum: 52
-        minimum: 1
-        type: integer
+      stages:
+        items:
+          $ref: '#/definitions/api.StageRequest'
+        maxItems: 50
+        minItems: 1
+        type: array
       start_date:
         example: "2025-01-01T00:00:00Z"
         type: string
@@ -113,6 +115,7 @@ definitions:
         type: array
     required:
     - end_date
+    - stages
     - start_date
     - teams
     type: object
@@ -128,8 +131,10 @@ definitions:
         type: string
       id:
         type: string
-      rounds:
-        type: integer
+      stages:
+        items:
+          $ref: '#/definitions/api.StageResponse'
+        type: array
       start_date:
         type: string
       teams:
@@ -139,6 +144,49 @@ definitions:
       updated_at:
         type: string
     type: object
+  api.StageRequest:
+    properties:
+      name:
+        maxLength: 100
+        minLength: 3
+        type: string
+      order_index:
+        minimum: 1
+        type: integer
+      stage_type:
+        $ref: '#/definitions/api.StageType'
+    required:
+    - name
+    - order_index
+    - stage_type
+    type: object
+  api.StageResponse:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      order_index:
+        type: integer
+      season_id:
+        type: string
+      stage_type:
+        $ref: '#/definitions/api.StageType'
+      updated_at:
+        type: string
+    type: object
+  api.StageType:
+    enum:
+    - regular
+    - finals
+    type: string
+    x-enum-varnames:
+    - StageTypeGroup
+    - StageTypeFinals
   api.TeamRequest:
     properties:
       abbreviation:
