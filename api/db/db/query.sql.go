@@ -201,6 +201,55 @@ func (q *Queries) CreateSeasonTeams(ctx context.Context, arg CreateSeasonTeamsPa
 	return err
 }
 
+const createStage = `-- name: CreateStage :exec
+INSERT INTO stages (
+	id,
+	season_id,
+	name,
+	stage_type,
+	order_index,
+	created_at,
+	updated_at,
+	deleted_at
+)
+VALUES (
+	$1,
+  $2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7,
+	$8
+)
+`
+
+type CreateStageParams struct {
+	ID         uuid.UUID
+	SeasonID   uuid.UUID
+	Name       string
+	StageType  StageType
+	OrderIndex int32
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	DeletedAt  sql.NullTime
+}
+
+// Insert a new stage into the database
+func (q *Queries) CreateStage(ctx context.Context, arg CreateStageParams) error {
+	_, err := q.db.ExecContext(ctx, createStage,
+		arg.ID,
+		arg.SeasonID,
+		arg.Name,
+		arg.StageType,
+		arg.OrderIndex,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+		arg.DeletedAt,
+	)
+	return err
+}
+
 const createTeam = `-- name: CreateTeam :exec
 INSERT INTO teams (
 	id,

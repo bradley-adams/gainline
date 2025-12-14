@@ -94,6 +94,14 @@ func DeleteSeasonsByCompetitionID(
 	return q.DeleteSeasonsByCompetitionID(ctx, params)
 }
 
+func CreateStage(
+	ctx context.Context,
+	q Queries,
+	params db.CreateStageParams,
+) error {
+	return q.CreateStage(ctx, params)
+}
+
 func CreateTeam(
 	ctx context.Context,
 	q Queries,
