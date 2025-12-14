@@ -282,6 +282,31 @@ WHERE
 AND
   deleted_at IS NULL;
 
+
+-- name: CreateStage :exec
+-- Insert a new stage into the database
+INSERT INTO stages (
+	id,
+	season_id,
+	name,
+	stage_type,
+	order_index,
+	created_at,
+	updated_at,
+	deleted_at
+)
+VALUES (
+	@id,
+  @season_id,
+	@name,
+	@stage_type,
+	@order_index,
+	@created_at,
+	@updated_at,
+	@deleted_at
+);
+
+
 -- name: CreateGame :exec
 -- Insert a new game into the database
 INSERT INTO games (
