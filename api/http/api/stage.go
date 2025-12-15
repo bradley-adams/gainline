@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/bradley-adams/gainline/db/db"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/guregu/null/zero"
 )
@@ -45,4 +46,9 @@ func ToStageResponse(s db.Stage) StageResponse {
 		UpdatedAt:  s.UpdatedAt,
 		DeletedAt:  zero.TimeFrom(s.DeletedAt.Time),
 	}
+}
+
+func ValidateStageType(fl validator.FieldLevel) bool {
+	stageType := fl.Field().String()
+	return stageType == "regular" || stageType == "finals"
 }
