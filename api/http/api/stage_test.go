@@ -22,7 +22,7 @@ var _ = Describe("StageRequest validation", func() {
 
 		stage = StageRequest{
 			Name:       "Group Stage",
-			StageType:  StageTypeGroup,
+			StageType:  StageTypeRegular,
 			OrderIndex: 1,
 		}
 	})
