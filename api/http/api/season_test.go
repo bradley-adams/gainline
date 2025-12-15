@@ -34,6 +34,7 @@ var _ = Describe("SeasonRequest validation", func() {
 		season := &SeasonRequest{
 			StartDate: date1,
 			EndDate:   date2,
+			Stages:    []StageRequest{{Name: "Regular Season", StageType: StageTypeRegular, OrderIndex: 1}},
 			Teams:     []uuid.UUID{team1, team2},
 		}
 		Expect(validate.Struct(season)).To(Succeed())
