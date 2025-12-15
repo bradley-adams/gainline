@@ -99,6 +99,7 @@ var _ = Describe("season handlers", func() {
 				"start_date":"2025-01-01T00:00:00Z",
 				"end_date":"2025-12-31T23:59:59Z",
 				"rounds":10,
+				"stages":[{"name":"Group Stage","stage_type":"regular","settings":{}}],
 				"teams":["013952a5-87e1-4d26-a312-09b2aff54241","7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97"]
 			}`
 			req := httptest.NewRequest(http.MethodPost, "/competitions/"+compID.String()+"/seasons", bytes.NewBufferString(reqBody))
@@ -142,6 +143,7 @@ var _ = Describe("season handlers", func() {
 				"start_date":"2025-01-01T00:00:00Z",
 				"end_date":"2025-12-31T23:59:59Z",
 				"rounds":10,
+				"stages":[{"name":"Group Stage","stage_type":"regular","settings":{}}],
 				"teams":["013952a5-87e1-4d26-a312-09b2aff54241","7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97"]
 			}`
 			req := httptest.NewRequest(http.MethodPost, "/competitions/"+compID.String()+"/seasons", bytes.NewBufferString(reqBody))
@@ -192,6 +194,7 @@ var _ = Describe("season handlers", func() {
 				"start_date":"2025-01-01T00:00:00Z",
 				"end_date":"2025-12-31T23:59:59Z",
 				"rounds":12,
+				"stages":[{"name":"Group Stage","stage_type":"regular","settings":{}}],
 				"teams":["013952a5-87e1-4d26-a312-09b2aff54241","7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97"]
 			}`
 			req := httptest.NewRequest(http.MethodPut, "/competitions/"+compID.String()+"/seasons/"+seasonID.String(), bytes.NewBufferString(reqBody))
@@ -224,6 +227,7 @@ var _ = Describe("season handlers", func() {
 				"start_date":"2025-01-01T00:00:00Z",
 				"end_date":"2025-12-31T23:59:59Z",
 				"rounds":12,
+				"stages":[{"name":"Group Stage","stage_type":"regular","settings":{}}],
 				"teams":["013952a5-87e1-4d26-a312-09b2aff54241","7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97"]
 			}`
 			req := httptest.NewRequest(http.MethodPut, "/competitions/"+compID.String()+"/seasons/"+seasonID.String(), bytes.NewBufferString(reqBody))

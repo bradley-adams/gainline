@@ -12,8 +12,8 @@ import (
 type StageType string
 
 const (
-	StageTypeGroup  StageType = "regular"
-	StageTypeFinals StageType = "finals"
+	StageTypeRegular StageType = "regular"
+	StageTypeFinals  StageType = "finals"
 )
 
 type StageRequest struct {
