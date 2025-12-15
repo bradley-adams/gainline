@@ -50,6 +50,15 @@ swag fmt
 mockgen -destination=/home/bradley/Personal/gainline/api/db/db_handler/mock/db.go -package=mock_db github.com/bradley-adams/gainline/db/db_handler DB,Queries
 ```
 
+I think I have to update the mock command to this. Keeping the one above for now incase I am mucking up.
+
+```
+mockgen \
+  -destination=./db/db_handler/mock/db.go \
+  -package=mock_db \
+  github.com/bradley-adams/gainline/db/db_handler DB,Queries
+```
+
 ## Todo:
 
 - Swagger spec default dont delete actual competition seeded data. Maybe seed a second one to delete
