@@ -15,10 +15,10 @@ import (
 
 // SeasonService defines the contract for season-related operations.
 type SeasonService interface {
-	Create(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (SeasonWithTeams, error)
-	GetAll(ctx context.Context, competitionID uuid.UUID) ([]SeasonWithTeams, error)
-	Get(ctx context.Context, competitionID, seasonID uuid.UUID) (SeasonWithTeams, error)
-	Update(ctx context.Context, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (SeasonWithTeams, error)
+	Create(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (SeasonAggregate, error)
+	GetAll(ctx context.Context, competitionID uuid.UUID) ([]SeasonAggregate, error)
+	Get(ctx context.Context, competitionID, seasonID uuid.UUID) (SeasonAggregate, error)
+	Update(ctx context.Context, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (SeasonAggregate, error)
 	Delete(ctx context.Context, seasonID uuid.UUID) error
 }
 
@@ -31,21 +31,21 @@ func NewSeasonService(db db_handler.DB) SeasonService {
 	return &seasonService{db: db}
 }
 
-func (s *seasonService) Create(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (SeasonWithTeams, error) {
-	var season SeasonWithTeams
+func (s *seasonService) Create(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (SeasonAggregate, error) {
+	var season SeasonAggregate
 	err := db_handler.RunInTransaction(ctx, s.db, func(queries db_handler.Queries) error {
 		var err error
 		season, err = createSeason(ctx, queries, req, competitionID)
 		return err
 	})
 	if err != nil {
-		return SeasonWithTeams{}, err
+		return SeasonAggregate{}, err
 	}
 	return season, nil
 }
 
-func (s *seasonService) GetAll(ctx context.Context, competitionID uuid.UUID) ([]SeasonWithTeams, error) {
-	var seasons []SeasonWithTeams
+func (s *seasonService) GetAll(ctx context.Context, competitionID uuid.UUID) ([]SeasonAggregate, error) {
+	var seasons []SeasonAggregate
 	err := db_handler.Run(ctx, s.db, func(queries db_handler.Queries) error {
 		var err error
 		seasons, err = getSeasons(ctx, queries, competitionID)
@@ -57,28 +57,28 @@ func (s *seasonService) GetAll(ctx context.Context, competitionID uuid.UUID) ([]
 	return seasons, nil
 }
 
-func (s *seasonService) Get(ctx context.Context, competitionID, seasonID uuid.UUID) (SeasonWithTeams, error) {
-	var season SeasonWithTeams
+func (s *seasonService) Get(ctx context.Context, competitionID, seasonID uuid.UUID) (SeasonAggregate, error) {
+	var season SeasonAggregate
 	err := db_handler.Run(ctx, s.db, func(queries db_handler.Queries) error {
 		var err error
 		season, err = getSeasonWithTeams(ctx, queries, seasonID)
 		return err
 	})
 	if err != nil {
-		return SeasonWithTeams{}, err
+		return SeasonAggregate{}, err
 	}
 	return season, nil
 }
 
-func (s *seasonService) Update(ctx context.Context, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (SeasonWithTeams, error) {
-	var season SeasonWithTeams
+func (s *seasonService) Update(ctx context.Context, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (SeasonAggregate, error) {
+	var season SeasonAggregate
 	err := db_handler.RunInTransaction(ctx, s.db, func(queries db_handler.Queries) error {
 		var txErr error
 		season, txErr = updateSeason(ctx, queries, req, competitionID, seasonID)
 		return txErr
 	})
 	if err != nil {
-		return SeasonWithTeams{}, err
+		return SeasonAggregate{}, err
 	}
 	return season, nil
 }
@@ -93,7 +93,7 @@ func (s *seasonService) Delete(ctx context.Context, seasonID uuid.UUID) error {
 	return nil
 }
 
-type SeasonWithTeams struct {
+type SeasonAggregate struct {
 	ID            uuid.UUID
 	CompetitionID uuid.UUID
 	StartDate     time.Time
@@ -104,7 +104,7 @@ type SeasonWithTeams struct {
 	DeletedAt     zero.Time
 }
 
-func ToSeasonResponse(s SeasonWithTeams) api.SeasonResponse {
+func ToSeasonResponse(s SeasonAggregate) api.SeasonResponse {
 	var teams []api.TeamResponse
 	for _, team := range s.Teams {
 		teams = append(teams, api.ToTeamResponse(team))
@@ -122,21 +122,21 @@ func ToSeasonResponse(s SeasonWithTeams) api.SeasonResponse {
 	}
 }
 
-func createSeason(ctx context.Context, queries db_handler.Queries, req *api.SeasonRequest, competitionID uuid.UUID) (SeasonWithTeams, error) {
+func createSeason(ctx context.Context, queries db_handler.Queries, req *api.SeasonRequest, competitionID uuid.UUID) (SeasonAggregate, error) {
 	now := time.Now()
 	seasonID := uuid.New()
 
 	if err := insertSeason(ctx, queries, seasonID, competitionID, req, now); err != nil {
-		return SeasonWithTeams{}, err
+		return SeasonAggregate{}, err
 	}
 
 	teamIDs := dedupeUUIDs(req.Teams)
 	if err := ensureTeamsExist(ctx, queries, teamIDs); err != nil {
-		return SeasonWithTeams{}, errors.Wrap(err, "teams do not all exist")
+		return SeasonAggregate{}, errors.Wrap(err, "teams do not all exist")
 	}
 
 	if err := ensureSeasonHasTeams(ctx, queries, seasonID, teamIDs, now, nil); err != nil {
-		return SeasonWithTeams{}, err
+		return SeasonAggregate{}, err
 	}
 
 	return getSeasonWithTeams(ctx, queries, seasonID)
@@ -191,30 +191,30 @@ func ensureSeasonHasTeams(ctx context.Context, queries db_handler.Queries, seaso
 	return nil
 }
 
-func getSeasonWithTeams(ctx context.Context, queries db_handler.Queries, seasonID uuid.UUID) (SeasonWithTeams, error) {
+func getSeasonWithTeams(ctx context.Context, queries db_handler.Queries, seasonID uuid.UUID) (SeasonAggregate, error) {
 	season, err := queries.GetSeason(ctx, seasonID)
 	if err != nil {
-		return SeasonWithTeams{}, errors.Wrap(err, "unable to get season")
+		return SeasonAggregate{}, errors.Wrap(err, "unable to get season")
 	}
 	return buildSeasonWithTeams(ctx, queries, season)
 }
 
-func buildSeasonWithTeams(ctx context.Context, queries db_handler.Queries, season db.Season) (SeasonWithTeams, error) {
+func buildSeasonWithTeams(ctx context.Context, queries db_handler.Queries, season db.Season) (SeasonAggregate, error) {
 	seasonTeams, err := queries.GetSeasonTeams(ctx, season.ID)
 	if err != nil {
-		return SeasonWithTeams{}, errors.Wrap(err, "unable to get season teams")
+		return SeasonAggregate{}, errors.Wrap(err, "unable to get season teams")
 	}
 
 	var teams []db.Team
 	for _, st := range seasonTeams {
 		team, err := queries.GetTeam(ctx, st.TeamID)
 		if err != nil {
-			return SeasonWithTeams{}, errors.Wrap(err, "unable to get team")
+			return SeasonAggregate{}, errors.Wrap(err, "unable to get team")
 		}
 		teams = append(teams, team)
 	}
 
-	return SeasonWithTeams{
+	return SeasonAggregate{
 		ID:            season.ID,
 		CompetitionID: season.CompetitionID,
 		StartDate:     season.StartDate,
@@ -238,13 +238,13 @@ func dedupeUUIDs(ids []uuid.UUID) []uuid.UUID {
 	return out
 }
 
-func getSeasons(ctx context.Context, queries db_handler.Queries, competitionID uuid.UUID) ([]SeasonWithTeams, error) {
+func getSeasons(ctx context.Context, queries db_handler.Queries, competitionID uuid.UUID) ([]SeasonAggregate, error) {
 	rawSeasons, err := queries.GetSeasons(ctx, competitionID)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to get seasons")
 	}
 
-	var seasons []SeasonWithTeams
+	var seasons []SeasonAggregate
 	for _, s := range rawSeasons {
 		swt, err := buildSeasonWithTeams(ctx, queries, s)
 		if err != nil {
@@ -255,13 +255,13 @@ func getSeasons(ctx context.Context, queries db_handler.Queries, competitionID u
 	return seasons, nil
 }
 
-func updateSeason(ctx context.Context, queries db_handler.Queries, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (SeasonWithTeams, error) {
+func updateSeason(ctx context.Context, queries db_handler.Queries, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (SeasonAggregate, error) {
 	now := time.Now()
 	if err := updateSeasonFields(ctx, queries, req, competitionID, seasonID, now); err != nil {
-		return SeasonWithTeams{}, err
+		return SeasonAggregate{}, err
 	}
 	if err := syncSeasonTeams(ctx, queries, seasonID, req.Teams, now); err != nil {
-		return SeasonWithTeams{}, errors.Wrap(err, "unable to sync season teams")
+		return SeasonAggregate{}, errors.Wrap(err, "unable to sync season teams")
 	}
 	return getSeasonWithTeams(ctx, queries, seasonID)
 }

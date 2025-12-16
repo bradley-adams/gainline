@@ -130,7 +130,7 @@ var _ = Describe("game", func() {
 		DeletedAt:    sql.NullTime{Time: time.Time{}, Valid: false},
 	}
 
-	validSeasonWithTeams := SeasonWithTeams{
+	validSeasonWithTeams := SeasonAggregate{
 		ID:            validSeasonID,
 		CompetitionID: validCompetitionID,
 		StartDate:     validTimeNow.AddDate(0, -1, 0),

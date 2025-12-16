@@ -136,10 +136,10 @@ var _ = Describe("season", func() {
 		validSeasonTeamFromDB3,
 	}
 
-	var validNilSeasonWithTeams SeasonWithTeams
-	var validNilSeasonsWithTeams []SeasonWithTeams
+	var validNilSeasonWithTeams SeasonAggregate
+	var validNilSeasonsWithTeams []SeasonAggregate
 
-	validSeasonWithTeams := SeasonWithTeams{
+	validSeasonWithTeams := SeasonAggregate{
 		ID:            validSeasonFromDB.ID,
 		CompetitionID: validSeasonFromDB.CompetitionID,
 		StartDate:     validSeasonFromDB.StartDate,
@@ -150,7 +150,7 @@ var _ = Describe("season", func() {
 		DeletedAt:     zero.TimeFrom(validSeasonFromDB.DeletedAt.Time),
 	}
 
-	validSeasonWithTeams2 := SeasonWithTeams{
+	validSeasonWithTeams2 := SeasonAggregate{
 		ID:            validSeasonFromDB2.ID,
 		CompetitionID: validSeasonFromDB2.CompetitionID,
 		StartDate:     validSeasonFromDB2.StartDate,

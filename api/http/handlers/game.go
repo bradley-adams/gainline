@@ -32,7 +32,7 @@ func handleCreateGame(
 	gameService service.GameService,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		season := ctx.MustGet("season").(service.SeasonWithTeams)
+		season := ctx.MustGet("season").(service.SeasonAggregate)
 
 		req := &api.GameRequest{}
 		if err := ctx.ShouldBindJSON(req); err != nil {
@@ -143,7 +143,7 @@ func handleUpdateGame(
 	validate *validator.Validate,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		season := ctx.MustGet("season").(service.SeasonWithTeams)
+		season := ctx.MustGet("season").(service.SeasonAggregate)
 
 		gameID, err := uuid.Parse(ctx.Param("gameID"))
 		if err != nil {

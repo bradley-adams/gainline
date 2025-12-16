@@ -21,39 +21,39 @@ import (
 
 // Manual mock for SeasonService
 type mockSeasonService struct {
-	CreateFn func(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (service.SeasonWithTeams, error)
-	GetAllFn func(ctx context.Context, competitionID uuid.UUID) ([]service.SeasonWithTeams, error)
-	GetFn    func(ctx context.Context, competitionID, seasonID uuid.UUID) (service.SeasonWithTeams, error)
-	UpdateFn func(ctx context.Context, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (service.SeasonWithTeams, error)
+	CreateFn func(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (service.SeasonAggregate, error)
+	GetAllFn func(ctx context.Context, competitionID uuid.UUID) ([]service.SeasonAggregate, error)
+	GetFn    func(ctx context.Context, competitionID, seasonID uuid.UUID) (service.SeasonAggregate, error)
+	UpdateFn func(ctx context.Context, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (service.SeasonAggregate, error)
 	DeleteFn func(ctx context.Context, seasonID uuid.UUID) error
 }
 
-func (m *mockSeasonService) Create(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (service.SeasonWithTeams, error) {
+func (m *mockSeasonService) Create(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (service.SeasonAggregate, error) {
 	if m.CreateFn != nil {
 		return m.CreateFn(ctx, req, competitionID)
 	}
-	return service.SeasonWithTeams{}, nil
+	return service.SeasonAggregate{}, nil
 }
 
-func (m *mockSeasonService) GetAll(ctx context.Context, competitionID uuid.UUID) ([]service.SeasonWithTeams, error) {
+func (m *mockSeasonService) GetAll(ctx context.Context, competitionID uuid.UUID) ([]service.SeasonAggregate, error) {
 	if m.GetAllFn != nil {
 		return m.GetAllFn(ctx, competitionID)
 	}
 	return nil, nil
 }
 
-func (m *mockSeasonService) Get(ctx context.Context, competitionID, seasonID uuid.UUID) (service.SeasonWithTeams, error) {
+func (m *mockSeasonService) Get(ctx context.Context, competitionID, seasonID uuid.UUID) (service.SeasonAggregate, error) {
 	if m.GetFn != nil {
 		return m.GetFn(ctx, competitionID, seasonID)
 	}
-	return service.SeasonWithTeams{}, nil
+	return service.SeasonAggregate{}, nil
 }
 
-func (m *mockSeasonService) Update(ctx context.Context, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (service.SeasonWithTeams, error) {
+func (m *mockSeasonService) Update(ctx context.Context, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (service.SeasonAggregate, error) {
 	if m.UpdateFn != nil {
 		return m.UpdateFn(ctx, req, competitionID, seasonID)
 	}
-	return service.SeasonWithTeams{}, nil
+	return service.SeasonAggregate{}, nil
 }
 
 func (m *mockSeasonService) Delete(ctx context.Context, seasonID uuid.UUID) error {
@@ -90,8 +90,8 @@ var _ = Describe("season handlers", func() {
 
 	Describe("create season", func() {
 		It("returns 201 for valid request", func() {
-			mockSvc.CreateFn = func(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (service.SeasonWithTeams, error) {
-				return service.SeasonWithTeams{ID: uuid.New()}, nil
+			mockSvc.CreateFn = func(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (service.SeasonAggregate, error) {
+				return service.SeasonAggregate{ID: uuid.New()}, nil
 			}
 
 			compID := uuid.New()
@@ -134,8 +134,8 @@ var _ = Describe("season handlers", func() {
 		})
 
 		It("returns 500 when service fails", func() {
-			mockSvc.CreateFn = func(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (service.SeasonWithTeams, error) {
-				return service.SeasonWithTeams{}, fmt.Errorf("db failure")
+			mockSvc.CreateFn = func(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (service.SeasonAggregate, error) {
+				return service.SeasonAggregate{}, fmt.Errorf("db failure")
 			}
 
 			compID := uuid.New()
@@ -158,8 +158,8 @@ var _ = Describe("season handlers", func() {
 	Describe("get all seasons", func() {
 		It("returns 200 and list of seasons", func() {
 			compID := uuid.New()
-			mockSvc.GetAllFn = func(ctx context.Context, competitionID uuid.UUID) ([]service.SeasonWithTeams, error) {
-				return []service.SeasonWithTeams{{ID: uuid.New()}}, nil
+			mockSvc.GetAllFn = func(ctx context.Context, competitionID uuid.UUID) ([]service.SeasonAggregate, error) {
+				return []service.SeasonAggregate{{ID: uuid.New()}}, nil
 			}
 
 			req := httptest.NewRequest(http.MethodGet, "/competitions/"+compID.String()+"/seasons", nil)
@@ -171,7 +171,7 @@ var _ = Describe("season handlers", func() {
 
 		It("returns 500 when service fails", func() {
 			compID := uuid.New()
-			mockSvc.GetAllFn = func(ctx context.Context, competitionID uuid.UUID) ([]service.SeasonWithTeams, error) {
+			mockSvc.GetAllFn = func(ctx context.Context, competitionID uuid.UUID) ([]service.SeasonAggregate, error) {
 				return nil, fmt.Errorf("db failure")
 			}
 
@@ -186,8 +186,8 @@ var _ = Describe("season handlers", func() {
 		It("returns 200 for valid update", func() {
 			compID := uuid.New()
 			seasonID := uuid.New()
-			mockSvc.UpdateFn = func(ctx context.Context, req *api.SeasonRequest, competitionID, sID uuid.UUID) (service.SeasonWithTeams, error) {
-				return service.SeasonWithTeams{ID: sID}, nil
+			mockSvc.UpdateFn = func(ctx context.Context, req *api.SeasonRequest, competitionID, sID uuid.UUID) (service.SeasonAggregate, error) {
+				return service.SeasonAggregate{ID: sID}, nil
 			}
 
 			reqBody := `{
@@ -219,8 +219,8 @@ var _ = Describe("season handlers", func() {
 		It("returns 500 when service fails", func() {
 			compID := uuid.New()
 			seasonID := uuid.New()
-			mockSvc.UpdateFn = func(ctx context.Context, req *api.SeasonRequest, competitionID, sID uuid.UUID) (service.SeasonWithTeams, error) {
-				return service.SeasonWithTeams{}, fmt.Errorf("db failure")
+			mockSvc.UpdateFn = func(ctx context.Context, req *api.SeasonRequest, competitionID, sID uuid.UUID) (service.SeasonAggregate, error) {
+				return service.SeasonAggregate{}, fmt.Errorf("db failure")
 			}
 
 			reqBody := `{
