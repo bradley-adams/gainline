@@ -23,14 +23,14 @@ import (
 
 // Manual mock for GameService
 type mockGameService struct {
-	CreateFn func(ctx context.Context, req *api.GameRequest, season service.SeasonWithTeams) (db.Game, error)
+	CreateFn func(ctx context.Context, req *api.GameRequest, season service.SeasonAggregate) (db.Game, error)
 	GetAllFn func(ctx context.Context, seasonID uuid.UUID) ([]db.Game, error)
 	GetFn    func(ctx context.Context, gameID uuid.UUID) (db.Game, error)
-	UpdateFn func(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season service.SeasonWithTeams) (db.Game, error)
+	UpdateFn func(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season service.SeasonAggregate) (db.Game, error)
 	DeleteFn func(ctx context.Context, gameID uuid.UUID) error
 }
 
-func (m *mockGameService) Create(ctx context.Context, req *api.GameRequest, season service.SeasonWithTeams) (db.Game, error) {
+func (m *mockGameService) Create(ctx context.Context, req *api.GameRequest, season service.SeasonAggregate) (db.Game, error) {
 	if m.CreateFn != nil {
 		return m.CreateFn(ctx, req, season)
 	}
@@ -48,7 +48,7 @@ func (m *mockGameService) Get(ctx context.Context, gameID uuid.UUID) (db.Game, e
 	}
 	return db.Game{}, nil
 }
-func (m *mockGameService) Update(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season service.SeasonWithTeams) (db.Game, error) {
+func (m *mockGameService) Update(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season service.SeasonAggregate) (db.Game, error) {
 	if m.UpdateFn != nil {
 		return m.UpdateFn(ctx, req, gameID, season)
 	}
@@ -67,7 +67,7 @@ var _ = Describe("game handlers", func() {
 		validate *validator.Validate
 		logger   zerolog.Logger
 		mockSvc  *mockGameService
-		season   service.SeasonWithTeams
+		season   service.SeasonAggregate
 	)
 
 	BeforeEach(func() {
@@ -82,7 +82,7 @@ var _ = Describe("game handlers", func() {
 		mockSvc = &mockGameService{}
 		router = gin.New()
 
-		season = service.SeasonWithTeams{
+		season = service.SeasonAggregate{
 			ID:        uuid.New(),
 			StartDate: time.Now().Add(-time.Hour * 24),
 			EndDate:   time.Now().Add(time.Hour * 24 * 30),
@@ -108,7 +108,7 @@ var _ = Describe("game handlers", func() {
 
 	Describe("create game", func() {
 		It("returns 201 for valid request", func() {
-			mockSvc.CreateFn = func(ctx context.Context, req *api.GameRequest, s service.SeasonWithTeams) (db.Game, error) {
+			mockSvc.CreateFn = func(ctx context.Context, req *api.GameRequest, s service.SeasonAggregate) (db.Game, error) {
 				return db.Game{ID: uuid.New(), SeasonID: s.ID, StageID: req.StageID}, nil
 			}
 
@@ -133,7 +133,7 @@ var _ = Describe("game handlers", func() {
 		})
 
 		It("returns 500 when service fails", func() {
-			mockSvc.CreateFn = func(ctx context.Context, req *api.GameRequest, s service.SeasonWithTeams) (db.Game, error) {
+			mockSvc.CreateFn = func(ctx context.Context, req *api.GameRequest, s service.SeasonAggregate) (db.Game, error) {
 				return db.Game{}, fmt.Errorf("db failure")
 			}
 
@@ -204,7 +204,7 @@ var _ = Describe("game handlers", func() {
 	Describe("update game", func() {
 		It("returns 200 for valid update", func() {
 			gameID := uuid.New()
-			mockSvc.UpdateFn = func(ctx context.Context, req *api.GameRequest, gID uuid.UUID, s service.SeasonWithTeams) (db.Game, error) {
+			mockSvc.UpdateFn = func(ctx context.Context, req *api.GameRequest, gID uuid.UUID, s service.SeasonAggregate) (db.Game, error) {
 				return db.Game{ID: gID, StageID: req.StageID, SeasonID: s.ID}, nil
 			}
 
@@ -230,7 +230,7 @@ var _ = Describe("game handlers", func() {
 
 		It("returns 500 when service fails", func() {
 			gameID := uuid.New()
-			mockSvc.UpdateFn = func(ctx context.Context, req *api.GameRequest, gID uuid.UUID, s service.SeasonWithTeams) (db.Game, error) {
+			mockSvc.UpdateFn = func(ctx context.Context, req *api.GameRequest, gID uuid.UUID, s service.SeasonAggregate) (db.Game, error) {
 				return db.Game{}, fmt.Errorf("db failure")
 			}
 

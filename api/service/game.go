@@ -14,10 +14,10 @@ import (
 
 // GameService defines the contract for game-related operations.
 type GameService interface {
-	Create(ctx context.Context, req *api.GameRequest, season SeasonWithTeams) (db.Game, error)
+	Create(ctx context.Context, req *api.GameRequest, season SeasonAggregate) (db.Game, error)
 	GetAll(ctx context.Context, seasonID uuid.UUID) ([]db.Game, error)
 	Get(ctx context.Context, gameID uuid.UUID) (db.Game, error)
-	Update(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season SeasonWithTeams) (db.Game, error)
+	Update(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season SeasonAggregate) (db.Game, error)
 	Delete(ctx context.Context, gameID uuid.UUID) error
 }
 
@@ -30,7 +30,7 @@ func NewGameService(db db_handler.DB) GameService {
 	return &gameService{db: db}
 }
 
-func (s *gameService) Create(ctx context.Context, req *api.GameRequest, season SeasonWithTeams) (db.Game, error) {
+func (s *gameService) Create(ctx context.Context, req *api.GameRequest, season SeasonAggregate) (db.Game, error) {
 	var game db.Game
 
 	err := db_handler.RunInTransaction(ctx, s.db, func(queries db_handler.Queries) error {
@@ -75,7 +75,7 @@ func (s *gameService) Get(ctx context.Context, gameID uuid.UUID) (db.Game, error
 	return game, nil
 }
 
-func (s *gameService) Update(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season SeasonWithTeams) (db.Game, error) {
+func (s *gameService) Update(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season SeasonAggregate) (db.Game, error) {
 	var game db.Game
 
 	err := db_handler.RunInTransaction(ctx, s.db, func(queries db_handler.Queries) error {
@@ -104,7 +104,7 @@ func createGame(
 	ctx context.Context,
 	queries db_handler.Queries,
 	req *api.GameRequest,
-	season SeasonWithTeams,
+	season SeasonAggregate,
 ) (db.Game, error) {
 	if err := validateGameRequest(req, season); err != nil {
 		return db.Game{}, err
@@ -150,7 +150,7 @@ func updateGame(
 	queries db_handler.Queries,
 	req *api.GameRequest,
 	gameID uuid.UUID,
-	season SeasonWithTeams,
+	season SeasonAggregate,
 ) (db.Game, error) {
 	if err := validateGameRequest(req, season); err != nil {
 		return db.Game{}, err
@@ -205,7 +205,7 @@ func deleteGame(
 	return nil
 }
 
-func validateGameRequest(req *api.GameRequest, season SeasonWithTeams) error {
+func validateGameRequest(req *api.GameRequest, season SeasonAggregate) error {
 	teamIDs := make(map[uuid.UUID]struct{}, len(season.Teams))
 	for _, t := range season.Teams {
 		teamIDs[t.ID] = struct{}{}

@@ -108,7 +108,7 @@ func handleGetSeasons(logger zerolog.Logger, seasonService service.SeasonService
 //	@Router		/competitions/{competitionID}/seasons/{seasonID} [get]
 func handleGetSeason(logger zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		season := ctx.MustGet("season").(service.SeasonWithTeams)
+		season := ctx.MustGet("season").(service.SeasonAggregate)
 
 		response.RespondSuccess(ctx, logger, http.StatusOK, service.ToSeasonResponse(season))
 	}
