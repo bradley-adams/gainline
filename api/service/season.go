@@ -98,6 +98,7 @@ type SeasonAggregate struct {
 	CompetitionID uuid.UUID
 	StartDate     time.Time
 	EndDate       time.Time
+	Stages        []db.Stage
 	Teams         []db.Team
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
@@ -136,6 +137,10 @@ func createSeason(ctx context.Context, queries db_handler.Queries, req *api.Seas
 	}
 
 	if err := ensureSeasonHasTeams(ctx, queries, seasonID, teamIDs, now, nil); err != nil {
+		return SeasonAggregate{}, err
+	}
+
+	if err := createStages(ctx, queries, seasonID, req.Stages, now); err != nil {
 		return SeasonAggregate{}, err
 	}
 
@@ -186,6 +191,26 @@ func ensureSeasonHasTeams(ctx context.Context, queries db_handler.Queries, seaso
 		}
 		if err := queries.CreateSeasonTeams(ctx, params); err != nil {
 			return errors.Wrapf(err, "unable to add team %s to season %s", teamID, seasonID)
+		}
+	}
+	return nil
+}
+
+func createStages(ctx context.Context, queries db_handler.Queries, seasonID uuid.UUID, stages []api.StageRequest, now time.Time) error {
+	for _, stage := range stages {
+		params := db.CreateStageParams{
+			ID:         uuid.New(),
+			Name:       stage.Name,
+			StageType:  db.StageType(stage.StageType),
+			OrderIndex: stage.OrderIndex,
+			SeasonID:   seasonID,
+			CreatedAt:  now,
+			UpdatedAt:  now,
+			DeletedAt:  sql.NullTime{Time: time.Time{}, Valid: false},
+		}
+
+		if err := queries.CreateStage(ctx, params); err != nil {
+			return errors.Wrapf(err, "failed to create stage %q for season %s", stage.Name, seasonID)
 		}
 	}
 	return nil
