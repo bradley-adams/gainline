@@ -306,6 +306,24 @@ VALUES (
 	@deleted_at
 );
 
+-- name: GetStagesBySeasonID :many
+-- Fetch all stages for a season, excluding soft-deleted stages
+SELECT
+  id,
+  season_id,
+  name,
+  stage_type,
+  order_index,
+  created_at,
+  updated_at,
+  deleted_at
+FROM
+  stages
+WHERE
+  season_id = @season_id
+AND
+  deleted_at IS NULL;
+
 
 -- name: CreateGame :exec
 -- Insert a new game into the database
