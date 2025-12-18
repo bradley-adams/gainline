@@ -102,6 +102,14 @@ func CreateStage(
 	return q.CreateStage(ctx, params)
 }
 
+func GetStagesBySeasonID(
+	ctx context.Context,
+	q Queries,
+	id uuid.UUID,
+) ([]db.Stage, error) {
+	return q.GetStagesBySeasonID(ctx, id)
+}
+
 func CreateTeam(
 	ctx context.Context,
 	q Queries,

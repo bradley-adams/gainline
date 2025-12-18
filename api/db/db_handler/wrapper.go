@@ -39,6 +39,7 @@ type Queries interface {
 
 	//Stage
 	CreateStage(ctx context.Context, arg db.CreateStageParams) error
+	GetStagesBySeasonID(ctx context.Context, id uuid.UUID) ([]db.Stage, error)
 
 	//Team
 	CreateTeam(ctx context.Context, arg db.CreateTeamParams) error
