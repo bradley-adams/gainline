@@ -61,7 +61,7 @@ func (s *seasonService) Get(ctx context.Context, competitionID, seasonID uuid.UU
 	var season SeasonAggregate
 	err := db_handler.Run(ctx, s.db, func(queries db_handler.Queries) error {
 		var err error
-		season, err = getSeasonWithTeams(ctx, queries, seasonID)
+		season, err = getSeason(ctx, queries, seasonID)
 		return err
 	})
 	if err != nil {
@@ -111,11 +111,17 @@ func ToSeasonResponse(s SeasonAggregate) api.SeasonResponse {
 		teams = append(teams, api.ToTeamResponse(team))
 	}
 
+	var stages []api.StageResponse
+	for _, stage := range s.Stages {
+		stages = append(stages, api.ToStageResponse(stage))
+	}
+
 	return api.SeasonResponse{
 		ID:            s.ID,
 		CompetitionID: s.CompetitionID,
 		StartDate:     s.StartDate,
 		EndDate:       s.EndDate,
+		Stages:        stages,
 		Teams:         teams,
 		CreatedAt:     s.CreatedAt,
 		UpdatedAt:     s.UpdatedAt,
@@ -144,7 +150,7 @@ func createSeason(ctx context.Context, queries db_handler.Queries, req *api.Seas
 		return SeasonAggregate{}, err
 	}
 
-	return getSeasonWithTeams(ctx, queries, seasonID)
+	return getSeason(ctx, queries, seasonID)
 }
 
 func insertSeason(ctx context.Context, queries db_handler.Queries, seasonID, competitionID uuid.UUID, req *api.SeasonRequest, now time.Time) error {
@@ -216,27 +222,29 @@ func createStages(ctx context.Context, queries db_handler.Queries, seasonID uuid
 	return nil
 }
 
-func getSeasonWithTeams(ctx context.Context, queries db_handler.Queries, seasonID uuid.UUID) (SeasonAggregate, error) {
+func getSeason(ctx context.Context, queries db_handler.Queries, seasonID uuid.UUID) (SeasonAggregate, error) {
 	season, err := queries.GetSeason(ctx, seasonID)
 	if err != nil {
 		return SeasonAggregate{}, errors.Wrap(err, "unable to get season")
 	}
-	return buildSeasonWithTeams(ctx, queries, season)
+
+	return buildSeasonAggregate(ctx, queries, season)
 }
 
-func buildSeasonWithTeams(ctx context.Context, queries db_handler.Queries, season db.Season) (SeasonAggregate, error) {
-	seasonTeams, err := queries.GetSeasonTeams(ctx, season.ID)
+func buildSeasonAggregate(
+	ctx context.Context,
+	queries db_handler.Queries,
+	season db.Season,
+) (SeasonAggregate, error) {
+
+	teams, err := getSeasonTeams(ctx, queries, season.ID)
 	if err != nil {
-		return SeasonAggregate{}, errors.Wrap(err, "unable to get season teams")
+		return SeasonAggregate{}, err
 	}
 
-	var teams []db.Team
-	for _, st := range seasonTeams {
-		team, err := queries.GetTeam(ctx, st.TeamID)
-		if err != nil {
-			return SeasonAggregate{}, errors.Wrap(err, "unable to get team")
-		}
-		teams = append(teams, team)
+	stages, err := queries.GetStagesBySeasonID(ctx, season.ID)
+	if err != nil {
+		return SeasonAggregate{}, errors.Wrap(err, "unable to get season stages")
 	}
 
 	return SeasonAggregate{
@@ -245,10 +253,34 @@ func buildSeasonWithTeams(ctx context.Context, queries db_handler.Queries, seaso
 		StartDate:     season.StartDate,
 		EndDate:       season.EndDate,
 		Teams:         teams,
+		Stages:        stages,
 		CreatedAt:     season.CreatedAt,
 		UpdatedAt:     season.UpdatedAt,
 		DeletedAt:     zero.TimeFrom(season.DeletedAt.Time),
 	}, nil
+}
+
+func getSeasonTeams(
+	ctx context.Context,
+	queries db_handler.Queries,
+	seasonID uuid.UUID,
+) ([]db.Team, error) {
+
+	rows, err := queries.GetSeasonTeams(ctx, seasonID)
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to get season teams")
+	}
+
+	teams := make([]db.Team, 0, len(rows))
+	for _, row := range rows {
+		team, err := queries.GetTeam(ctx, row.TeamID)
+		if err != nil {
+			return nil, errors.Wrap(err, "unable to get team")
+		}
+		teams = append(teams, team)
+	}
+
+	return teams, nil
 }
 
 func dedupeUUIDs(ids []uuid.UUID) []uuid.UUID {
@@ -264,20 +296,21 @@ func dedupeUUIDs(ids []uuid.UUID) []uuid.UUID {
 }
 
 func getSeasons(ctx context.Context, queries db_handler.Queries, competitionID uuid.UUID) ([]SeasonAggregate, error) {
-	rawSeasons, err := queries.GetSeasons(ctx, competitionID)
+	seasons, err := queries.GetSeasons(ctx, competitionID)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to get seasons")
 	}
 
-	var seasons []SeasonAggregate
-	for _, s := range rawSeasons {
-		swt, err := buildSeasonWithTeams(ctx, queries, s)
+	seasonAggregates := make([]SeasonAggregate, 0, len(seasons))
+	for _, season := range seasons {
+		seasonAggregate, err := buildSeasonAggregate(ctx, queries, season)
 		if err != nil {
 			return nil, err
 		}
-		seasons = append(seasons, swt)
+		seasonAggregates = append(seasonAggregates, seasonAggregate)
 	}
-	return seasons, nil
+
+	return seasonAggregates, nil
 }
 
 func updateSeason(ctx context.Context, queries db_handler.Queries, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (SeasonAggregate, error) {
@@ -288,7 +321,7 @@ func updateSeason(ctx context.Context, queries db_handler.Queries, req *api.Seas
 	if err := syncSeasonTeams(ctx, queries, seasonID, req.Teams, now); err != nil {
 		return SeasonAggregate{}, errors.Wrap(err, "unable to sync season teams")
 	}
-	return getSeasonWithTeams(ctx, queries, seasonID)
+	return getSeason(ctx, queries, seasonID)
 }
 
 func updateSeasonFields(ctx context.Context, queries db_handler.Queries, req *api.SeasonRequest, competitionID, seasonID uuid.UUID, now time.Time) error {
