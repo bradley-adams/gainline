@@ -98,6 +98,29 @@ var _ = Describe("middleware", func() {
 		DeletedAt:     sql.NullTime{Time: time.Time{}, Valid: false},
 	}
 
+	validRegularStageFromDB := db.Stage{
+		ID:         uuid.MustParse("5e8f5502-02d3-4143-a52c-18a731c315a5"),
+		SeasonID:   validSeasonID,
+		Name:       "Regular",
+		OrderIndex: 1,
+		CreatedAt:  validTimeNow,
+		UpdatedAt:  validTimeNow,
+	}
+
+	validFinalStagesFromDB := db.Stage{
+		ID:         uuid.MustParse("c0f79d11-57e7-4184-be6e-68f01f6278a7"),
+		SeasonID:   validSeasonID,
+		Name:       "Finals",
+		OrderIndex: 2,
+		CreatedAt:  validTimeNow,
+		UpdatedAt:  validTimeNow,
+	}
+
+	validStagesFromDB := []db.Stage{
+		validRegularStageFromDB,
+		validFinalStagesFromDB,
+	}
+
 	validSeasonTeamFromDB := db.GetSeasonTeamsRow{
 		ID:        validSeasonTeamID,
 		TeamID:    validTeamID,
@@ -179,7 +202,10 @@ var _ = Describe("middleware", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validTeamFromDB2, nil)
-
+			mockQueries.EXPECT().GetStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validStagesFromDB, nil)
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
@@ -238,6 +264,10 @@ var _ = Describe("middleware", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validTeamFromDB2, nil)
+			mockQueries.EXPECT().GetStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validStagesFromDB, nil)
 
 			mockDB.EXPECT().New(
 				gomock.Any(),
@@ -280,6 +310,10 @@ var _ = Describe("middleware", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validTeamFromDB2, nil)
+			mockQueries.EXPECT().GetStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validStagesFromDB, nil)
 
 			recorder := createRecorder()
 			req, _ := http.NewRequest("GET", "/test/competitions/"+invalidCompetitionID.String()+"/seasons/"+validSeasonID.String()+"/games/"+validGameID.String(), nil)
@@ -312,6 +346,10 @@ var _ = Describe("middleware", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validTeamFromDB2, nil)
+			mockQueries.EXPECT().GetStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validStagesFromDB, nil)
 
 			mockDB.EXPECT().New(
 				gomock.Any(),
