@@ -86,6 +86,43 @@ var _ = Describe("season", func() {
 		validSeasonFromDB2,
 	}
 
+	validRegularStageFromDB := db.Stage{
+		ID:         uuid.MustParse("5e8f5502-02d3-4143-a52c-18a731c315a5"),
+		SeasonID:   validSeasonID,
+		Name:       "Regular",
+		OrderIndex: 1,
+		CreatedAt:  validTimeNow,
+		UpdatedAt:  validTimeNow,
+	}
+
+	validFinalStagesFromDB := db.Stage{
+		ID:         uuid.MustParse("c0f79d11-57e7-4184-be6e-68f01f6278a7"),
+		SeasonID:   validSeasonID,
+		Name:       "Semi Finals",
+		OrderIndex: 2,
+		CreatedAt:  validTimeNow,
+		UpdatedAt:  validTimeNow,
+	}
+
+	validFinalStagesFromDB2 := db.Stage{
+		ID:         uuid.MustParse("d40b4854-06e8-43ec-be4c-748f9a58c16f"),
+		SeasonID:   validSeasonID,
+		Name:       "Final",
+		OrderIndex: 3,
+		CreatedAt:  validTimeNow,
+		UpdatedAt:  validTimeNow,
+	}
+
+	validStagesFromDB := []db.Stage{
+		validRegularStageFromDB,
+		validFinalStagesFromDB,
+	}
+
+	validStagesFromDB2 := []db.Stage{
+		validRegularStageFromDB,
+		validFinalStagesFromDB2,
+	}
+
 	validTeamFromDB := db.Team{
 		ID:           validTeamID,
 		Name:         "Test Team",
@@ -101,6 +138,16 @@ var _ = Describe("season", func() {
 		Name:         "Test Team2",
 		Abbreviation: "TT2",
 		Location:     "Testville 22",
+		CreatedAt:    validTimeNow,
+		UpdatedAt:    validTimeNow,
+		DeletedAt:    sql.NullTime{Time: time.Time{}, Valid: false},
+	}
+
+	validTeamFromDB3 := db.Team{
+		ID:           validTeamID3,
+		Name:         "Test Team3",
+		Abbreviation: "TT3",
+		Location:     "Testville 33",
 		CreatedAt:    validTimeNow,
 		UpdatedAt:    validTimeNow,
 		DeletedAt:    sql.NullTime{Time: time.Time{}, Valid: false},
@@ -228,6 +275,10 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validTeamFromDB2, nil)
+			mockQueries.EXPECT().GetStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validStagesFromDB, nil)
 			mockDB.EXPECT().Commit(
 				gomock.Any(),
 			)
@@ -242,13 +293,16 @@ var _ = Describe("season", func() {
 			Expect(season.CompetitionID).To(Equal(validSeasonResponse.CompetitionID))
 			Expect(season.StartDate).To(Equal(validSeasonResponse.StartDate))
 			Expect(season.EndDate).To(Equal(validSeasonResponse.EndDate))
-
 			Expect(season.Teams).To(HaveLen(2))
 			Expect(season.Teams).To(ConsistOf(
 				validTeamFromDB,
 				validTeamFromDB2,
 			))
-
+			Expect(season.Stages).To(HaveLen(2))
+			Expect(season.Stages).To(ConsistOf(
+				validRegularStageFromDB,
+				validFinalStagesFromDB,
+			))
 			Expect(season.CreatedAt).To(Equal(validSeasonResponse.CreatedAt))
 			Expect(season.UpdatedAt).To(Equal(validSeasonResponse.UpdatedAt))
 			Expect(season.DeletedAt.Time).To(Equal(validSeasonResponse.DeletedAt.Time))
@@ -442,6 +496,68 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("unable to get season: a valid testing error"))
 		})
 
+		It("should rollback and return a formatted error when fetching stages by seasonID fails", func() {
+			mockDB.EXPECT().BeginTx(
+				gomock.Any(),
+				gomock.Any(),
+			)
+			mockDB.EXPECT().New(
+				gomock.Any(),
+			).Return(mockQueries)
+			mockQueries.EXPECT().CreateSeason(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(db.Team{}, nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(db.Team{}, nil)
+			mockQueries.EXPECT().CreateSeasonTeams(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().CreateSeasonTeams(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().CreateStage(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().GetSeason(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validSeasonFromDB, nil)
+			mockQueries.EXPECT().GetSeasonTeams(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validSeasonTeamsFromDB, nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTeamFromDB, nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTeamFromDB2, nil)
+			mockQueries.EXPECT().GetStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return([]db.Stage{}, validTestError)
+			mockDB.EXPECT().Rollback(
+				gomock.Any(),
+			).Times(1)
+
+			season, err := svc.Create(context.Background(), validSeasonRequest, validCompetitionID)
+
+			Expect(season).To(Equal(validNilSeasonWithTeams))
+			Expect(err.Error()).To(Equal("unable to get season stages: a valid testing error"))
+		})
+
 		It("should return a formatted error when commit fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
@@ -482,6 +598,10 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return([]db.GetSeasonTeamsRow{}, nil)
+			mockQueries.EXPECT().GetStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validStagesFromDB, nil)
 			mockDB.EXPECT().Commit(
 				gomock.Any(),
 			).Return(validTestError)
@@ -508,11 +628,35 @@ var _ = Describe("season", func() {
 			mockQueries.EXPECT().GetSeasonTeams(
 				gomock.Any(),
 				gomock.Any(),
-			).Return(nil, nil)
+			).Return(validSeasonTeamsFromDB, nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTeamFromDB, nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTeamFromDB2, nil)
 			mockQueries.EXPECT().GetSeasonTeams(
 				gomock.Any(),
 				gomock.Any(),
-			).Return(nil, nil)
+			).Return(validSeasonTeamsFromDB2, nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTeamFromDB, nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTeamFromDB3, nil)
+			mockQueries.EXPECT().GetStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validStagesFromDB, nil)
+			mockQueries.EXPECT().GetStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validStagesFromDB2, nil)
 
 			seasons, err := svc.GetAll(context.Background(), validCompetitionID)
 			Expect(err).NotTo(HaveOccurred())
@@ -521,6 +665,16 @@ var _ = Describe("season", func() {
 			Expect(seasons[0].CompetitionID).To(Equal(validSeasonsResponse[0].CompetitionID))
 			Expect(seasons[0].StartDate).To(Equal(validSeasonsResponse[0].StartDate))
 			Expect(seasons[0].EndDate).To(Equal(validSeasonsResponse[0].EndDate))
+			Expect(seasons[0].Teams).To(HaveLen(2))
+			Expect(seasons[0].Teams).To(ConsistOf(
+				validTeamFromDB,
+				validTeamFromDB2,
+			))
+			Expect(seasons[0].Stages).To(HaveLen(2))
+			Expect(seasons[0].Stages).To(ConsistOf(
+				validRegularStageFromDB,
+				validFinalStagesFromDB,
+			))
 			Expect(seasons[0].CreatedAt).To(Equal(validSeasonsResponse[0].CreatedAt))
 			Expect(seasons[0].UpdatedAt).To(Equal(validSeasonsResponse[0].UpdatedAt))
 			Expect(seasons[0].DeletedAt.Time).To(Equal(validSeasonsResponse[0].DeletedAt.Time))
@@ -529,6 +683,16 @@ var _ = Describe("season", func() {
 			Expect(seasons[1].CompetitionID).To(Equal(validSeasonsResponse[1].CompetitionID))
 			Expect(seasons[1].StartDate).To(Equal(validSeasonsResponse[1].StartDate))
 			Expect(seasons[1].EndDate).To(Equal(validSeasonsResponse[1].EndDate))
+			Expect(seasons[1].Teams).To(HaveLen(2))
+			Expect(seasons[1].Teams).To(ConsistOf(
+				validTeamFromDB,
+				validTeamFromDB3,
+			))
+			Expect(seasons[1].Stages).To(HaveLen(2))
+			Expect(seasons[1].Stages).To(ConsistOf(
+				validRegularStageFromDB,
+				validFinalStagesFromDB2,
+			))
 			Expect(seasons[1].CreatedAt).To(Equal(validSeasonsResponse[1].CreatedAt))
 			Expect(seasons[1].UpdatedAt).To(Equal(validSeasonsResponse[1].UpdatedAt))
 			Expect(seasons[1].DeletedAt.Time).To(Equal(validSeasonsResponse[1].DeletedAt.Time))
@@ -582,7 +746,19 @@ var _ = Describe("season", func() {
 			mockQueries.EXPECT().GetSeasonTeams(
 				gomock.Any(),
 				gomock.Any(),
-			).Return([]db.GetSeasonTeamsRow{}, nil)
+			).Return(validSeasonTeamsFromDB, nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTeamFromDB, nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTeamFromDB2, nil)
+			mockQueries.EXPECT().GetStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validStagesFromDB, nil)
 
 			season, err := svc.Get(context.Background(), validCompetitionID, validSeasonID)
 			Expect(err).NotTo(HaveOccurred())
@@ -591,6 +767,16 @@ var _ = Describe("season", func() {
 			Expect(season.CompetitionID).To(Equal(validSeasonResponse.CompetitionID))
 			Expect(season.StartDate).To(Equal(validSeasonResponse.StartDate))
 			Expect(season.EndDate).To(Equal(validSeasonResponse.EndDate))
+			Expect(season.Teams).To(HaveLen(2))
+			Expect(season.Teams).To(ConsistOf(
+				validTeamFromDB,
+				validTeamFromDB2,
+			))
+			Expect(season.Stages).To(HaveLen(2))
+			Expect(season.Stages).To(ConsistOf(
+				validRegularStageFromDB,
+				validFinalStagesFromDB,
+			))
 			Expect(season.CreatedAt).To(Equal(validSeasonResponse.CreatedAt))
 			Expect(season.UpdatedAt).To(Equal(validSeasonResponse.UpdatedAt))
 			Expect(season.DeletedAt.Time).To(Equal(validSeasonResponse.DeletedAt.Time))
@@ -680,6 +866,11 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validTeamFromDB2, nil)
+			mockQueries.EXPECT().GetStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validStagesFromDB, nil)
+
 			mockDB.EXPECT().Commit(
 				gomock.Any(),
 			)
@@ -1040,6 +1231,73 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("unable to get team: a valid testing error"))
 		})
 
+		It("should rollback and return a formatted error when getting a stage after update fails", func() {
+			mockDB.EXPECT().BeginTx(
+				gomock.Any(),
+				gomock.Any(),
+			)
+			mockDB.EXPECT().New(
+				gomock.Any(),
+			).Return(mockQueries)
+			mockQueries.EXPECT().UpdateSeason(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTeamFromDB, nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTeamFromDB2, nil)
+			mockQueries.EXPECT().GetSeasonTeams(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validSeasonTeamsFromDB2, nil)
+			mockQueries.EXPECT().CreateSeasonTeams(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteSeasonTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().GetSeason(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validSeasonFromDB, nil)
+			mockQueries.EXPECT().GetSeasonTeams(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validSeasonTeamsFromDB, nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTeamFromDB, nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(db.Team{}, nil)
+			mockQueries.EXPECT().GetStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return([]db.Stage{}, validTestError)
+			mockDB.EXPECT().Rollback(
+				gomock.Any(),
+			).Times(1)
+
+			season, err := svc.Update(
+				context.Background(),
+				validSeasonRequest,
+				validCompetitionID,
+				validSeasonID,
+			)
+
+			Expect(season).To(Equal(validNilSeasonWithTeams))
+			Expect(err.Error()).To(Equal("unable to get season stages: a valid testing error"))
+		})
+
 		It("should return a formatted error when commit fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
@@ -1088,6 +1346,10 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validTeamFromDB2, nil)
+			mockQueries.EXPECT().GetStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validStagesFromDB, nil)
 			mockDB.EXPECT().Commit(
 				gomock.Any(),
 			).Return(validTestError)
