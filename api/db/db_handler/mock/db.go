@@ -528,6 +528,21 @@ func (mr *MockQueriesMockRecorder) GetSeasons(ctx, competitionID any) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSeasons", reflect.TypeOf((*MockQueries)(nil).GetSeasons), ctx, competitionID)
 }
 
+// GetStagesBySeasonID mocks base method.
+func (m *MockQueries) GetStagesBySeasonID(ctx context.Context, id uuid.UUID) ([]db.Stage, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetStagesBySeasonID", ctx, id)
+	ret0, _ := ret[0].([]db.Stage)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetStagesBySeasonID indicates an expected call of GetStagesBySeasonID.
+func (mr *MockQueriesMockRecorder) GetStagesBySeasonID(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStagesBySeasonID", reflect.TypeOf((*MockQueries)(nil).GetStagesBySeasonID), ctx, id)
+}
+
 // GetTeam mocks base method.
 func (m *MockQueries) GetTeam(ctx context.Context, id uuid.UUID) (db.Team, error) {
 	m.ctrl.T.Helper()
