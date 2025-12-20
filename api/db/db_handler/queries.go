@@ -110,6 +110,22 @@ func GetStagesBySeasonID(
 	return q.GetStagesBySeasonID(ctx, id)
 }
 
+func UpdateStage(
+	ctx context.Context,
+	q Queries,
+	params db.UpdateStageParams,
+) error {
+	return q.UpdateStage(ctx, params)
+}
+
+func DeleteStage(
+	ctx context.Context,
+	q Queries,
+	params db.DeleteStageParams,
+) error {
+	return q.DeleteStage(ctx, params)
+}
+
 func CreateTeam(
 	ctx context.Context,
 	q Queries,
