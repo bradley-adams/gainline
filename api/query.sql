@@ -324,6 +324,29 @@ WHERE
 AND
   deleted_at IS NULL;
 
+-- name: UpdateStage :exec
+-- Update an existing stage
+UPDATE stages
+SET
+  name        = @name,
+  stage_type  = @stage_type,
+  order_index = @order_index,
+  updated_at  = @updated_at
+WHERE
+  id = @id
+AND
+  deleted_at IS NULL;
+
+-- name: DeleteStage :exec
+-- Soft delete a stage
+UPDATE stages
+SET
+  deleted_at = @deleted_at
+WHERE
+  id = @id
+AND
+  deleted_at IS NULL;
+
 
 -- name: CreateGame :exec
 -- Insert a new game into the database
