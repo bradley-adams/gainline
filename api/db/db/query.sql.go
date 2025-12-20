@@ -468,6 +468,27 @@ func (q *Queries) DeleteSeasonsByCompetitionID(ctx context.Context, arg DeleteSe
 	return err
 }
 
+const deleteStage = `-- name: DeleteStage :exec
+UPDATE stages
+SET
+  deleted_at = $1
+WHERE
+  id = $2
+AND
+  deleted_at IS NULL
+`
+
+type DeleteStageParams struct {
+	DeletedAt sql.NullTime
+	ID        uuid.UUID
+}
+
+// Soft delete a stage
+func (q *Queries) DeleteStage(ctx context.Context, arg DeleteStageParams) error {
+	_, err := q.db.ExecContext(ctx, deleteStage, arg.DeletedAt, arg.ID)
+	return err
+}
+
 const deleteTeam = `-- name: DeleteTeam :exec
 UPDATE teams
 SET
@@ -1025,6 +1046,39 @@ func (q *Queries) UpdateSeason(ctx context.Context, arg UpdateSeasonParams) erro
 		arg.CompetitionID,
 		arg.StartDate,
 		arg.EndDate,
+		arg.UpdatedAt,
+		arg.ID,
+	)
+	return err
+}
+
+const updateStage = `-- name: UpdateStage :exec
+UPDATE stages
+SET
+  name        = $1,
+  stage_type  = $2,
+  order_index = $3,
+  updated_at  = $4
+WHERE
+  id = $5
+AND
+  deleted_at IS NULL
+`
+
+type UpdateStageParams struct {
+	Name       string
+	StageType  StageType
+	OrderIndex int32
+	UpdatedAt  time.Time
+	ID         uuid.UUID
+}
+
+// Update an existing stage
+func (q *Queries) UpdateStage(ctx context.Context, arg UpdateStageParams) error {
+	_, err := q.db.ExecContext(ctx, updateStage,
+		arg.Name,
+		arg.StageType,
+		arg.OrderIndex,
 		arg.UpdatedAt,
 		arg.ID,
 	)
