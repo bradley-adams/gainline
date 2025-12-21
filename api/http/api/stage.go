@@ -17,9 +17,10 @@ const (
 )
 
 type StageRequest struct {
-	Name       string    `json:"name" validate:"required,min=3,max=100,entity_name"`
-	StageType  StageType `json:"stage_type" validate:"required,stage_type"`
-	OrderIndex int32     `json:"order_index" validate:"required,min=1"`
+	ID         *uuid.UUID `json:"id,omitempty" swaggerignore:"true"`
+	Name       string     `json:"name" validate:"required,min=3,max=100,entity_name"`
+	StageType  StageType  `json:"stage_type" validate:"required,stage_type"`
+	OrderIndex int32      `json:"order_index" validate:"required,min=1"`
 }
 
 type StageResponse struct {
