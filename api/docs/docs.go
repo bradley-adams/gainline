@@ -1183,23 +1183,22 @@ const docTemplate = `{
         },
         "api.StageRequest": {
             "type": "object",
-            "required": [
-                "name",
-                "order_index",
-                "stage_type"
-            ],
             "properties": {
                 "name": {
                     "type": "string",
-                    "maxLength": 100,
-                    "minLength": 3
+                    "example": "Regular Season"
                 },
                 "order_index": {
                     "type": "integer",
-                    "minimum": 1
+                    "example": 1
                 },
                 "stage_type": {
-                    "$ref": "#/definitions/api.StageType"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/api.StageType"
+                        }
+                    ],
+                    "example": "regular"
                 }
             }
         },
@@ -1239,7 +1238,7 @@ const docTemplate = `{
                 "finals"
             ],
             "x-enum-varnames": [
-                "StageTypeGroup",
+                "StageTypeRegular",
                 "StageTypeFinals"
             ]
         },
