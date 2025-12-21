@@ -147,18 +147,15 @@ definitions:
   api.StageRequest:
     properties:
       name:
-        maxLength: 100
-        minLength: 3
+        example: Regular Season
         type: string
       order_index:
-        minimum: 1
+        example: 1
         type: integer
       stage_type:
-        $ref: '#/definitions/api.StageType'
-    required:
-    - name
-    - order_index
-    - stage_type
+        allOf:
+        - $ref: '#/definitions/api.StageType'
+        example: regular
     type: object
   api.StageResponse:
     properties:
@@ -185,7 +182,7 @@ definitions:
     - finals
     type: string
     x-enum-varnames:
-    - StageTypeGroup
+    - StageTypeRegular
     - StageTypeFinals
   api.TeamRequest:
     properties:

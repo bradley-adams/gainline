@@ -202,21 +202,16 @@ func ensureSeasonHasTeams(ctx context.Context, queries db_handler.Queries, seaso
 	return nil
 }
 
-func createStages(ctx context.Context, queries db_handler.Queries, seasonID uuid.UUID, stages []api.StageRequest, now time.Time) error {
+func createStages(
+	ctx context.Context,
+	queries db_handler.Queries,
+	seasonID uuid.UUID,
+	stages []api.StageRequest,
+	now time.Time,
+) error {
 	for _, stage := range stages {
-		params := db.CreateStageParams{
-			ID:         uuid.New(),
-			Name:       stage.Name,
-			StageType:  db.StageType(stage.StageType),
-			OrderIndex: stage.OrderIndex,
-			SeasonID:   seasonID,
-			CreatedAt:  now,
-			UpdatedAt:  now,
-			DeletedAt:  sql.NullTime{Time: time.Time{}, Valid: false},
-		}
-
-		if err := queries.CreateStage(ctx, params); err != nil {
-			return errors.Wrapf(err, "failed to create stage %q for season %s", stage.Name, seasonID)
+		if err := createStage(ctx, queries, seasonID, stage, now); err != nil {
+			return err
 		}
 	}
 	return nil
@@ -315,12 +310,19 @@ func getSeasons(ctx context.Context, queries db_handler.Queries, competitionID u
 
 func updateSeason(ctx context.Context, queries db_handler.Queries, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (SeasonAggregate, error) {
 	now := time.Now()
+
 	if err := updateSeasonFields(ctx, queries, req, competitionID, seasonID, now); err != nil {
 		return SeasonAggregate{}, err
 	}
+
 	if err := syncSeasonTeams(ctx, queries, seasonID, req.Teams, now); err != nil {
 		return SeasonAggregate{}, errors.Wrap(err, "unable to sync season teams")
 	}
+
+	if err := syncSeasonStages(ctx, queries, seasonID, req.Stages, now); err != nil {
+		return SeasonAggregate{}, errors.Wrap(err, "unable to sync season stages")
+	}
+
 	return getSeason(ctx, queries, seasonID)
 }
 
@@ -335,6 +337,120 @@ func updateSeasonFields(ctx context.Context, queries db_handler.Queries, req *ap
 	if err := queries.UpdateSeason(ctx, params); err != nil {
 		return errors.Wrap(err, "unable to update season")
 	}
+	return nil
+}
+
+func syncSeasonStages(
+	ctx context.Context,
+	queries db_handler.Queries,
+	seasonID uuid.UUID,
+	stages []api.StageRequest,
+	now time.Time,
+) error {
+	existingStages, err := queries.GetStagesBySeasonID(ctx, seasonID)
+	if err != nil {
+		return errors.Wrap(err, "unable to get existing stages")
+	}
+
+	existingMap := make(map[uuid.UUID]db.Stage, len(existingStages))
+	for _, stage := range existingStages {
+		existingMap[stage.ID] = stage
+	}
+
+	requestedSet := make(map[uuid.UUID]struct{})
+
+	for _, stage := range stages {
+		if stage.ID == nil {
+			if err := createStage(ctx, queries, seasonID, stage, now); err != nil {
+				return err
+			}
+			continue
+		}
+
+		stageID := *stage.ID
+		requestedSet[stageID] = struct{}{}
+
+		if _, exists := existingMap[stageID]; !exists {
+			return errors.Errorf("unable to update stage %s for season %s", stageID, seasonID)
+		}
+
+		if err := updateStage(ctx, queries, stageID, stage, now); err != nil {
+			return err
+		}
+	}
+
+	return removeExtraSeasonStages(ctx, queries, existingStages, requestedSet, now)
+}
+
+func createStage(
+	ctx context.Context,
+	queries db_handler.Queries,
+	seasonID uuid.UUID,
+	stage api.StageRequest,
+	now time.Time,
+) error {
+	params := db.CreateStageParams{
+		ID:         uuid.New(),
+		SeasonID:   seasonID,
+		Name:       stage.Name,
+		StageType:  db.StageType(stage.StageType),
+		OrderIndex: stage.OrderIndex,
+		CreatedAt:  now,
+		UpdatedAt:  now,
+		DeletedAt:  sql.NullTime{Valid: false},
+	}
+
+	if err := queries.CreateStage(ctx, params); err != nil {
+		return errors.Wrapf(err, "unable to create stage %q", stage.Name)
+	}
+
+	return nil
+}
+
+func updateStage(
+	ctx context.Context,
+	queries db_handler.Queries,
+	stageID uuid.UUID,
+	stage api.StageRequest,
+	now time.Time,
+) error {
+	params := db.UpdateStageParams{
+		ID:         stageID,
+		Name:       stage.Name,
+		StageType:  db.StageType(stage.StageType),
+		OrderIndex: stage.OrderIndex,
+		UpdatedAt:  now,
+	}
+
+	if err := queries.UpdateStage(ctx, params); err != nil {
+		return errors.Wrapf(err, "unable to update stage %s", stageID)
+	}
+
+	return nil
+}
+
+func removeExtraSeasonStages(
+	ctx context.Context,
+	queries db_handler.Queries,
+	existingStages []db.Stage,
+	requestedSet map[uuid.UUID]struct{},
+	now time.Time,
+) error {
+	for _, stage := range existingStages {
+		if _, keep := requestedSet[stage.ID]; keep {
+			continue
+		}
+
+		params := db.DeleteStageParams{
+			ID:        stage.ID,
+			DeletedAt: sql.NullTime{Time: now, Valid: true},
+		}
+
+		if err := queries.DeleteStage(ctx, params); err != nil {
+			return errors.Wrapf(err, "unable to delete stage %s", stage.ID)
+		}
+	}
+
 	return nil
 }
 
