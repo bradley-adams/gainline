@@ -347,6 +347,16 @@ WHERE
 AND
   deleted_at IS NULL;
 
+-- name: DeleteStagesBySeasonID :exec
+-- Soft delete all stages for a season
+UPDATE stages
+SET
+  deleted_at = @deleted_at
+WHERE
+  season_id = @season_id
+AND
+  deleted_at IS NULL;
+
 
 -- name: CreateGame :exec
 -- Insert a new game into the database
