@@ -409,6 +409,34 @@ func (mr *MockQueriesMockRecorder) DeleteSeasonsByCompetitionID(ctx, arg any) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSeasonsByCompetitionID", reflect.TypeOf((*MockQueries)(nil).DeleteSeasonsByCompetitionID), ctx, arg)
 }
 
+// DeleteStage mocks base method.
+func (m *MockQueries) DeleteStage(ctx context.Context, arg db.DeleteStageParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteStage", ctx, arg)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteStage indicates an expected call of DeleteStage.
+func (mr *MockQueriesMockRecorder) DeleteStage(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteStage", reflect.TypeOf((*MockQueries)(nil).DeleteStage), ctx, arg)
+}
+
+// DeleteStagesBySeasonID mocks base method.
+func (m *MockQueries) DeleteStagesBySeasonID(ctx context.Context, arg db.DeleteStagesBySeasonIDParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteStagesBySeasonID", ctx, arg)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteStagesBySeasonID indicates an expected call of DeleteStagesBySeasonID.
+func (mr *MockQueriesMockRecorder) DeleteStagesBySeasonID(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteStagesBySeasonID", reflect.TypeOf((*MockQueries)(nil).DeleteStagesBySeasonID), ctx, arg)
+}
+
 // DeleteTeam mocks base method.
 func (m *MockQueries) DeleteTeam(ctx context.Context, arg db.DeleteTeamParams) error {
 	m.ctrl.T.Helper()
@@ -613,6 +641,20 @@ func (m *MockQueries) UpdateSeason(ctx context.Context, arg db.UpdateSeasonParam
 func (mr *MockQueriesMockRecorder) UpdateSeason(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSeason", reflect.TypeOf((*MockQueries)(nil).UpdateSeason), ctx, arg)
+}
+
+// UpdateStage mocks base method.
+func (m *MockQueries) UpdateStage(ctx context.Context, arg db.UpdateStageParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateStage", ctx, arg)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateStage indicates an expected call of UpdateStage.
+func (mr *MockQueriesMockRecorder) UpdateStage(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateStage", reflect.TypeOf((*MockQueries)(nil).UpdateStage), ctx, arg)
 }
 
 // UpdateTeam mocks base method.
