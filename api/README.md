@@ -65,3 +65,4 @@ mockgen \
 - Create/Update competition swagger default violates unique constraint.
 - Expand DB handler testing (integration with mock DB).
 - Error response standardisation (consistent shape for errors).
+- Aggregates should be assembled using aggregate-shaped queries (Season)
