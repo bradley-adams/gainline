@@ -126,6 +126,14 @@ func DeleteStage(
 	return q.DeleteStage(ctx, params)
 }
 
+func DeleteStagesBySeasonID(
+	ctx context.Context,
+	q Queries,
+	params db.DeleteStagesBySeasonIDParams,
+) error {
+	return q.DeleteStagesBySeasonID(ctx, params)
+}
+
 func CreateTeam(
 	ctx context.Context,
 	q Queries,
