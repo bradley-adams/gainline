@@ -533,6 +533,13 @@ func softDeleteSeasonDependencies(ctx context.Context, queries db_handler.Querie
 		return errors.Wrap(err, "unable to delete season teams for season")
 	}
 
+	if err := queries.DeleteStagesBySeasonID(ctx, db.DeleteStagesBySeasonIDParams{
+		SeasonID:  seasonID,
+		DeletedAt: sql.NullTime{Time: now, Valid: true},
+	}); err != nil {
+		return errors.Wrap(err, "unable to delete stages for season")
+	}
+
 	return nil
 }
 
