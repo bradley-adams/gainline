@@ -1814,6 +1814,10 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(nil)
+			mockQueries.EXPECT().DeleteStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
 			mockQueries.EXPECT().DeleteSeason(
 				gomock.Any(),
 				gomock.Any(),
@@ -1904,6 +1908,10 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(nil)
+			mockQueries.EXPECT().DeleteStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
 			mockQueries.EXPECT().DeleteSeason(
 				gomock.Any(),
 				gomock.Any(),
@@ -1930,6 +1938,10 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Return(nil)
 			mockQueries.EXPECT().DeleteSeasonTeamsBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteStagesBySeasonID(
 				gomock.Any(),
 				gomock.Any(),
 			).Return(nil)
