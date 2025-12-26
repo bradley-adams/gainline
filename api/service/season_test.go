@@ -1892,6 +1892,35 @@ var _ = Describe("season", func() {
 			Expect(err.Error()).To(Equal("unable to delete season teams for season: a valid testing error"))
 		})
 
+		It("should rollback and return a formatted error when deleting the season stages fails", func() {
+			mockDB.EXPECT().BeginTx(
+				gomock.Any(),
+				gomock.Any(),
+			)
+			mockDB.EXPECT().New(
+				gomock.Any(),
+			).Return(mockQueries)
+			mockQueries.EXPECT().DeleteGamesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteSeasonTeamsBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTestError)
+			mockDB.EXPECT().Rollback(
+				gomock.Any(),
+			).Times(1)
+
+			err := svc.Delete(context.Background(), validCompetitionID)
+
+			Expect(err.Error()).To(Equal("unable to delete stages for season: a valid testing error"))
+		})
+
 		It("should rollback and return a formatted error when deleting the season fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
