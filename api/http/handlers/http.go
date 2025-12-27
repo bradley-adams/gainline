@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/bradley-adams/gainline/db/db_handler"
 	"github.com/bradley-adams/gainline/docs"
 	"github.com/bradley-adams/gainline/http/middleware"
@@ -24,7 +26,7 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 
-	router.GET("/health", healthCheck(logger))
+	router.GET("/health", healthCheck(db, logger))
 
 	docs.SwaggerInfo.BasePath = "/v1"
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -73,12 +75,22 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 	return router
 }
 
-func healthCheck(logger zerolog.Logger) gin.HandlerFunc {
+func healthCheck(db db_handler.DB, logger zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+
+		if err := db.HealthCheck(); err != nil {
+			logger.Error().
+				Err(err).
+				Msg("database health check failed")
+
+			ctx.JSON(http.StatusServiceUnavailable, gin.H{
+				"status": "unhealthy",
+			})
+			return
+		}
 
 		ctx.JSON(200, gin.H{
 			"message": "OK",
 		})
-
 	}
 }
