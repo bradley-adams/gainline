@@ -13,8 +13,24 @@ export interface Season {
     end_date: Date
     id: string
     start_date: Date
+    stages: Stage[]
     teams: (string | Team)[]
     updated_at: Date
+}
+
+export enum StageType {
+    StageTypeRegular = 'regular',
+    StageTypeFinals = 'finals'
+}
+
+export interface Stage {
+    id: string
+    name: string
+    stageType: StageType
+    orderIndex: number
+    created_at: Date
+    updated_at: Date
+    deleted_at?: Date
 }
 
 export interface Team {
