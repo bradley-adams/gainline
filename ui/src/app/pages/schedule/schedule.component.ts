@@ -8,7 +8,7 @@ import { GamesService } from '../../services/games/games.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
 import { SeasonsService } from '../../services/seasons/seasons.service'
 import { MaterialModule } from '../../shared/material/material.module'
-import { Competition, Game, Season } from '../../types/api'
+import { Competition, Game, Season, Stage } from '../../types/api'
 
 @Component({
     selector: 'app-schedule',
@@ -26,6 +26,7 @@ export class ScheduleComponent implements OnInit {
 
     public dataSource = new MatTableDataSource<Game>([])
     public games: Game[] = []
+    public stages: Stage[] = []
     public seasons: Season[] = []
     public competitions: Competition[] = []
 
@@ -34,7 +35,8 @@ export class ScheduleComponent implements OnInit {
     ngOnInit(): void {
         this.scheduleForm = this.formBuilder.group({
             competition: [''],
-            season: ['']
+            season: [''],
+            stage: ['']
         })
 
         this.initFormListeners()
@@ -44,6 +46,9 @@ export class ScheduleComponent implements OnInit {
     private initFormListeners(): void {
         this.scheduleForm.get('competition')!.valueChanges.subscribe(this.onCompetitionChange.bind(this))
         this.scheduleForm.get('season')!.valueChanges.subscribe(this.onSeasonChange.bind(this))
+        this.scheduleForm.get('stage')!.valueChanges.subscribe(() => {
+            this.filterGamesByRound()
+        })
     }
 
     private onCompetitionChange(compId: string): void {
@@ -56,6 +61,14 @@ export class ScheduleComponent implements OnInit {
     private onSeasonChange(seasonId: string): void {
         const compId = this.scheduleForm.get('competition')!.value
         const season = this.seasons.find((s) => s.id === seasonId)
+
+        if (!season) return
+
+        this.stages = season.stages || []
+
+        if (this.stages.length > 0) {
+            this.scheduleForm.patchValue({ stage: this.stages[0].id }, { emitEvent: false })
+        }
 
         if (compId) {
             this.loadGames(compId, seasonId)
@@ -100,11 +113,27 @@ export class ScheduleComponent implements OnInit {
     private loadGames(competitionId: string, seasonId: string): void {
         this.gamesService.getGames(competitionId, seasonId).subscribe({
             next: (games) => {
-                this.dataSource.data = games
+                this.games = games
+
+                const selectedStageId = this.scheduleForm.get('stage')!.value
+                if (!selectedStageId && this.stages.length > 0) {
+                    this.scheduleForm.patchValue({ stage: this.stages[0].id }, { emitEvent: false })
+                }
+
+                this.filterGamesByRound()
             },
             error: (err) => {
                 this.notificationService.showErrorAndLog('Load Error', 'Failed to load games', err)
             }
         })
+    }
+
+    private filterGamesByRound(): void {
+        const selectedRoundId = this.scheduleForm.get('stage')!.value
+        if (selectedRoundId) {
+            this.dataSource.data = this.games.filter((game) => game.stage_id === selectedRoundId)
+        } else {
+            this.dataSource.data = this.games
+        }
     }
 }
