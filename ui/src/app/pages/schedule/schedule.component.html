@@ -20,6 +20,15 @@
                 </mat-option>
             </mat-select>
         </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field stage-field">
+            <mat-label>Stage</mat-label>
+            <mat-select formControlName="stage">
+                <mat-option *ngFor="let s of stages" [value]="s.id">
+                    {{ s.name }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
     </form>
 </div>
 
