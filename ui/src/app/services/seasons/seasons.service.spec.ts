@@ -2,7 +2,7 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestBed } from '@angular/core/testing'
 import { environment } from '../../../environments/environment'
-import { Season, Team } from '../../types/api'
+import { Season, Stage, StageType, Team } from '../../types/api'
 import { SeasonsService } from './seasons.service'
 
 describe('SeasonsService', () => {
@@ -48,11 +48,39 @@ describe('SeasonsService', () => {
         }
     ]
 
+    const MockStages: Stage[] = [
+        {
+            id: 'stage-round-1',
+            name: 'Round 1',
+            stageType: StageType.StageTypeRegular,
+            orderIndex: 1,
+            created_at: new Date('2025-01-01T00:00:00Z'),
+            updated_at: new Date('2025-01-01T00:00:00Z')
+        },
+        {
+            id: 'stage-round-2',
+            name: 'Round 2',
+            stageType: StageType.StageTypeRegular,
+            orderIndex: 2,
+            created_at: new Date('2025-01-01T00:00:00Z'),
+            updated_at: new Date('2025-01-01T00:00:00Z')
+        },
+        {
+            id: 'stage-round-3',
+            name: 'Final',
+            stageType: StageType.StageTypeFinals,
+            orderIndex: 3,
+            created_at: new Date('2025-01-01T00:00:00Z'),
+            updated_at: new Date('2025-01-01T00:00:00Z')
+        }
+    ]
+
     const mockSeason: Season = {
         id: 'season1',
         competition_id: 'comp1',
         start_date: new Date('2025-01-01T00:00:00Z'),
         end_date: new Date('2025-12-31T23:59:59Z'),
+        stages: MockStages,
         teams: mockTeams,
         created_at: new Date('2024-12-01T00:00:00Z'),
         updated_at: new Date('2024-12-01T00:00:00Z')
@@ -65,6 +93,7 @@ describe('SeasonsService', () => {
             competition_id: 'comp1',
             start_date: new Date('2024-01-01T00:00:00Z'),
             end_date: new Date('2024-12-31T23:59:59Z'),
+            stages: MockStages,
             teams: mockTeams,
             created_at: new Date('2023-12-01T00:00:00Z'),
             updated_at: new Date('2023-12-01T00:00:00Z')
