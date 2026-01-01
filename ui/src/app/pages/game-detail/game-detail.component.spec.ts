@@ -9,7 +9,7 @@ import { of, throwError } from 'rxjs'
 import { GamesService } from '../../services/games/games.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
 import { SeasonsService } from '../../services/seasons/seasons.service'
-import { Game, GameStatus, Season, Team } from '../../types/api'
+import { Game, GameStatus, Season, Stage, StageType, Team } from '../../types/api'
 import { GameListComponent } from '../game-list/game-list.component'
 import { GameDetailComponent } from './game-detail.component'
 
@@ -41,11 +41,39 @@ describe('GameDetailComponent', () => {
         }
     ]
 
+    const MockStages: Stage[] = [
+        {
+            id: 'stage-round-1',
+            name: 'Round 1',
+            stageType: StageType.StageTypeRegular,
+            orderIndex: 1,
+            created_at: new Date('2025-01-01T00:00:00Z'),
+            updated_at: new Date('2025-01-01T00:00:00Z')
+        },
+        {
+            id: 'stage-round-2',
+            name: 'Round 2',
+            stageType: StageType.StageTypeRegular,
+            orderIndex: 2,
+            created_at: new Date('2025-01-01T00:00:00Z'),
+            updated_at: new Date('2025-01-01T00:00:00Z')
+        },
+        {
+            id: 'stage-round-3',
+            name: 'Final',
+            stageType: StageType.StageTypeFinals,
+            orderIndex: 3,
+            created_at: new Date('2025-01-01T00:00:00Z'),
+            updated_at: new Date('2025-01-01T00:00:00Z')
+        }
+    ]
+
     const mockSeason1: Season = {
         id: 'season1',
         competition_id: 'comp1',
         start_date: new Date('2025-01-01T00:00:00Z'),
         end_date: new Date('2025-12-31T23:59:59Z'),
+        stages: MockStages,
         teams: mockTeams,
         created_at: new Date('2024-12-01T00:00:00Z'),
         updated_at: new Date('2024-12-01T00:00:00Z')
