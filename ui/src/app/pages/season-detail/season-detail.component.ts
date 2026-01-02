@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common'
 import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core'
 import {
     AbstractControl,
+    FormArray,
     FormBuilder,
     FormControl,
     FormGroup,
@@ -25,7 +26,7 @@ import { NotificationService } from '../../services/notifications/notifications.
 import { SeasonsService } from '../../services/seasons/seasons.service'
 import { TeamsService } from '../../services/teams/teams.service'
 import { MaterialModule } from '../../shared/material/material.module'
-import { Season, Team } from '../../types/api'
+import { Season, StageType, Team } from '../../types/api'
 
 @Component({
     selector: 'app-season-detail',
@@ -80,6 +81,10 @@ export class SeasonDetailComponent implements OnInit {
         this.initDateTimeSync()
         this.loadTeams()
 
+        if (!this.isEditMode) {
+            this.addStage()
+        }
+
         if (this.isEditMode && this.competitionId && this.seasonId) {
             this.loadSeason(this.competitionId, this.seasonId)
         }
@@ -90,7 +95,9 @@ export class SeasonDetailComponent implements OnInit {
             {
                 start_datetime: [null, Validators.required],
                 end_datetime: [null, Validators.required],
-                teams: [[], [Validators.required, this.minMaxArrayValidator(2, 20)]]
+                teams: [[], [Validators.required, this.minMaxArrayValidator(2, 20)]],
+
+                stages: this.formBuilder.array([], Validators.required)
             },
             {
                 validators: this.endAfterStartValidator
@@ -126,12 +133,16 @@ export class SeasonDetailComponent implements OnInit {
             return
         }
 
-        const { start_datetime, end_datetime, teams } = this.seasonForm.value
+        const { start_datetime, end_datetime, teams, stages } = this.seasonForm.value
 
         const seasonData: Partial<Season> = {
             start_date: start_datetime,
             end_date: end_datetime,
-            teams
+            teams,
+            stages: stages.map((stage: any, index: number) => ({
+                ...stage,
+                orderIndex: index + 1
+            }))
         }
 
         if (!this.isEditMode) {
@@ -181,6 +192,16 @@ export class SeasonDetailComponent implements OnInit {
                     start_datetime: startDate,
                     end_datetime: endDate,
                     teams: (season.teams as Team[]).map((t) => t.id)
+                })
+
+                this.stages.clear()
+                season.stages?.forEach((stage) => {
+                    this.stages.push(
+                        this.formBuilder.group({
+                            name: [stage.name, Validators.required],
+                            stageType: [stage.stageType, Validators.required]
+                        })
+                    )
                 })
             },
             error: (err) => {
@@ -273,5 +294,36 @@ export class SeasonDetailComponent implements OnInit {
     removeTeam(teamId: string) {
         this.selectedTeamIds = this.selectedTeamIds.filter((id) => id !== teamId)
         ;(this.seasonForm.get('teams') as FormControl).setValue([...this.selectedTeamIds])
+    }
+
+    get stages(): FormArray {
+        return this.seasonForm.get('stages') as FormArray
+    }
+
+    addStage(): void {
+        this.stages.push(
+            this.formBuilder.group({
+                name: ['', Validators.required],
+                stageType: [StageType.StageTypeRegular, Validators.required]
+            })
+        )
+    }
+
+    removeStage(index: number): void {
+        this.stages.removeAt(index)
+    }
+
+    moveStageUp(i: number) {
+        if (i === 0) return
+        const stage = this.stages.at(i)
+        this.stages.removeAt(i)
+        this.stages.insert(i - 1, stage)
+    }
+
+    moveStageDown(i: number) {
+        if (i === this.stages.length - 1) return
+        const stage = this.stages.at(i)
+        this.stages.removeAt(i)
+        this.stages.insert(i + 1, stage)
     }
 }
