@@ -94,6 +94,69 @@
             </mat-form-field>
         </div>
 
+        <div class="form-row stages-row">
+            <div class="stages-header">Stages</div>
+
+            <div formArrayName="stages" class="stages-list">
+                <div
+                    *ngFor="let stageCtrl of stages.controls; let i = index"
+                    [formGroupName]="i"
+                    class="stage-row">
+                    <div class="stage-order">{{ i + 1 }}</div>
+
+                    <mat-form-field appearance="outline" class="stage-name-field">
+                        <mat-label>Stage Name</mat-label>
+                        <input matInput formControlName="name" placeholder="Enter stage name" />
+                        <mat-error *ngIf="stageCtrl.get('name')?.hasError('required')">
+                            Stage name is required
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="stage-type-field">
+                        <mat-label>Stage Type</mat-label>
+                        <mat-select formControlName="stageType">
+                            <mat-option [value]="'REGULAR'">Regular</mat-option>
+                            <mat-option [value]="'FINALS'">Finals</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <div class="stage-actions">
+                        <button
+                            mat-icon-button
+                            type="button"
+                            aria-label="Move stage up"
+                            (click)="moveStageUp(i)"
+                            [disabled]="i === 0">
+                            <mat-icon>arrow_upward</mat-icon>
+                        </button>
+
+                        <button
+                            mat-icon-button
+                            type="button"
+                            aria-label="Move stage down"
+                            (click)="moveStageDown(i)"
+                            [disabled]="i === stages.length - 1">
+                            <mat-icon>arrow_downward</mat-icon>
+                        </button>
+
+                        <button
+                            mat-icon-button
+                            type="button"
+                            aria-label="Delete stage"
+                            (click)="removeStage(i)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <button mat-stroked-button type="button" (click)="addStage()">Add Stage</button>
+            </div>
+
+            <mat-error *ngIf="seasonForm.get('stages')?.hasError('required')">
+                At least one stage is required
+            </mat-error>
+        </div>
+
         <div class="actions">
             <button type="submit" mat-flat-button>SAVE</button>
             <button mat-stroked-button [routerLink]="['/admin/competitions', competitionId, 'seasons']">
