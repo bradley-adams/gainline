@@ -8,7 +8,7 @@ import { of, throwError } from 'rxjs'
 import { NotificationService } from '../../services/notifications/notifications.service'
 import { SeasonsService } from '../../services/seasons/seasons.service'
 import { TeamsService } from '../../services/teams/teams.service'
-import { Season, Team } from '../../types/api'
+import { Season, Stage, StageType, Team } from '../../types/api'
 import { SeasonListComponent } from '../season-list/season-list.component'
 import { SeasonDetailComponent } from './season-detail.component'
 
@@ -56,11 +56,39 @@ describe('SeasonDetailComponent', () => {
         }
     ]
 
+    const MockStages: Stage[] = [
+        {
+            id: 'stage-round-1',
+            name: 'Round 1',
+            stageType: StageType.StageTypeRegular,
+            orderIndex: 1,
+            created_at: new Date('2025-01-01T00:00:00Z'),
+            updated_at: new Date('2025-01-01T00:00:00Z')
+        },
+        {
+            id: 'stage-round-2',
+            name: 'Round 2',
+            stageType: StageType.StageTypeRegular,
+            orderIndex: 2,
+            created_at: new Date('2025-01-01T00:00:00Z'),
+            updated_at: new Date('2025-01-01T00:00:00Z')
+        },
+        {
+            id: 'stage-round-3',
+            name: 'Final',
+            stageType: StageType.StageTypeFinals,
+            orderIndex: 3,
+            created_at: new Date('2025-01-01T00:00:00Z'),
+            updated_at: new Date('2025-01-01T00:00:00Z')
+        }
+    ]
+
     const mockSeason1: Season = {
         id: 'season1',
         competition_id: 'comp1',
         start_date: new Date('2025-01-01T00:00:00Z'),
         end_date: new Date('2026-01-01T12:59:00Z'),
+        stages: MockStages,
         teams: mockTeams,
         created_at: new Date('2024-12-01T00:00:00Z'),
         updated_at: new Date('2024-12-01T00:00:00Z')
@@ -71,6 +99,8 @@ describe('SeasonDetailComponent', () => {
         competition_id: 'comp1',
         start_date: new Date('2024-01-01T00:00:00Z'),
         end_date: new Date('2024-12-31T23:59:59Z'),
+        stages: MockStages,
+
         teams: mockTeams,
         created_at: new Date('2023-12-01T00:00:00Z'),
         updated_at: new Date('2023-12-01T00:00:00Z')
@@ -325,6 +355,7 @@ describe('SeasonDetailComponent', () => {
                 competition_id: 'comp1',
                 start_date: new Date('2025-01-01T09:30:00Z'),
                 end_date: new Date('2025-12-31T18:45:00Z'),
+                stages: MockStages,
                 teams: mockTeams,
                 created_at: new Date(),
                 updated_at: new Date()
