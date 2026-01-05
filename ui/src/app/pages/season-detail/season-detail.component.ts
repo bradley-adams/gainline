@@ -57,6 +57,13 @@ export class SeasonDetailComponent implements OnInit {
     private readonly teamsService = inject(TeamsService)
     private readonly notificationService = inject(NotificationService)
 
+    public StageType = StageType
+
+    public stageTypeOptions = [
+        { value: StageType.StageTypeRegular, label: 'Regular' },
+        { value: StageType.StageTypeFinals, label: 'Finals' }
+    ]
+
     public seasonForm!: FormGroup
     public startDateControl = new FormControl<Date | null>(null, Validators.required)
     public startTimeControl = new FormControl<Date | null>(null, Validators.required)
@@ -199,7 +206,7 @@ export class SeasonDetailComponent implements OnInit {
                     this.stages.push(
                         this.formBuilder.group({
                             name: [stage.name, Validators.required],
-                            stageType: [stage.stageType, Validators.required]
+                            stageType: [stage.stage_type, Validators.required]
                         })
                     )
                 })
