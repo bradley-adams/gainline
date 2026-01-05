@@ -26,8 +26,8 @@ export enum StageType {
 export interface Stage {
     id: string
     name: string
-    stageType: StageType
-    orderIndex: number
+    stage_type: StageType
+    order_index: number
     created_at: Date
     updated_at: Date
     deleted_at?: Date
