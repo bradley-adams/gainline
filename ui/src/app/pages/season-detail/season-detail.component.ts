@@ -103,7 +103,6 @@ export class SeasonDetailComponent implements OnInit {
                 start_datetime: [null, Validators.required],
                 end_datetime: [null, Validators.required],
                 teams: [[], [Validators.required, this.minMaxArrayValidator(2, 20)]],
-
                 stages: this.formBuilder.array([], Validators.required)
             },
             {
