@@ -189,7 +189,8 @@ describe('SeasonDetailComponent', () => {
             component.seasonForm.setValue({
                 start_datetime: start,
                 end_datetime: end,
-                teams: ['team1', 'team2']
+                teams: ['team1', 'team2'],
+                stages: [{ name: 'Stage 1', stageType: StageType.StageTypeRegular }]
             })
 
             expect(component.seasonForm.valid).toBeFalse()
@@ -229,7 +230,8 @@ describe('SeasonDetailComponent', () => {
             component.seasonForm.setValue({
                 start_datetime: null,
                 end_datetime: null,
-                teams: []
+                teams: [],
+                stages: [{ name: null, stageType: null }]
             })
             component.isEditMode = false
 
@@ -248,7 +250,8 @@ describe('SeasonDetailComponent', () => {
             component.seasonForm.setValue({
                 start_datetime: startDatetime,
                 end_datetime: endDatetime,
-                teams: ['team1', 'team2']
+                teams: ['team1', 'team2'],
+                stages: [{ name: 'Stage 1', stageType: StageType.StageTypeRegular }]
             })
 
             component.submitForm()
@@ -263,7 +266,8 @@ describe('SeasonDetailComponent', () => {
             component.seasonForm.setValue({
                 start_datetime: mockSeason1.start_date,
                 end_datetime: mockSeason1.end_date,
-                teams: ['team1', 'team2']
+                teams: ['team1', 'team2'],
+                stages: [{ name: null, stageType: null }]
             })
 
             component.submitForm()
@@ -282,7 +286,8 @@ describe('SeasonDetailComponent', () => {
             component.seasonForm.setValue({
                 start_datetime: startDatetime,
                 end_datetime: endDatetime,
-                teams: ['team1', 'team2']
+                teams: ['team1', 'team2'],
+                stages: [{ name: 'Stage 1', stageType: StageType.StageTypeRegular }]
             })
 
             component.submitForm()
@@ -306,7 +311,8 @@ describe('SeasonDetailComponent', () => {
             component.seasonForm.patchValue({
                 start_datetime: mockSeason1.start_date,
                 end_datetime: mockSeason1.end_date,
-                teams: ['team1', 'team2']
+                teams: ['team1', 'team2'],
+                stages: [{ name: 'Stage 1', stageType: StageType.StageTypeRegular }]
             })
 
             component.submitForm()
@@ -325,7 +331,8 @@ describe('SeasonDetailComponent', () => {
             component.seasonForm.setValue({
                 start_datetime: mockSeason1.start_date,
                 end_datetime: mockSeason1.end_date,
-                teams: ['team1', 'team2']
+                teams: ['team1', 'team2'],
+                stages: [{ name: 'Stage 1', stageType: StageType.StageTypeRegular }]
             })
 
             component.submitForm()
@@ -405,10 +412,14 @@ describe('SeasonDetailComponent', () => {
             component.competitionId = 'comp1'
             ;(component as any).seasonId = 'season1'
 
+            component.stages.clear()
+            component.addStage()
+
             component.seasonForm.setValue({
                 start_datetime: startDatetime,
                 end_datetime: endDatetime,
-                teams: ['team1', 'team2']
+                teams: ['team1', 'team2'],
+                stages: [{ name: 'Stage 1', stageType: StageType.StageTypeRegular }]
             })
 
             component.submitForm()
@@ -419,7 +430,8 @@ describe('SeasonDetailComponent', () => {
                 jasmine.objectContaining({
                     start_date: startDatetime,
                     end_date: endDatetime,
-                    teams: ['team1', 'team2']
+                    teams: ['team1', 'team2'],
+                    stages: [jasmine.objectContaining({ name: 'Stage 1', orderIndex: 1 })]
                 })
             )
         })
