@@ -115,8 +115,9 @@
                     <mat-form-field appearance="outline" class="stage-type-field">
                         <mat-label>Stage Type</mat-label>
                         <mat-select formControlName="stageType">
-                            <mat-option [value]="'REGULAR'">Regular</mat-option>
-                            <mat-option [value]="'FINALS'">Finals</mat-option>
+                            <mat-option *ngFor="let option of stageTypeOptions" [value]="option.value">
+                                {{ option.label }}
+                            </mat-option>
                         </mat-select>
                     </mat-form-field>
 
