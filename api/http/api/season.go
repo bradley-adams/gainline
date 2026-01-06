@@ -3,6 +3,7 @@ package api
 import (
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/guregu/null/zero"
 )
@@ -24,4 +25,38 @@ type SeasonResponse struct {
 	CreatedAt     time.Time       `json:"created_at"`
 	UpdatedAt     time.Time       `json:"updated_at"`
 	DeletedAt     zero.Time       `json:"deleted_at"`
+}
+
+func ValidateSeasonRequest(sl validator.StructLevel) {
+	season := sl.Current().Interface().(SeasonRequest)
+
+	stages := season.Stages
+	seen := make(map[int32]bool, len(stages))
+
+	for _, s := range stages {
+		if seen[s.OrderIndex] {
+			sl.ReportError(
+				stages,
+				"stages",
+				"Stages",
+				"duplicate_order",
+				"duplicate stage order_index",
+			)
+			return
+		}
+		seen[s.OrderIndex] = true
+	}
+
+	for i := 1; i <= len(stages); i++ {
+		if !seen[int32(i)] {
+			sl.ReportError(
+				stages,
+				"stages",
+				"Stages",
+				"non_contiguous_order",
+				"stage order_index must be contiguous starting at 1",
+			)
+			return
+		}
+	}
 }

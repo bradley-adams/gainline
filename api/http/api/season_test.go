@@ -27,6 +27,8 @@ var _ = Describe("SeasonRequest validation", func() {
 		validate.RegisterValidation("unique_team_uuids", validation.ValidateUniqueUUIDs)
 		validate.RegisterValidation("stage_type", ValidateStageType)
 
+		validate.RegisterStructValidation(ValidateSeasonRequest, SeasonRequest{})
+
 		team1 = uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
 		team2 = uuid.MustParse("7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97")
 
@@ -193,4 +195,57 @@ var _ = Describe("SeasonRequest validation", func() {
 		err := validate.Struct(season)
 		Expect(err).To(HaveOccurred())
 	})
+
+	It("fails when stages have duplicate order_index", func() {
+		season := &SeasonRequest{
+			StartDate: date1,
+			EndDate:   date2,
+			Stages: []StageRequest{
+				{
+					Name:       "Stage 1",
+					StageType:  StageTypeRegular,
+					OrderIndex: 1,
+				},
+				{
+					Name:       "Stage 2",
+					StageType:  StageTypeFinals,
+					OrderIndex: 1, // duplicate
+				},
+			},
+			Teams: []uuid.UUID{team1, team2},
+		}
+
+		err := validate.Struct(season)
+		Expect(err).To(HaveOccurred())
+
+		validationErrors := err.(validator.ValidationErrors)
+		Expect(validationErrors[0].Tag()).To(Equal("duplicate_order"))
+	})
+
+	It("fails when stage order_index is not contiguous", func() {
+		season := &SeasonRequest{
+			StartDate: date1,
+			EndDate:   date2,
+			Stages: []StageRequest{
+				{
+					Name:       "Stage 1",
+					StageType:  StageTypeRegular,
+					OrderIndex: 1,
+				},
+				{
+					Name:       "Stage 2",
+					StageType:  StageTypeFinals,
+					OrderIndex: 3, // gap
+				},
+			},
+			Teams: []uuid.UUID{team1, team2},
+		}
+
+		err := validate.Struct(season)
+		Expect(err).To(HaveOccurred())
+
+		validationErrors := err.(validator.ValidationErrors)
+		Expect(validationErrors[0].Tag()).To(Equal("non_contiguous_order"))
+	})
+
 })
