@@ -27,7 +27,7 @@ var _ = Describe("SeasonRequest validation", func() {
 		validate.RegisterValidation("unique_team_uuids", validation.ValidateUniqueUUIDs)
 		validate.RegisterValidation("stage_type", ValidateStageType)
 
-		validate.RegisterStructValidation(ValidateSeasonRequest, SeasonRequest{})
+		validate.RegisterStructValidation(ValidateSeasonStages, SeasonRequest{})
 
 		team1 = uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")
 		team2 = uuid.MustParse("7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97")

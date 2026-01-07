@@ -27,7 +27,7 @@ type SeasonResponse struct {
 	DeletedAt     zero.Time       `json:"deleted_at"`
 }
 
-func ValidateSeasonRequest(sl validator.StructLevel) {
+func ValidateSeasonStages(sl validator.StructLevel) {
 	season := sl.Current().Interface().(SeasonRequest)
 
 	stages := season.Stages
