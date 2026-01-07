@@ -7,6 +7,6 @@ func Register(v *validator.Validate) {
 	v.RegisterValidation("stage_type", ValidateStageType)
 
 	v.RegisterStructValidation(ValidateGameRequest, GameRequest{})
-	v.RegisterStructValidation(ValidateSeasonRequest, SeasonRequest{})
+	v.RegisterStructValidation(ValidateSeasonStages, SeasonRequest{})
 
 }
