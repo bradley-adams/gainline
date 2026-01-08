@@ -74,6 +74,12 @@ var _ = Describe("StageRequest validation", func() {
 		Expect(err).To(HaveOccurred())
 	})
 
+	It("fails when OrderIndex is over 100", func() {
+		stage.OrderIndex = 101
+		err := validate.Struct(stage)
+		Expect(err).To(HaveOccurred())
+	})
+
 	It("passes with StageType finals", func() {
 		stage.StageType = StageTypeFinals
 		Expect(validate.Struct(stage)).To(Succeed())
