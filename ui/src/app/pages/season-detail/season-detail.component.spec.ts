@@ -431,7 +431,13 @@ describe('SeasonDetailComponent', () => {
                     start_date: startDatetime,
                     end_date: endDatetime,
                     teams: ['team1', 'team2'],
-                    stages: [jasmine.objectContaining({ name: 'Stage 1', orderIndex: 1 })]
+                    stages: [
+                        jasmine.objectContaining({
+                            name: 'Stage 1',
+                            stage_type: StageType.StageTypeRegular,
+                            order_index: 1
+                        })
+                    ]
                 })
             )
         })

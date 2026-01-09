@@ -40,8 +40,5 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## ToDos:
 
-- Must be 1 stage error shows on season create.
-- Stage indexs validation.
-- What should we use in breadcrumb in place or season and game ids.
 - Smaller screen friendly adjustments.
 - Look at Cypress/Playwright for e2e testing setup.

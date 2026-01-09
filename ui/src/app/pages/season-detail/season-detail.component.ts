@@ -57,7 +57,7 @@ export class SeasonDetailComponent implements OnInit {
     private readonly teamsService = inject(TeamsService)
     private readonly notificationService = inject(NotificationService)
 
-    public StageType = StageType
+    public readonly stageTypes = StageType
 
     public stageTypeOptions = [
         { value: StageType.StageTypeRegular, label: 'Regular' },
@@ -103,7 +103,7 @@ export class SeasonDetailComponent implements OnInit {
                 start_datetime: [null, Validators.required],
                 end_datetime: [null, Validators.required],
                 teams: [[], [Validators.required, this.minMaxArrayValidator(2, 20)]],
-                stages: this.formBuilder.array([], Validators.required)
+                stages: this.formBuilder.array([], [Validators.required, this.minMaxArrayValidator(1, 50)])
             },
             {
                 validators: this.endAfterStartValidator
@@ -146,8 +146,9 @@ export class SeasonDetailComponent implements OnInit {
             end_date: end_datetime,
             teams,
             stages: stages.map((stage: any, index: number) => ({
-                ...stage,
-                orderIndex: index + 1
+                name: stage.name,
+                stage_type: stage.stageType,
+                order_index: index + 1
             }))
         }
 
@@ -204,7 +205,10 @@ export class SeasonDetailComponent implements OnInit {
                 season.stages?.forEach((stage) => {
                     this.stages.push(
                         this.formBuilder.group({
-                            name: [stage.name, Validators.required],
+                            name: [
+                                stage.name,
+                                [Validators.required, Validators.minLength(3), Validators.maxLength(100)]
+                            ],
                             stageType: [stage.stage_type, Validators.required]
                         })
                     )
@@ -309,7 +313,7 @@ export class SeasonDetailComponent implements OnInit {
     addStage(): void {
         this.stages.push(
             this.formBuilder.group({
-                name: ['', Validators.required],
+                name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
                 stageType: [StageType.StageTypeRegular, Validators.required]
             })
         )
