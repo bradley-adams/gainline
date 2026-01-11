@@ -1,4 +1,4 @@
--- Remove 2025 games
+-- Remove 2025 games (depend on stages + season)
 DELETE FROM games
 WHERE season_id = '9300778f-cce0-4efe-af6c-e399d8170315';
 
@@ -6,9 +6,13 @@ WHERE season_id = '9300778f-cce0-4efe-af6c-e399d8170315';
 DELETE FROM season_teams
 WHERE season_id = '9300778f-cce0-4efe-af6c-e399d8170315';
 
--- Remove 2025 stages (regular + finals)
+-- Remove 2025 stages
 DELETE FROM stages
 WHERE season_id = '9300778f-cce0-4efe-af6c-e399d8170315';
+
+-- Remove 2025 season
+DELETE FROM seasons
+WHERE id = '9300778f-cce0-4efe-af6c-e399d8170315';
 
 -- Remove 2025 teams
 DELETE FROM teams
@@ -28,10 +32,6 @@ WHERE id IN (
     '7b6cdb33-3bc6-4b0c-bac2-82d2a6bc6a97',
     'ab4c78b1-5dc6-4a14-8f15-d1f144b81d96'
 );
-
--- Remove 2025 season
-DELETE FROM seasons
-WHERE id = '9300778f-cce0-4efe-af6c-e399d8170315';
 
 -- Remove NPC competition
 DELETE FROM competitions
