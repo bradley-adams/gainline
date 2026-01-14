@@ -61,8 +61,6 @@ mockgen \
 
 ## Todo:
 
-- Stage validations.
-- Use the delete season query.
 - Swagger spec default dont delete actual competition seeded data. Maybe seed a second one to delete
 - Create/Update competition swagger default violates unique constraint.
 - Expand DB handler testing (integration with mock DB).
