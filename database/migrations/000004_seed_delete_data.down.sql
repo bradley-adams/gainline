@@ -6,7 +6,6 @@ WHERE id = 'a973dd2c-ecd3-4578-b5c3-9022a3f0ecbd';
 DELETE FROM seasons
 WHERE id = '9300778f-cce0-4efe-af6c-e399d8170315';
 
-
 -- Cleanup seeded DELETE test teams
 DELETE FROM teams
 WHERE id IN (
