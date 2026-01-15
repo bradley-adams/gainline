@@ -51,3 +51,30 @@ VALUES
     now(),
     now()
 );
+
+-- Connect deletable test teams to deletable test season
+INSERT INTO season_teams (
+    id,
+    season_id,
+    team_id,
+    created_at,
+    updated_at,
+    deleted_at
+)
+VALUES
+(
+    'e38a003f-35b3-4f4a-95ea-1bd047d3c158',
+    '9300778f-cce0-4efe-af6c-e399d8170315',
+    '2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0001',
+    now(),
+    now(),
+    NULL
+),
+(
+    'e7a22e34-27e2-437c-a0c8-a21bacf57b75',
+    '9300778f-cce0-4efe-af6c-e399d8170315',
+    '2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0002',
+    now(),
+    now(),
+    NULL
+);
