@@ -1,4 +1,4 @@
--- Seed competition used for DELETE endpoint testing (safe to delete)
+-- Seed competition for DELETE endpoint testing (safe to delete)
 INSERT INTO competitions (id, name, created_at, updated_at)
 VALUES (
     'a973dd2c-ecd3-4578-b5c3-9022a3f0ecbd',
@@ -7,7 +7,7 @@ VALUES (
     now()
 );
 
--- Seed season used for DELETE endpoint testing (safe to delete)
+-- Seed season for DELETE endpoint testing (safe to delete)
 INSERT INTO seasons (
     id,
     competition_id,
@@ -17,7 +17,7 @@ INSERT INTO seasons (
     updated_at
 )
 VALUES (
-    '9300778f-cce0-4efe-af6c-e399d8170315',
+    'fe04fe69-834f-42be-9821-04e53e8de26d',
     'a973dd2c-ecd3-4578-b5c3-9022a3f0ecbd',
     TIMESTAMPTZ '2025-07-31 21:10+12',
     TIMESTAMPTZ '2025-10-25 23:10+12',
@@ -25,7 +25,7 @@ VALUES (
     now()
 );
 
--- Seed teams used for DELETE endpoint testing (safe to delete)
+-- Seed teams for DELETE endpoint testing (safe to delete)
 INSERT INTO teams (
     id,
     name,
@@ -52,7 +52,7 @@ VALUES
     now()
 );
 
--- Connect deletable test teams to deletable test season
+-- Seed season-team links for DELETE endpoint testing (safe to delete)
 INSERT INTO season_teams (
     id,
     season_id,
@@ -64,7 +64,7 @@ INSERT INTO season_teams (
 VALUES
 (
     'e38a003f-35b3-4f4a-95ea-1bd047d3c158',
-    '9300778f-cce0-4efe-af6c-e399d8170315',
+    'fe04fe69-834f-42be-9821-04e53e8de26d',
     '2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0001',
     now(),
     now(),
@@ -72,9 +72,29 @@ VALUES
 ),
 (
     'e7a22e34-27e2-437c-a0c8-a21bacf57b75',
-    '9300778f-cce0-4efe-af6c-e399d8170315',
+    'fe04fe69-834f-42be-9821-04e53e8de26d',
     '2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0002',
     now(),
     now(),
     NULL
+);
+
+-- Seed stage for DELETE endpoint testing (safe to delete)
+INSERT INTO stages (
+    id,
+    season_id,
+    name,
+    stage_type,
+    order_index,
+    created_at,
+    updated_at
+)
+VALUES (
+    'b138fab0-39fc-4eb5-9c10-44a918ed3952',
+    'fe04fe69-834f-42be-9821-04e53e8de26d',
+    'Round 1',
+    'regular',
+    1,
+    now(),
+    now()
 );

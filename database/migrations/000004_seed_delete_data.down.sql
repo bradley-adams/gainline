@@ -1,3 +1,7 @@
+-- Cleanup seeded DELETE test stage
+DELETE FROM stages
+WHERE id = 'eab15533-dea6-4a3d-8a95-d38e4fba2d5a';
+
 -- Cleanup seeded DELETE test season-team links
 DELETE FROM season_teams
 WHERE season_id = '9300778f-cce0-4efe-af6c-e399d8170315';
@@ -16,4 +20,3 @@ WHERE id IN (
 -- Cleanup seeded DELETE test competition
 DELETE FROM competitions
 WHERE id = 'a973dd2c-ecd3-4578-b5c3-9022a3f0ecbd';
-
