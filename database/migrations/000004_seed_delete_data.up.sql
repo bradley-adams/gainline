@@ -1,4 +1,5 @@
--- Seed competition for DELETE endpoint testing (safe to delete)
+-- Seed deletable test data
+
 INSERT INTO competitions (id, name, created_at, updated_at)
 VALUES (
     'a973dd2c-ecd3-4578-b5c3-9022a3f0ecbd',
@@ -7,7 +8,6 @@ VALUES (
     now()
 );
 
--- Seed season for DELETE endpoint testing (safe to delete)
 INSERT INTO seasons (
     id,
     competition_id,
@@ -25,7 +25,6 @@ VALUES (
     now()
 );
 
--- Seed teams for DELETE endpoint testing (safe to delete)
 INSERT INTO teams (
     id,
     name,
@@ -52,7 +51,6 @@ VALUES
     now()
 );
 
--- Seed season-team links for DELETE endpoint testing (safe to delete)
 INSERT INTO season_teams (
     id,
     season_id,
@@ -79,7 +77,6 @@ VALUES
     NULL
 );
 
--- Seed stage for DELETE endpoint testing (safe to delete)
 INSERT INTO stages (
     id,
     season_id,
@@ -95,6 +92,33 @@ VALUES (
     'Round 1',
     'regular',
     1,
+    now(),
+    now()
+);
+
+INSERT INTO games (
+    id,
+    season_id,
+    stage_id,
+    date,
+    home_team_id,
+    away_team_id,
+    home_score,
+    away_score,
+    status,
+    created_at,
+    updated_at
+)
+VALUES (
+    '30f8181f-0a44-4ad7-a163-3ef2d29e504e',
+    'fe04fe69-834f-42be-9821-04e53e8de26d',
+    'b138fab0-39fc-4eb5-9c10-44a918ed3952',
+    TIMESTAMPTZ '2025-07-31 21:10+12',
+    '2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0001',
+    '2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0002',
+    10,
+    12,
+    'finished',
     now(),
     now()
 );
