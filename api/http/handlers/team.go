@@ -165,7 +165,7 @@ func handleUpdateTeam(
 //	@ID			delete-team
 //	@Tags		Teams
 //	@Produce	json
-//	@Param		teamID	path			string	true	"Team ID"	default(013952a5-87e1-4d26-a312-09b2aff54241)
+//	@Param		teamID	path			string	true	"Team ID"	default(2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0001)
 //	@Success	204		"No Content"	"Team deleted successfully"
 //	@Failure	400		{object}		response.ErrorResponse	"Invalid team ID"
 //	@Failure	500		{object}		response.ErrorResponse	"Internal server error"
