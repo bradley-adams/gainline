@@ -147,15 +147,19 @@ definitions:
   api.StageRequest:
     properties:
       name:
-        example: Regular Season
+        maxLength: 100
+        minLength: 3
         type: string
       order_index:
-        example: 1
+        maximum: 100
+        minimum: 1
         type: integer
       stage_type:
-        allOf:
-        - $ref: '#/definitions/api.StageType'
-        example: regular
+        $ref: '#/definitions/api.StageType'
+    required:
+    - name
+    - order_index
+    - stage_type
     type: object
   api.StageResponse:
     properties:
@@ -287,7 +291,7 @@ paths:
     delete:
       operationId: delete-competition
       parameters:
-      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+      - default: a973dd2c-ecd3-4578-b5c3-9022a3f0ecbd
         description: UUID of the competition
         in: path
         name: competitionID
@@ -438,13 +442,13 @@ paths:
     delete:
       operationId: delete-season
       parameters:
-      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+      - default: a973dd2c-ecd3-4578-b5c3-9022a3f0ecbd
         description: Competition ID
         in: path
         name: competitionID
         required: true
         type: string
-      - default: 9300778f-cce0-4efe-af6c-e399d8170315
+      - default: fe04fe69-834f-42be-9821-04e53e8de26d
         description: Season ID
         in: path
         name: seasonID
@@ -621,19 +625,19 @@ paths:
     delete:
       operationId: delete-game
       parameters:
-      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+      - default: a973dd2c-ecd3-4578-b5c3-9022a3f0ecbd
         description: Competition ID
         in: path
         name: competitionID
         required: true
         type: string
-      - default: 9300778f-cce0-4efe-af6c-e399d8170315
+      - default: fe04fe69-834f-42be-9821-04e53e8de26d
         description: Season ID
         in: path
         name: seasonID
         required: true
         type: string
-      - default: 4019a7f3-7741-4d8f-b3e0-1c7f3a0a1a01
+      - default: 30f8181f-0a44-4ad7-a163-3ef2d29e504e
         description: Game ID
         in: path
         name: gameID
@@ -793,7 +797,7 @@ paths:
     delete:
       operationId: delete-team
       parameters:
-      - default: 013952a5-87e1-4d26-a312-09b2aff54241
+      - default: 2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0001
         description: Team ID
         in: path
         name: teamID
