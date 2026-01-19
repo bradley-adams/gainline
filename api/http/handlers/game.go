@@ -180,9 +180,9 @@ func handleUpdateGame(
 //	@ID			delete-game
 //	@Tags		Games
 //	@Produce	json
-//	@Param		competitionID	path			string	true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
-//	@Param		seasonID		path			string	true	"Season ID"			default(9300778f-cce0-4efe-af6c-e399d8170315)
-//	@Param		gameID			path			string	true	"Game ID"			default(4019a7f3-7741-4d8f-b3e0-1c7f3a0a1a01)
+//	@Param		competitionID	path			string	true	"Competition ID"	default(a973dd2c-ecd3-4578-b5c3-9022a3f0ecbd)
+//	@Param		seasonID		path			string	true	"Season ID"			default(fe04fe69-834f-42be-9821-04e53e8de26d)
+//	@Param		gameID			path			string	true	"Game ID"			default(30f8181f-0a44-4ad7-a163-3ef2d29e504e)
 //	@Success	204				"No Content"	"Game deleted successfully"
 //	@Failure	400				{object}		response.ErrorResponse	"Invalid game ID"
 //	@Failure	500				{object}		response.ErrorResponse	"Internal server error"

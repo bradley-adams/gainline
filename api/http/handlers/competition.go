@@ -162,7 +162,7 @@ func handleUpdateCompetition(
 //	@ID			delete-competition
 //	@Tags		Competitions
 //	@Produce	json
-//	@Param		competitionID	path		string					true	"UUID of the competition"	default(44dd315c-1abc-43aa-9843-642f920190d1)
+//	@Param		competitionID	path		string					true	"UUID of the competition"	default(a973dd2c-ecd3-4578-b5c3-9022a3f0ecbd)
 //	@Success	204				{string}	string					"Successfully deleted"
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid competition ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"

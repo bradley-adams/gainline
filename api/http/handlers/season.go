@@ -176,8 +176,8 @@ func handleUpdateSeason(
 //	@ID			delete-season
 //	@Tags		Seasons
 //	@Produce	json
-//	@Param		competitionID	path			string	true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
-//	@Param		seasonID		path			string	true	"Season ID"			default(9300778f-cce0-4efe-af6c-e399d8170315)
+//	@Param		competitionID	path			string	true	"Competition ID"	default(a973dd2c-ecd3-4578-b5c3-9022a3f0ecbd)
+//	@Param		seasonID		path			string	true	"Season ID"			default(fe04fe69-834f-42be-9821-04e53e8de26d)
 //	@Success	204				"No Content"	"Season deleted successfully"
 //	@Failure	400				{object}		response.ErrorResponse	"Invalid season ID"
 //	@Failure	500				{object}		response.ErrorResponse	"Internal server error"
