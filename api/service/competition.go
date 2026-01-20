@@ -147,23 +147,20 @@ func updateCompetition(ctx context.Context, queries db_handler.Queries, competit
 	return competition, nil
 }
 
+// deleteCompetition performs a soft-delete cascade in dependency order
 func deleteCompetition(ctx context.Context, queries db_handler.Queries, competitionID uuid.UUID) error {
 	now := time.Now()
 
-	deleteGamesByCompetitionIDParams := db.DeleteGamesByCompetitionIDParams{
-		DeletedAt:     sql.NullTime{Time: now, Valid: true},
-		CompetitionID: competitionID,
-	}
-	if err := queries.DeleteGamesByCompetitionID(ctx, deleteGamesByCompetitionIDParams); err != nil {
-		return errors.Wrap(err, "unable to delete games for competition")
+	if err := deleteCompetitionGames(ctx, queries, competitionID, now); err != nil {
+		return err
 	}
 
-	deleteSeasonsByCompetitionIDParams := db.DeleteSeasonsByCompetitionIDParams{
-		DeletedAt:     sql.NullTime{Time: now, Valid: true},
-		CompetitionID: competitionID,
+	if err := deleteCompetitionStages(ctx, queries, competitionID, now); err != nil {
+		return err
 	}
-	if err := queries.DeleteSeasonsByCompetitionID(ctx, deleteSeasonsByCompetitionIDParams); err != nil {
-		return errors.Wrap(err, "unable to delete seasons for competition")
+
+	if err := deleteCompetitionSeasons(ctx, queries, competitionID, now); err != nil {
+		return err
 	}
 
 	deleteCompetitionParams := db.DeleteCompetitionParams{
@@ -172,6 +169,67 @@ func deleteCompetition(ctx context.Context, queries db_handler.Queries, competit
 	}
 	if err := queries.DeleteCompetition(ctx, deleteCompetitionParams); err != nil {
 		return errors.Wrap(err, "unable to delete competition")
+	}
+
+	return nil
+}
+
+func deleteCompetitionGames(
+	ctx context.Context,
+	q db_handler.Queries,
+	competitionID uuid.UUID,
+	now time.Time,
+) error {
+	params := db.DeleteGamesByCompetitionIDParams{
+		DeletedAt:     sql.NullTime{Time: now, Valid: true},
+		CompetitionID: competitionID,
+	}
+
+	if err := q.DeleteGamesByCompetitionID(ctx, params); err != nil {
+		return errors.Wrap(err, "unable to delete games for competition")
+	}
+
+	return nil
+}
+
+func deleteCompetitionStages(
+	ctx context.Context,
+	q db_handler.Queries,
+	competitionID uuid.UUID,
+	now time.Time,
+) error {
+	params := db.DeleteStagesByCompetitionIDParams{
+		DeletedAt:     sql.NullTime{Time: now, Valid: true},
+		CompetitionID: competitionID,
+	}
+
+	if err := q.DeleteStagesByCompetitionID(ctx, params); err != nil {
+		return errors.Wrap(err, "unable to delete stages for competition")
+	}
+
+	return nil
+}
+
+func deleteCompetitionSeasons(
+	ctx context.Context,
+	q db_handler.Queries,
+	competitionID uuid.UUID,
+	now time.Time,
+) error {
+	deletedAt := sql.NullTime{Time: now, Valid: true}
+
+	if err := q.DeleteSeasonTeamsByCompetitionID(ctx, db.DeleteSeasonTeamsByCompetitionIDParams{
+		DeletedAt:     deletedAt,
+		CompetitionID: competitionID,
+	}); err != nil {
+		return errors.Wrap(err, "unable to delete season teams for competition")
+	}
+
+	if err := q.DeleteSeasonsByCompetitionID(ctx, db.DeleteSeasonsByCompetitionIDParams{
+		DeletedAt:     deletedAt,
+		CompetitionID: competitionID,
+	}); err != nil {
+		return errors.Wrap(err, "unable to delete seasons for competition")
 	}
 
 	return nil

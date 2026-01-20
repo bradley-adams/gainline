@@ -282,6 +282,21 @@ WHERE
 AND
   deleted_at IS NULL;
 
+-- name: DeleteSeasonTeamsByCompetitionID :exec
+-- Soft delete all season teams for a competition
+UPDATE season_teams
+SET
+  deleted_at = @deleted_at
+WHERE
+    season_id IN (
+        SELECT id
+        FROM seasons
+        WHERE competition_id = @competition_id
+          AND deleted_at IS NULL
+    )
+AND
+    deleted_at IS NULL;
+
 
 -- name: CreateStage :exec
 -- Insert a new stage into the database
@@ -356,6 +371,21 @@ WHERE
   season_id = @season_id
 AND
   deleted_at IS NULL;
+
+-- name: DeleteStagesByCompetitionID :exec
+-- Soft delete all stages for a competition
+UPDATE stages
+SET
+  deleted_at = @deleted_at
+WHERE
+    season_id IN (
+        SELECT id
+        FROM seasons
+        WHERE competition_id = @competition_id
+          AND deleted_at IS NULL
+    )
+AND
+    deleted_at IS NULL;
 
 
 -- name: CreateGame :exec
