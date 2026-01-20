@@ -134,6 +134,14 @@ func DeleteStagesBySeasonID(
 	return q.DeleteStagesBySeasonID(ctx, params)
 }
 
+func DeleteStagesByCompetitionID(
+	ctx context.Context,
+	q Queries,
+	params db.DeleteStagesByCompetitionIDParams,
+) error {
+	return q.DeleteStagesByCompetitionID(ctx, params)
+}
+
 func CreateTeam(
 	ctx context.Context,
 	q Queries,
@@ -203,6 +211,14 @@ func DeleteSeasonTeamsBySeasonID(
 	params db.DeleteSeasonTeamsBySeasonIDParams,
 ) error {
 	return q.DeleteSeasonTeamsBySeasonID(ctx, params)
+}
+
+func DeleteSeasonTeamsByCompetitionID(
+	ctx context.Context,
+	q Queries,
+	params db.DeleteSeasonTeamsByCompetitionIDParams,
+) error {
+	return q.DeleteSeasonTeamsByCompetitionID(ctx, params)
 }
 
 func CreateGame(
