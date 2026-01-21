@@ -381,6 +381,20 @@ func (mr *MockQueriesMockRecorder) DeleteSeasonTeam(ctx, arg any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSeasonTeam", reflect.TypeOf((*MockQueries)(nil).DeleteSeasonTeam), ctx, arg)
 }
 
+// DeleteSeasonTeamsByCompetitionID mocks base method.
+func (m *MockQueries) DeleteSeasonTeamsByCompetitionID(ctx context.Context, arg db.DeleteSeasonTeamsByCompetitionIDParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteSeasonTeamsByCompetitionID", ctx, arg)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteSeasonTeamsByCompetitionID indicates an expected call of DeleteSeasonTeamsByCompetitionID.
+func (mr *MockQueriesMockRecorder) DeleteSeasonTeamsByCompetitionID(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSeasonTeamsByCompetitionID", reflect.TypeOf((*MockQueries)(nil).DeleteSeasonTeamsByCompetitionID), ctx, arg)
+}
+
 // DeleteSeasonTeamsBySeasonID mocks base method.
 func (m *MockQueries) DeleteSeasonTeamsBySeasonID(ctx context.Context, arg db.DeleteSeasonTeamsBySeasonIDParams) error {
 	m.ctrl.T.Helper()
@@ -421,6 +435,20 @@ func (m *MockQueries) DeleteStage(ctx context.Context, arg db.DeleteStageParams)
 func (mr *MockQueriesMockRecorder) DeleteStage(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteStage", reflect.TypeOf((*MockQueries)(nil).DeleteStage), ctx, arg)
+}
+
+// DeleteStagesByCompetitionID mocks base method.
+func (m *MockQueries) DeleteStagesByCompetitionID(ctx context.Context, arg db.DeleteStagesByCompetitionIDParams) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteStagesByCompetitionID", ctx, arg)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteStagesByCompetitionID indicates an expected call of DeleteStagesByCompetitionID.
+func (mr *MockQueriesMockRecorder) DeleteStagesByCompetitionID(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteStagesByCompetitionID", reflect.TypeOf((*MockQueries)(nil).DeleteStagesByCompetitionID), ctx, arg)
 }
 
 // DeleteStagesBySeasonID mocks base method.
