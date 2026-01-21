@@ -467,7 +467,14 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 				gomock.Any(),
 			).Return(nil)
-
+			mockQueries.EXPECT().DeleteStagesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteSeasonTeamsByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
 			mockQueries.EXPECT().DeleteSeasonsByCompetitionID(
 				gomock.Any(),
 				gomock.Any(),
@@ -521,6 +528,58 @@ var _ = Describe("competition", func() {
 			Expect(err.Error()).To(Equal("unable to delete games for competition: a valid testing error"))
 		})
 
+		It("should rollback and return error if deleting stages fails", func() {
+			mockDB.EXPECT().BeginTx(
+				gomock.Any(),
+				gomock.Any(),
+			)
+			mockDB.EXPECT().New(
+				gomock.Any(),
+			).Return(mockQueries)
+			mockQueries.EXPECT().DeleteGamesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteStagesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTestError)
+			mockDB.EXPECT().Rollback(
+				gomock.Any(),
+			).AnyTimes()
+
+			err := svc.Delete(context.Background(), validCompetitionID)
+			Expect(err.Error()).To(Equal("unable to delete stages for competition: a valid testing error"))
+		})
+
+		It("should rollback and return error if deleting seasoon teams fails", func() {
+			mockDB.EXPECT().BeginTx(
+				gomock.Any(),
+				gomock.Any(),
+			)
+			mockDB.EXPECT().New(
+				gomock.Any(),
+			).Return(mockQueries)
+			mockQueries.EXPECT().DeleteGamesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteStagesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteSeasonTeamsByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTestError)
+			mockDB.EXPECT().Rollback(
+				gomock.Any(),
+			).AnyTimes()
+
+			err := svc.Delete(context.Background(), validCompetitionID)
+			Expect(err.Error()).To(Equal("unable to delete season teams for competition: a valid testing error"))
+		})
+
 		It("should rollback and return error if deleting seasons fails", func() {
 			mockDB.EXPECT().BeginTx(
 				gomock.Any(),
@@ -530,6 +589,14 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Return(mockQueries)
 			mockQueries.EXPECT().DeleteGamesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteStagesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteSeasonTeamsByCompetitionID(
 				gomock.Any(),
 				gomock.Any(),
 			).Return(nil)
@@ -554,6 +621,14 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Return(mockQueries)
 			mockQueries.EXPECT().DeleteGamesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteStagesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteSeasonTeamsByCompetitionID(
 				gomock.Any(),
 				gomock.Any(),
 			).Return(nil)
@@ -583,6 +658,14 @@ var _ = Describe("competition", func() {
 				gomock.Any(),
 			).Return(mockQueries)
 			mockQueries.EXPECT().DeleteGamesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteStagesByCompetitionID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil)
+			mockQueries.EXPECT().DeleteSeasonTeamsByCompetitionID(
 				gomock.Any(),
 				gomock.Any(),
 			).Return(nil)
