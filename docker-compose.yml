@@ -29,15 +29,17 @@ services:
   gainline-migrate:
     image: migrate/migrate
     volumes:
-      - ./database/migrations:/migrations
+      - ./db/migrations:/migrations
     depends_on:
       gainline-db:
         condition: service_healthy
     restart: "no"
-    entrypoint: [
-      "sh", "-c",
-      "sleep 5 && migrate -path=/migrations -database=postgres://gainline:gainline@gainline-db:5432/gainline?sslmode=disable up"
-    ]
+    entrypoint:
+      [
+        "sh",
+        "-c",
+        "sleep 5 && migrate -path=/migrations -database=postgres://gainline:gainline@gainline-db:5432/gainline?sslmode=disable up",
+      ]
     networks:
       - backend
 
@@ -62,14 +64,13 @@ services:
       - backend
     restart: unless-stopped
 
-
   gainline-ui:
     container_name: gainline-ui
     build:
       context: ./ui
       dockerfile: Dockerfile
     ports:
-      - "4200:80"  # maps container nginx port 80 to host 4200
+      - "4200:80" # maps container nginx port 80 to host 4200
     depends_on:
       - gainline-api
     networks:
