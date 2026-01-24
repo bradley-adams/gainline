@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/bradley-adams/gainline/db"
 	_ "github.com/bradley-adams/gainline/docs"
 	"github.com/go-playground/validator/v10"
 	_ "github.com/lib/pq"
@@ -13,7 +14,6 @@ import (
 	"github.com/bradley-adams/gainline/http/api"
 	"github.com/bradley-adams/gainline/http/handlers"
 	"github.com/bradley-adams/gainline/http/validation"
-	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 )
@@ -65,15 +65,7 @@ func setUpEnvVars() error {
 }
 
 func setupWrapperDB(logger zerolog.Logger) *db_handler.DBWrapper {
-	logger.Info().Msg("setting up WrapperDB...")
-
-	return &db_handler.DBWrapper{
-		DB: setupDB(logger).DB,
-	}
-}
-
-func setupDB(logger zerolog.Logger) *sqlx.DB {
-	logger.Info().Msg("starting database connection...")
+	logger.Info().Msg("setting up DBWrapper using db.Open...")
 
 	dbURL := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
@@ -85,12 +77,14 @@ func setupDB(logger zerolog.Logger) *sqlx.DB {
 		viper.GetString("DB_SSL_MODE"),
 	)
 
-	db, err := sqlx.Connect("postgres", dbURL)
+	sqlDB, err := db.Open(dbURL)
 	if err != nil {
-		logger.Fatal().Err(err).Msg("failed to connect to database")
+		logger.Fatal().Err(err).Msg("failed to open database")
 	}
 
-	return db
+	return &db_handler.DBWrapper{
+		DB: sqlDB,
+	}
 }
 
 func setUpValidator(logger zerolog.Logger) (*validator.Validate, error) {
