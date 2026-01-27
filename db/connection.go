@@ -15,7 +15,7 @@ import (
 //go:embed migrations/*.sql
 var migrationFiles embed.FS
 
-// Open opens a database connection and pings it.
+// Open opens a database connection and verifies connectivity.
 func Open(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
@@ -30,8 +30,9 @@ func Open(dsn string) (*sql.DB, error) {
 	return db, nil
 }
 
-// VerifyMigrations checks that all embedded migrations have been applied and that the schema is not dirty.
-func VerifyMigrations(db *sql.DB) error {
+// VerifySchemaUpToDate verifies that the database schema matches the
+// migrations embedded in this binary. It does NOT apply migrations.
+func VerifySchemaUpToDate(db *sql.DB) error {
 	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
 		return fmt.Errorf("migrate driver: %w", err)
@@ -50,13 +51,45 @@ func VerifyMigrations(db *sql.DB) error {
 		return fmt.Errorf("migrate init: %w", err)
 	}
 
-	version, dirty, err := m.Version()
+	dbVersion, dirty, err := m.Version()
 	if err != nil && err != migrate.ErrNilVersion {
 		return fmt.Errorf("migration version check failed: %w", err)
 	}
 
 	if dirty {
-		return fmt.Errorf("database schema is dirty at version %d", version)
+		return fmt.Errorf("database schema is dirty at version %d", dbVersion)
+	}
+
+	// Determine latest embedded migration version
+	latest, err := sourceDriver.First()
+	if err != nil {
+		if err == migrate.ErrNilVersion {
+			return nil
+		}
+		return fmt.Errorf("read migrations: %w", err)
+	}
+
+	for {
+		next, err := sourceDriver.Next(latest)
+		if err != nil {
+			break
+		}
+		latest = next
+	}
+
+	if err == migrate.ErrNilVersion && latest != 0 {
+		return fmt.Errorf(
+			"database schema out of date: db=none, expected=%d",
+			latest,
+		)
+	}
+
+	if dbVersion != latest {
+		return fmt.Errorf(
+			"database schema out of date: db=%d, expected=%d",
+			dbVersion,
+			latest,
+		)
 	}
 
 	return nil
