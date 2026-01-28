@@ -10,6 +10,8 @@ github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 h1:d+Bc7a5rLufV
 github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=
 github.com/bradley-adams/gainline/db v0.0.0-20260125183818-84fb9d024b7a h1:dkzax7huXPbPdlRvp7gbdw7ez6YkjRuIYcoQCrzLQ+Q=
 github.com/bradley-adams/gainline/db v0.0.0-20260125183818-84fb9d024b7a/go.mod h1:V/QuA0Q6aQ4xb2xsAep7Oe0bv858yW9TNPyLJE7s7zs=
+github.com/bradley-adams/gainline/db v0.0.0-20260127173915-fa4592adc198 h1:0fYA4JXdnq4zK3dmVIRqQmrz6OVzm+6YjxN8vWrmSV8=
+github.com/bradley-adams/gainline/db v0.0.0-20260127173915-fa4592adc198/go.mod h1:V/QuA0Q6aQ4xb2xsAep7Oe0bv858yW9TNPyLJE7s7zs=
 github.com/bytedance/sonic v1.13.3 h1:MS8gmaH16Gtirygw7jV91pDCN33NyMrPbN7qiYhEsF0=
 github.com/bytedance/sonic v1.13.3/go.mod h1:o68xyaF9u2gvVBuGHPlUVCy+ZfmNNO5ETf1+KgkJhz4=
 github.com/bytedance/sonic/loader v0.1.1/go.mod h1:ncP89zfokxS5LZrJxl5z0UJcsk4M4yY2JpfqGeCtNLU=
