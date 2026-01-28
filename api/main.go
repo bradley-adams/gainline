@@ -82,8 +82,8 @@ func setupWrapperDB(logger zerolog.Logger) *db_handler.DBWrapper {
 		logger.Fatal().Err(err).Msg("failed to open database")
 	}
 
-	// Verify migrations
-	if err := db.VerifyMigrations(sqlDB); err != nil {
+	// Verify migrations are clean and up to date.
+	if err := db.VerifySchemaUpToDate(sqlDB); err != nil {
 		logger.Fatal().Err(err).Msg("database migrations not up to date")
 	}
 

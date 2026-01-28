@@ -20,6 +20,12 @@ curl http://localhost:8080/health
 http://localhost:8080/swagger/index.html#/
 ```
 
+### Get latest version of DB pkg
+
+```
+go get github.com/bradley-adams/gainline/db@latest
+```
+
 ### Database Migrations:
 
 ```
