@@ -2,7 +2,9 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"io/fs"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -81,7 +83,7 @@ func latestEmbeddedVersion(src source.Driver) (uint, error) {
 	for {
 		next, err := src.Next(latest)
 		if err != nil {
-			if err == migrate.ErrNilVersion {
+			if err == migrate.ErrNilVersion || errors.Is(err, fs.ErrNotExist) {
 				break
 			}
 			return 0, fmt.Errorf("read migrations: %w", err)
