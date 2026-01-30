@@ -9,6 +9,7 @@ Tags must be created from `main` after changes have been merged.
 ```
 git checkout main
 git pull origin main
+git describe --tags
 git tag v0.1.0
 git push origin v0.1.0
 ```
