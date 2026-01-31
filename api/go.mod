@@ -2,6 +2,8 @@ module github.com/bradley-adams/gainline
 
 go 1.24.1
 
+// replace github.com/bradley-adams/gainline/db => ../db
+
 require (
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-gonic/gin v1.10.1
@@ -26,7 +28,7 @@ require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
-	github.com/bradley-adams/gainline/db v0.0.0-20260127173915-fa4592adc198
+	github.com/bradley-adams/gainline/db v0.0.0-20260130202459-98a4c6d65f3b
 	github.com/bytedance/sonic v1.13.3 // indirect
 	github.com/bytedance/sonic/loader v0.2.4 // indirect
 	github.com/cloudwego/base64x v0.1.5 // indirect
