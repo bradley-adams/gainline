@@ -5,6 +5,7 @@ help:
 	@echo "  migrate-create name=<name>   Create a new migration"
 	@echo "  migrate-up                  Run all up migrations (local DB)"
 	@echo "  migrate-down                Roll back one migration"
+	@echo "  migrate-down-all             Roll back ALL migrations (DANGER)"
 	@echo ""
 
 .PHONY: migrate-create
@@ -28,3 +29,10 @@ migrate-down:
 		-path migrations \
 		-database "postgres://gainline:gainline@localhost:5432/gainline?sslmode=disable" \
 		down 1
+
+.PHONY: migrate-down-all
+migrate-down-all:
+	migrate \
+		-path migrations \
+		-database "postgres://gainline:gainline@localhost:5432/gainline?sslmode=disable" \
+		down
