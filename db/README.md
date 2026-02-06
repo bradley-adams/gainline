@@ -1,43 +1,87 @@
 # Gainline DB Migrations
 
-Database migrations and Open for a db connection.
+Database migrations and tooling for managing the Gainline Postgres database.
 
-## Tagging a Release
+## Release Tagging
 
-Tags must be created from `main` after changes have been merged.
+Releases are tagged **from `main` only** using an interactive Make target.
 
-```
-git checkout main
-git pull origin main
-git describe --tags
-git tag v0.1.0
-git push origin v0.1.0
-```
+The process will:
 
-## Creating a migration
+- Show the current tag
+- Prompt for the next version
+- Prevent duplicate tags
+- Ensure you are on `main`
+- Ensure the working tree is clean
+- Create and push an annotated tag
 
-```
-migrate create -ext sql -dir db/migrations -seq a_new_migration
-```
+### Tag a release
 
-## Runnin migrations
-
-Up:
-
-```
-migrate -path db/migrations -database "postgres://gainline:gainline@localhost:5432/gainline?sslmode=disable" up
+```bash
+make release-tag
 ```
 
-Down:
+Example flow:
 
 ```
-migrate -path db/migrations -database "postgres://gainline:gainline@localhost:5432/gainline?sslmode=disable" down
+📌 Current tag: v0.1.0
+
+Enter new tag (vX.Y.Z): v0.2.0
+Confirm release tag 'v0.2.0'? (y/N): y
+Tagging release v0.2.0…
+
 ```
 
-Clear Dirty migration:
+## Creating a Migration
+
+Create a new sequential SQL migration using the Makefile:
+
+```bash
+make migrate-create name=add_new_table
+```
+
+This will generate a pair of migration files (up/down) under:
 
 ```
-migrate -path db/migrations -database "postgres://gainline:gainline@localhost:5432/gainline?sslmode=disable" force 1
+migrations/
+```
+
+## Running Migrations
+
+All migration commands are wrapped by the Makefile and run against the database
+defined by `DB_URL` in the Makefile (local Postgres by default).
+
+### Apply migrations (up)
+
+Run all pending migrations:
+
+```bash
+make migrate-up
+```
+
+### Roll back migrations (down)
+
+Roll back the most recent migration:
+
+```bash
+make migrate-down
+```
+
+### Roll back all migrations (DANGER)
+
+Roll back all applied migrations. This will reset the database schema.
+
+```bash
+make migrate-down-all
+```
+
+### Clear dirty migration (DANGER)
+
+If a migration fails and leaves the database in a dirty state, force the migration
+version manually:
+
+```bash
+make migrate-force version=1
 ```
 
 ## Todo:
