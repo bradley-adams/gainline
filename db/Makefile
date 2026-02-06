@@ -1,3 +1,5 @@
+DB_URL := postgres://gainline:gainline@localhost:5432/gainline?sslmode=disable
+
 .PHONY: help
 help:
 	@echo ""
@@ -7,6 +9,7 @@ help:
 	@echo "  migrate-down                 Roll back one migration"
 	@echo "  migrate-down-all             Roll back ALL migrations (DANGER)"
 	@echo "  migrate-force version=<n>    Clear dirty migration and set version (DANGER)"
+	@echo "  release-tag                  Interactive release tagging (main only)"
 	@echo ""
 
 .PHONY: migrate-create
@@ -21,21 +24,21 @@ migrate-create:
 migrate-up:
 	migrate \
 		-path migrations \
-		-database "postgres://gainline:gainline@localhost:5432/gainline?sslmode=disable" \
+		-database "$(DB_URL)" \
 		up
 
 .PHONY: migrate-down
 migrate-down:
 	migrate \
 		-path migrations \
-		-database "postgres://gainline:gainline@localhost:5432/gainline?sslmode=disable" \
+		-database "$(DB_URL)" \
 		down 1
 
 .PHONY: migrate-down-all
 migrate-down-all:
 	migrate \
 		-path migrations \
-		-database "postgres://gainline:gainline@localhost:5432/gainline?sslmode=disable" \
+		-database "$(DB_URL)" \
 		down
 
 .PHONY: migrate-force
@@ -46,5 +49,39 @@ migrate-force:
 	fi
 	migrate \
 		-path migrations \
-		-database "postgres://gainline:gainline@localhost:5432/gainline?sslmode=disable" \
+		-database "$(DB_URL)" \
 		force $(version)
+
+.PHONY: release-tag
+release-tag:
+	@current=$$(git describe --tags --abbrev=0 2>/dev/null || echo "none"); \
+	echo "📌 Current tag: $$current"; \
+	echo ""; \
+	read -p "Enter new tag (vX.Y.Z): " version; \
+	if [ -z "$$version" ]; then \
+		echo "❌ No version entered. Aborting."; \
+		exit 1; \
+	fi; \
+	if git rev-parse "$$version" >/dev/null 2>&1; then \
+		echo "❌ Tag $$version already exists."; \
+		exit 1; \
+	fi; \
+	echo ""; \
+	read -p "Confirm release tag '$$version'? (y/N): " confirm; \
+	if [ "$$confirm" != "y" ]; then \
+		echo "Aborted."; \
+		exit 1; \
+	fi; \
+	if [ "$$(git branch --show-current)" != "main" ]; then \
+		echo "❌ You must be on the main branch."; \
+		exit 1; \
+	fi; \
+	if [ -n "$$(git status --porcelain)" ]; then \
+		echo "❌ Working tree is dirty."; \
+		exit 1; \
+	fi; \
+	echo ""; \
+	echo "Tagging release $$version…"; \
+	git pull origin main; \
+	git tag -a $$version -m "Release $$version"; \
+	git push origin $$version
