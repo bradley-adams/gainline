@@ -86,7 +86,6 @@ make migrate-force version=1
 
 ## Todo:
 
-- Creating DB connection package.
 - Adding season sponsor column. (Remove from competition name).
 - Handle shield challenge games (Side competitions/trophies).
 - Points tables and bonus points.
