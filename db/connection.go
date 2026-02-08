@@ -7,11 +7,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var openDB = sql.Open
-
-// Open opens a database connection and verifies connectivity.
 func Open(dsn string) (*sql.DB, error) {
-	db, err := openDB("postgres", dsn)
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("open db: %w", err)
 	}
