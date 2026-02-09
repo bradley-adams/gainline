@@ -39,8 +39,11 @@ var _ = BeforeSuite(func() {
 			"POSTGRES_PASSWORD": "gainline",
 		},
 		WaitingFor: wait.ForSQL("5432/tcp", "postgres", func(host string, port nat.Port) string {
-			return fmt.Sprintf("postgres://gainline:gainline@%s:%s/gainline_test?sslmode=disable", host, port.Port())
-		}).WithStartupTimeout(30 * time.Second),
+			return fmt.Sprintf(
+				"postgres://gainline:gainline@%s:%s/gainline_test?sslmode=disable",
+				host, port.Port(),
+			)
+		}).WithStartupTimeout(5 * time.Second),
 	}
 
 	var err error
@@ -50,16 +53,21 @@ var _ = BeforeSuite(func() {
 	})
 	Expect(err).NotTo(HaveOccurred())
 
-	// Get mapped port
-	hostPort, err := container.MappedPort(ctx, "5432")
+	host, err := container.Host(ctx)
 	Expect(err).NotTo(HaveOccurred())
 
-	dsn = fmt.Sprintf("postgres://gainline:gainline@localhost:%s/gainline_test?sslmode=disable", hostPort.Port())
+	port, err := container.MappedPort(ctx, "5432")
+	Expect(err).NotTo(HaveOccurred())
+
+	dsn = fmt.Sprintf(
+		"postgres://gainline:gainline@%s:%s/gainline_test?sslmode=disable",
+		host, port.Port(),
+	)
 })
 
 var _ = AfterSuite(func() {
 	if container != nil {
-		Expect(container.Terminate(ctx)).To(Succeed())
+		_ = container.Terminate(ctx)
 	}
 })
 
