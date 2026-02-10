@@ -10,16 +10,10 @@ import (
 	"time"
 
 	"github.com/docker/go-connections/nat"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
+	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 )
-
-func TestDBIntegration(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "DB Integration Suite")
-}
 
 var (
 	ctx       context.Context
@@ -27,7 +21,9 @@ var (
 	dsn       string
 )
 
-var _ = BeforeSuite(func() {
+func setupDB(t *testing.T) {
+	t.Helper()
+
 	ctx = context.Background()
 
 	req := testcontainers.ContainerRequest{
@@ -38,12 +34,14 @@ var _ = BeforeSuite(func() {
 			"POSTGRES_USER":     "gainline",
 			"POSTGRES_PASSWORD": "gainline",
 		},
-		WaitingFor: wait.ForSQL("5432/tcp", "postgres", func(host string, port nat.Port) string {
-			return fmt.Sprintf(
-				"postgres://gainline:gainline@%s:%s/gainline_test?sslmode=disable",
-				host, port.Port(),
-			)
-		}).WithStartupTimeout(5 * time.Second),
+		WaitingFor: wait.
+			ForSQL("5432/tcp", "postgres", func(host string, port nat.Port) string {
+				return fmt.Sprintf(
+					"postgres://gainline:gainline@%s:%s/gainline_test?sslmode=disable",
+					host, port.Port(),
+				)
+			}).
+			WithStartupTimeout(10 * time.Second),
 	}
 
 	var err error
@@ -51,37 +49,49 @@ var _ = BeforeSuite(func() {
 		ContainerRequest: req,
 		Started:          true,
 	})
-	Expect(err).NotTo(HaveOccurred())
+	require.NoError(t, err)
 
 	host, err := container.Host(ctx)
-	Expect(err).NotTo(HaveOccurred())
+	require.NoError(t, err)
 
 	port, err := container.MappedPort(ctx, "5432")
-	Expect(err).NotTo(HaveOccurred())
+	require.NoError(t, err)
 
 	dsn = fmt.Sprintf(
 		"postgres://gainline:gainline@%s:%s/gainline_test?sslmode=disable",
 		host, port.Port(),
 	)
-})
+}
 
-var _ = AfterSuite(func() {
+func teardownDB(t *testing.T) {
+	t.Helper()
+
 	if container != nil {
-		_ = container.Terminate(ctx)
+		require.NoError(t, container.Terminate(ctx))
 	}
-})
+}
 
-var _ = Describe("Open (integration)", func() {
-	It("connects to Postgres successfully", func() {
+func TestDBIntegration(t *testing.T) {
+	setupDB(t)
+	t.Cleanup(func() {
+		teardownDB(t)
+	})
+
+	t.Run("connects to Postgres successfully", func(t *testing.T) {
 		db, err := Open(dsn)
-		Expect(err).NotTo(HaveOccurred())
-		Expect(db.Ping()).To(Succeed())
-		Expect(db.Close()).To(Succeed())
+		require.NoError(t, err)
+		require.NotNil(t, db)
+
+		t.Cleanup(func() {
+			require.NoError(t, db.Close())
+		})
+
+		require.NoError(t, db.Ping())
 	})
 
-	It("fails with an invalid DSN", func() {
+	t.Run("fails with invalid DSN", func(t *testing.T) {
 		db, err := Open("postgres://bad:bad@localhost:1/nope")
-		Expect(err).To(HaveOccurred())
-		Expect(db).To(BeNil())
+		require.Error(t, err)
+		require.Nil(t, db)
 	})
-})
+}
