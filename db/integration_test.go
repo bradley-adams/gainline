@@ -15,16 +15,10 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-var (
-	testCtx       context.Context
-	testContainer testcontainers.Container
-	testDSN       string
-)
-
 func setupTestDB(t *testing.T) string {
 	t.Helper()
 
-	testCtx = context.Background()
+	ctx := context.Background()
 
 	req := testcontainers.ContainerRequest{
 		Image:        "postgres:16",
@@ -44,27 +38,26 @@ func setupTestDB(t *testing.T) string {
 			WithStartupTimeout(10 * time.Second),
 	}
 
-	var err error
-	testContainer, err = testcontainers.GenericContainer(testCtx, testcontainers.GenericContainerRequest{
+	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: req,
 		Started:          true,
 	})
 	require.NoError(t, err)
 
-	host, err := testContainer.Host(testCtx)
+	host, err := container.Host(ctx)
 	require.NoError(t, err)
 
-	port, err := testContainer.MappedPort(testCtx, "5432")
+	port, err := container.MappedPort(ctx, "5432")
 	require.NoError(t, err)
 
-	testDSN = fmt.Sprintf(
+	dsn := fmt.Sprintf(
 		"postgres://gainline:gainline@%s:%s/gainline_test?sslmode=disable",
 		host, port.Port(),
 	)
 
 	t.Cleanup(func() {
-		require.NoError(t, testContainer.Terminate(testCtx))
+		require.NoError(t, container.Terminate(ctx))
 	})
 
-	return testDSN
+	return dsn
 }
