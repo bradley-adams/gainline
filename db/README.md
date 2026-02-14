@@ -2,9 +2,29 @@
 
 Database migrations and tooling for managing the Gainline Postgres database.
 
+## Prerequisites
+
+Install `just`:
+
+```bash
+sudo apt install just
+```
+
+Verify:
+
+```bash
+just --version
+```
+
+## View All Commands
+
+```bash
+just
+```
+
 ## Release Tagging
 
-Releases are tagged **from `main` only** using an interactive Make target.
+Releases are tagged **from `main` only** using an interactive Just recipe.
 
 The process will:
 
@@ -18,7 +38,7 @@ The process will:
 ### Tag a release
 
 ```bash
-make release-tag
+just release-tag
 ```
 
 Example flow:
@@ -29,15 +49,14 @@ Example flow:
 Enter new tag (vX.Y.Z): v0.2.0
 Confirm release tag 'v0.2.0'? (y/N): y
 Tagging release v0.2.0…
-
 ```
 
 ## Creating a Migration
 
-Create a new sequential SQL migration using the Makefile:
+Create a new sequential SQL migration:
 
 ```bash
-make migrate-create name=add_new_table
+just migrate-create name=add_new_table
 ```
 
 This will generate a pair of migration files (up/down) under:
@@ -48,15 +67,15 @@ migrations/
 
 ## Running Migrations
 
-All migration commands are wrapped by the Makefile and run against the database
-defined by `DB_URL` in the Makefile (local Postgres by default).
+All migration commands are wrapped by the `justfile` and run against the database
+defined by `DB_URL` in the `justfile` (local Postgres by default).
 
 ### Apply migrations (up)
 
 Run all pending migrations:
 
 ```bash
-make migrate-up
+just migrate-up
 ```
 
 ### Roll back migrations (down)
@@ -64,7 +83,7 @@ make migrate-up
 Roll back the most recent migration:
 
 ```bash
-make migrate-down
+just migrate-down
 ```
 
 ### Roll back all migrations (DANGER)
@@ -72,7 +91,7 @@ make migrate-down
 Roll back all applied migrations. This will reset the database schema.
 
 ```bash
-make migrate-down-all
+just migrate-down-all
 ```
 
 ### Clear dirty migration (DANGER)
@@ -81,10 +100,10 @@ If a migration fails and leaves the database in a dirty state, force the migrati
 version manually:
 
 ```bash
-make migrate-force version=1
+just migrate-force 1
 ```
 
-## Todo:
+## Todo
 
 - Adding season sponsor column. (Remove from competition name).
 - Handle shield challenge games (Side competitions/trophies).
