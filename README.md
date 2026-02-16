@@ -2,29 +2,89 @@
 
 A rugby season scheduler.
 
-## Build and Run:
+## Using Make Commands
 
-```
-docker compose build
-docker compose up -d
-```
+All common Docker and database operations are wrapped in the Makefile.
 
-### Up just the DB & migrate:
-
-```
-docker compose up -d gainline-db
-docker compose run --rm gainline-migrate
+```bash
+make
 ```
 
-### Stop and Remove old data
+## Application Lifecycle
 
-```
-docker stop gainline-db
-docker rm gainline-db
-docker volume rm gainline-data
+### Build containers
+
+```bash
+make build
 ```
 
-## Todo:
+### Start all services
+
+```bash
+make up
+```
+
+### Rebuild and start services
+
+```bash
+make rebuild
+```
+
+### Stop all services
+
+```bash
+make down
+```
+
+### Restart everything
+
+```bash
+make restart
+```
+
+### View logs
+
+```bash
+make logs
+```
+
+## Database Commands
+
+### Start database only
+
+```bash
+make db-up
+```
+
+### Stop database only
+
+```bash
+make db-stop
+```
+
+### Run migrations
+
+```bash
+make migrate
+```
+
+### Reset database (⚠ Destructive)
+
+Stops services and removes the database volume.
+
+```bash
+make db-reset
+```
+
+## Cleaning Everything
+
+Remove all containers, volumes, and orphans:
+
+```bash
+make clean
+```
+
+## Todo
 
 - Run tests in PRs
 - Implement search across core entities (teams, games, seasons, competitions).
