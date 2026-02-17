@@ -70,7 +70,8 @@ make migrate
 
 ### Reset database (⚠ Destructive)
 
-Stops services and removes the database volume.
+Removes the database volume, recreates the database,
+and runs migrations.
 
 ```bash
 make db-reset
