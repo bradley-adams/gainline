@@ -60,7 +60,10 @@ migrate:
 db-stop:
 	docker compose stop gainline-db
 
-# Remove DB container + volume (⚠ destructive)
+# Remove DB container + volume, then recreate + migrate
 db-reset:
 	docker compose down
 	docker volume rm gainline-data || true
+	docker compose up -d gainline-db
+	docker compose run --rm gainline-migrate
+
