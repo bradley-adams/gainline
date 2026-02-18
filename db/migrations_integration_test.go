@@ -4,6 +4,7 @@
 package db
 
 import (
+	"database/sql"
 	"testing"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -16,20 +17,15 @@ func TestVerifySchemaUpToDate_Integration(t *testing.T) {
 	dsn := setupTestDB(t)
 
 	t.Run("fails when no migrations applied", func(t *testing.T) {
-		db, err := Open(dsn)
-		require.NoError(t, err)
-		t.Cleanup(func() { require.NoError(t, db.Close()) })
-
-		err = VerifySchemaUpToDate(db)
+		err := VerifySchemaUpToDate(dsn) // <-- pass DSN string
 		require.Error(t, err)
 	})
 
 	t.Run("succeeds when schema is up to date", func(t *testing.T) {
-		db, err := Open(dsn)
+		db, err := sql.Open("postgres", dsn)
 		require.NoError(t, err)
 		t.Cleanup(func() { require.NoError(t, db.Close()) })
 
-		// Apply migrations
 		driver, err := postgres.WithInstance(db, &postgres.Config{})
 		require.NoError(t, err)
 
@@ -42,7 +38,7 @@ func TestVerifySchemaUpToDate_Integration(t *testing.T) {
 
 		require.NoError(t, m.Up())
 
-		// Now verify schema is up to date
-		require.NoError(t, VerifySchemaUpToDate(db))
+		// Now verify schema using DSN string
+		require.NoError(t, VerifySchemaUpToDate(dsn))
 	})
 }
