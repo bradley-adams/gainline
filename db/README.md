@@ -103,6 +103,26 @@ version manually:
 just migrate-force 1
 ```
 
+## Running Database Tests
+
+Integration tests are tagged with integration and can be run via just.
+
+### Run integration tests
+
+Runs all tests with the integration build tag.
+
+```bash
+just db-test
+```
+
+### Run integration tests (clean cache)
+
+Clears the Go test cache before running integration tests.
+
+```bash
+just db-test-clean
+```
+
 ## Todo
 
 - Adding season sponsor column. (Remove from competition name).
