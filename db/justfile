@@ -52,23 +52,27 @@ current-tag:
     @git describe --tags
 
 release-tag:
-    @echo "Current tag:"
-    @git describe --tags
-    @echo -n "Enter new tag (vX.Y.Z): "
-    @read new_tag; \
-    if [ -z "$new_tag" ]; then \
-        echo "❌ Tag cannot be empty. Release cancelled."; \
-        exit 0; \
-    fi; \
-    echo -n "Confirm release tag '$new_tag'? (y/N): "; \
-    read confirm; \
-    if [ "$confirm" != "y" ]; then \
-        echo "❌ Release cancelled."; \
-        exit 0; \
-    fi; \
-    echo "Tagging release $new_tag…"; \
-    git tag -a "$new_tag" -m "Release $new_tag"; \
-    git push origin "$new_tag"
+	@echo "Current tag:"
+	@git describe --tags
+	@echo -n "Enter new tag (vX.Y.Z): "
+	@read new_tag; \
+	if [ -z "$$new_tag" ]; then \
+		echo "❌ Tag cannot be empty. Release cancelled."; \
+		exit 0; \
+	fi; \
+	if ! echo "$$new_tag" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$$'; then \
+		echo "❌ Invalid format. Tag must match v0.0.0"; \
+		exit 0; \
+	fi; \
+	echo -n "Confirm release tag '$$new_tag'? (y/N): "; \
+	read confirm; \
+	if [ "$$confirm" != "y" ]; then \
+		echo "❌ Release cancelled."; \
+		exit 0; \
+	fi; \
+	echo "Tagging release $$new_tag…"; \
+	git tag -a "$$new_tag" -m "Release $$new_tag"; \
+	git push origin "$$new_tag"
 
 db-test:
     go test -tags=integration .
