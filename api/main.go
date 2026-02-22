@@ -38,14 +38,14 @@ func main() {
 
 	logger.Info().Msgf("%s starting", serviceName)
 
-	db := setupWrapperDB(logger)
+	dbWrapper := setupWrapperDB(logger)
 	validate, err := setUpValidator(logger)
 	if err != nil {
 		panic(err)
 	}
 
 	logger.Debug().Msg("setting up router...")
-	r := handlers.SetupRouter(db, logger, validate)
+	r := handlers.SetupRouter(dbWrapper, logger, validate)
 
 	logger.Info().Msg(serviceName + " started")
 	logger.Fatal().Err(r.Run(":8080")).Msg("failed to start server")
@@ -77,14 +77,15 @@ func setupWrapperDB(logger zerolog.Logger) *db_handler.DBWrapper {
 		viper.GetString("DB_SSL_MODE"),
 	)
 
+	// verify migrations first, using dbURL string
+	if err := db.VerifySchemaUpToDate(dbURL); err != nil {
+		logger.Fatal().Err(err).Msg("database migrations not up to date")
+	}
+
+	// now open the long-lived app DB
 	sqlDB, err := db.Open(dbURL)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("failed to open database")
-	}
-
-	// Verify migrations are clean and up to date.
-	if err := db.VerifySchemaUpToDate(sqlDB); err != nil {
-		logger.Fatal().Err(err).Msg("database migrations not up to date")
 	}
 
 	logger.Info().Msg("database connection established and migrations verified")
