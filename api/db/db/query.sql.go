@@ -13,6 +13,18 @@ import (
 	"github.com/google/uuid"
 )
 
+const countCompetitions = `-- name: CountCompetitions :one
+SELECT COUNT(*) FROM competitions WHERE deleted_at IS NULL
+`
+
+// Get total competitions (excluding soft-deleted)
+func (q *Queries) CountCompetitions(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countCompetitions)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createCompetition = `-- name: CreateCompetition :exec
 INSERT INTO competitions (
     id,
@@ -628,6 +640,54 @@ WHERE
 // Fetch all competitions, excluding soft-deleted competitions
 func (q *Queries) GetCompetitions(ctx context.Context) ([]Competition, error) {
 	rows, err := q.db.QueryContext(ctx, getCompetitions)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Competition
+	for rows.Next() {
+		var i Competition
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getCompetitionsPaginated = `-- name: GetCompetitionsPaginated :many
+SELECT
+    id,
+    name,
+    created_at,
+    updated_at,
+    deleted_at
+FROM competitions
+WHERE deleted_at IS NULL
+ORDER BY created_at DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetCompetitionsPaginatedParams struct {
+	Limit  int32
+	Offset int32
+}
+
+// Fetch competitions with limit/offset, excluding soft-deleted
+func (q *Queries) GetCompetitionsPaginated(ctx context.Context, arg GetCompetitionsPaginatedParams) ([]Competition, error) {
+	rows, err := q.db.QueryContext(ctx, getCompetitionsPaginated, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
