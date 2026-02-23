@@ -43,6 +43,23 @@ FROM
 WHERE
 	deleted_at IS NULL;
 
+-- name: GetCompetitionsPaginated :many
+-- Fetch competitions with limit/offset, excluding soft-deleted
+SELECT
+    id,
+    name,
+    created_at,
+    updated_at,
+    deleted_at
+FROM competitions
+WHERE deleted_at IS NULL
+ORDER BY created_at DESC
+LIMIT $1 OFFSET $2;
+
+-- name: CountCompetitions :one
+-- Get total competitions (excluding soft-deleted)
+SELECT COUNT(*) FROM competitions WHERE deleted_at IS NULL;
+
 -- name: UpdateCompetition :exec
 -- Update an existing competition by id
 UPDATE competitions
