@@ -17,6 +17,7 @@ import (
 type CompetitionService interface {
 	Create(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error)
 	GetAll(ctx context.Context) ([]db.Competition, error)
+	GetAllPaginated(ctx context.Context, limit, offset int) ([]db.Competition, int64, error)
 	Get(ctx context.Context, id uuid.UUID) (db.Competition, error)
 	Update(ctx context.Context, id uuid.UUID, req *api.CompetitionRequest) (db.Competition, error)
 	Delete(ctx context.Context, id uuid.UUID) error
@@ -63,6 +64,41 @@ func (s *competitionService) GetAll(ctx context.Context) ([]db.Competition, erro
 	}
 
 	return competitions, nil
+}
+
+func (s *competitionService) GetAllPaginated(
+	ctx context.Context,
+	limit, offset int,
+) ([]db.Competition, int64, error) {
+	var (
+		competitions []db.Competition
+		total        int64
+	)
+
+	err := db_handler.Run(ctx, s.db, func(q db_handler.Queries) error {
+		var err error
+
+		total, err = q.CountCompetitions(ctx)
+		if err != nil {
+			return errors.Wrap(err, "count competitions")
+		}
+
+		competitions, err = q.GetCompetitionsPaginated(ctx, db.GetCompetitionsPaginatedParams{
+			Limit:  int32(limit),
+			Offset: int32(offset),
+		})
+		if err != nil {
+			return errors.Wrap(err, "get competitions paginated")
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return competitions, total, nil
 }
 
 func (s *competitionService) Get(ctx context.Context, competitionID uuid.UUID) (db.Competition, error) {
