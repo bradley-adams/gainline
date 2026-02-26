@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"math"
 	"net/http"
+	"strconv"
 
 	"github.com/bradley-adams/gainline/http/api"
 	"github.com/bradley-adams/gainline/http/response"
@@ -75,6 +77,53 @@ func handleGetCompetitions(logger zerolog.Logger, competitionService service.Com
 		}
 
 		response.RespondSuccess(ctx, logger, http.StatusOK, competitionResponse)
+	}
+}
+
+// handleGetCompetitions2 retrieves competitions (paginated)
+//
+//	@Summary	Retrieve competitions 2
+//	@ID			get-competitions2
+//	@Tags		Competitions
+//	@Produce	json
+//	@Param		page		query		int	false	"Page number"		default(1)
+//	@Param		page_size	query		int	false	"Items per page"	default(20)
+//	@Success	200			{object}	api.PaginatedResponse[api.CompetitionResponse]
+//	@Failure	500			{object}	response.ErrorResponse
+//	@Router		/competitions2 [get]
+func handleGetCompetitions2(
+	logger zerolog.Logger,
+	competitionService service.CompetitionService,
+) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		page, pageSize, offset := getPagination(ctx)
+
+		competitions, total, err := competitionService.GetAllPaginated(
+			ctx.Request.Context(),
+			pageSize,
+			offset,
+		)
+		if err != nil {
+			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get competitions")
+			return
+		}
+
+		data := make([]api.CompetitionResponse, 0, len(competitions))
+		for _, competition := range competitions {
+			data = append(data, api.ToCompetitionResponse(competition))
+		}
+
+		totalPages := int(math.Ceil(float64(total) / float64(pageSize)))
+
+		response.RespondSuccess(ctx, logger, http.StatusOK, api.PaginatedResponse[api.CompetitionResponse]{
+			Data: data,
+			Pagination: api.PaginationMeta{
+				Page:       page,
+				PageSize:   pageSize,
+				Total:      total,
+				TotalPages: totalPages,
+			},
+		})
 	}
 }
 
@@ -183,4 +232,20 @@ func handleDeleteCompetition(logger zerolog.Logger, competitionService service.C
 
 		response.RespondSuccess(ctx, logger, http.StatusNoContent, nil)
 	}
+}
+
+func getPagination(ctx *gin.Context) (page, pageSize, offset int) {
+	page = 1
+	pageSize = 20
+
+	if p, err := strconv.Atoi(ctx.Query("page")); err == nil && p > 0 {
+		page = p
+	}
+
+	if ps, err := strconv.Atoi(ctx.Query("page_size")); err == nil && ps > 0 && ps <= 100 {
+		pageSize = ps
+	}
+
+	offset = (page - 1) * pageSize
+	return
 }
