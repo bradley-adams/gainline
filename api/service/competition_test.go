@@ -261,6 +261,56 @@ var _ = Describe("competition", func() {
 		})
 	})
 
+	Describe("GetAllPaginated", func() {
+		It("should retrieve paginated competitions without errors", func() {
+			mockDB.EXPECT().New(gomock.Any()).Return(mockQueries)
+			mockQueries.EXPECT().CountCompetitions(gomock.Any()).Return(int64(len(validCompetitionsFromDB)), nil)
+			mockQueries.EXPECT().GetCompetitionsPaginated(
+				gomock.Any(),
+				db.GetCompetitionsPaginatedParams{
+					Limit:  int32(10),
+					Offset: int32(0),
+				},
+			).Return(validCompetitionsFromDB, nil)
+
+			competitions, total, err := svc.GetAllPaginated(context.Background(), 10, 0)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(total).To(Equal(int64(len(validCompetitionsFromDB))))
+			Expect(competitions).To(HaveLen(2))
+			Expect(competitions[0].ID).To(Equal(validCompetitionsFromDB[0].ID))
+			Expect(competitions[1].ID).To(Equal(validCompetitionsFromDB[1].ID))
+		})
+
+		It("should return an error if CountCompetitions fails", func() {
+			mockDB.EXPECT().New(gomock.Any()).Return(mockQueries)
+			mockQueries.EXPECT().CountCompetitions(gomock.Any()).Return(int64(0), validTestError)
+
+			competitions, total, err := svc.GetAllPaginated(context.Background(), 10, 0)
+			Expect(competitions).To(BeNil())
+			Expect(total).To(Equal(int64(0)))
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("count competitions"))
+		})
+
+		It("should return an error if GetCompetitionsPaginated fails", func() {
+			mockDB.EXPECT().New(gomock.Any()).Return(mockQueries)
+			mockQueries.EXPECT().CountCompetitions(gomock.Any()).Return(int64(2), nil)
+			mockQueries.EXPECT().GetCompetitionsPaginated(
+				gomock.Any(),
+				db.GetCompetitionsPaginatedParams{
+					Limit:  int32(10),
+					Offset: int32(0),
+				},
+			).Return(nil, validTestError)
+
+			competitions, total, err := svc.GetAllPaginated(context.Background(), 10, 0)
+			Expect(competitions).To(BeNil())
+			Expect(total).To(Equal(int64(0)))
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("get competitions paginated"))
+		})
+	})
+
 	Describe("GetCompetition", func() {
 		It("should retrieve a competition without errors", func() {
 			mockDB.EXPECT().New(
