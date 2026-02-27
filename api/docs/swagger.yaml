@@ -90,6 +90,26 @@ definitions:
     - GameStatusPlaying
     - GameStatusFinished
     - GameStatusCancelled
+  api.PaginatedResponse-api_CompetitionResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/api.CompetitionResponse'
+        type: array
+      pagination:
+        $ref: '#/definitions/api.PaginationMeta'
+    type: object
+  api.PaginationMeta:
+    properties:
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
   api.SeasonRequest:
     properties:
       end_date:
@@ -745,6 +765,34 @@ paths:
       summary: Update a game
       tags:
       - Games
+  /competitions2:
+    get:
+      operationId: get-competitions2
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Items per page
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.PaginatedResponse-api_CompetitionResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Retrieve competitions 2
+      tags:
+      - Competitions
   /teams:
     get:
       operationId: get-teams
