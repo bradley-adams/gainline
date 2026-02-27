@@ -20,11 +20,12 @@ import (
 
 // Manual mock for CompetitionService
 type mockCompetitionService struct {
-	CreateFn func(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error)
-	GetAllFn func(ctx context.Context) ([]db.Competition, error)
-	GetFn    func(ctx context.Context, id uuid.UUID) (db.Competition, error)
-	UpdateFn func(ctx context.Context, id uuid.UUID, req *api.CompetitionRequest) (db.Competition, error)
-	DeleteFn func(ctx context.Context, id uuid.UUID) error
+	CreateFn          func(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error)
+	GetAllFn          func(ctx context.Context) ([]db.Competition, error)
+	GetAllPaginatedFn func(ctx context.Context, limit, offset int) ([]db.Competition, int64, error)
+	GetFn             func(ctx context.Context, id uuid.UUID) (db.Competition, error)
+	UpdateFn          func(ctx context.Context, id uuid.UUID, req *api.CompetitionRequest) (db.Competition, error)
+	DeleteFn          func(ctx context.Context, id uuid.UUID) error
 }
 
 func (m *mockCompetitionService) Create(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error) {
@@ -39,6 +40,16 @@ func (m *mockCompetitionService) GetAll(ctx context.Context) ([]db.Competition, 
 		return m.GetAllFn(ctx)
 	}
 	return nil, nil
+}
+
+func (m *mockCompetitionService) GetAllPaginated(
+	ctx context.Context,
+	limit, offset int,
+) ([]db.Competition, int64, error) {
+	if m.GetAllPaginatedFn != nil {
+		return m.GetAllPaginatedFn(ctx, limit, offset)
+	}
+	return nil, 0, nil
 }
 
 func (m *mockCompetitionService) Get(ctx context.Context, id uuid.UUID) (db.Competition, error) {
@@ -91,6 +102,7 @@ var _ = Describe("competition handlers", func() {
 		router = gin.New()
 		router.POST("/competitions", handleCreateCompetition(logger, validate, mockSvc))
 		router.GET("/competitions", handleGetCompetitions(logger, mockSvc))
+		router.GET("/competitions2", handleGetCompetitions2(logger, mockSvc))
 		router.GET("/competitions/:competitionID", handleGetCompetition(logger, mockSvc))
 		router.PUT("/competitions/:competitionID", handleUpdateCompetition(logger, validate, mockSvc))
 		router.DELETE("/competitions/:competitionID", handleDeleteCompetition(logger, mockSvc))
@@ -164,6 +176,39 @@ var _ = Describe("competition handlers", func() {
 			req := httptest.NewRequest(http.MethodGet, "/competitions", nil)
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
+			Expect(w.Code).To(Equal(http.StatusInternalServerError))
+		})
+	})
+
+	Describe("get all competitions (paginated)", func() {
+		It("returns 200 and paginated competitions", func() {
+			id := uuid.New()
+
+			mockSvc.GetAllPaginatedFn = func(ctx context.Context, limit, offset int) ([]db.Competition, int64, error) {
+				Expect(limit).To(Equal(10))
+				Expect(offset).To(Equal(0))
+
+				return []db.Competition{
+					{ID: id, Name: "Comp1"},
+				}, int64(1), nil
+			}
+
+			req := httptest.NewRequest(http.MethodGet, "/competitions2?page=1&page_size=10", nil)
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+
+			Expect(w.Code).To(Equal(http.StatusOK))
+		})
+
+		It("returns 500 when service fails", func() {
+			mockSvc.GetAllPaginatedFn = func(ctx context.Context, limit, offset int) ([]db.Competition, int64, error) {
+				return nil, int64(0), fmt.Errorf("db failure")
+			}
+
+			req := httptest.NewRequest(http.MethodGet, "/competitions2?page=1&page_size=10", nil)
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+
 			Expect(w.Code).To(Equal(http.StatusInternalServerError))
 		})
 	})
