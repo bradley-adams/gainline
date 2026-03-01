@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
-import { Competition } from '../../types/api'
-import { environment } from '../../../environments/environment'
+import { inject, Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
+import { environment } from '../../../environments/environment'
+import { Competition, PaginatedResponse } from '../../types/api'
 
 @Injectable({
     providedIn: 'root'
@@ -13,6 +13,15 @@ export class CompetitionsService {
 
     getCompetitions(): Observable<Competition[]> {
         return this.http.get<Competition[]>(`${this.path}/v1/competitions`)
+    }
+
+    getPaginatedCompetitions(page: number, pageSize: number): Observable<PaginatedResponse<Competition>> {
+        return this.http.get<PaginatedResponse<Competition>>(`${this.path}/v1/competitions2`, {
+            params: {
+                page: page.toString(),
+                page_size: pageSize.toString()
+            }
+        })
     }
 
     getCompetition(id: string): Observable<Competition> {
