@@ -45,3 +45,9 @@
         <td class="mat-cell text-center" colspan="3">No competitions found</td>
     </tr>
 </table>
+
+<mat-paginator
+    [length]="total"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    (page)="onPageChange($event)"></mat-paginator>
