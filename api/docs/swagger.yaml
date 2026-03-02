@@ -256,24 +256,6 @@ info:
   version: "1.0"
 paths:
   /competitions:
-    get:
-      operationId: get-competitions
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: List of competitions
-          schema:
-            items:
-              $ref: '#/definitions/api.CompetitionResponse'
-            type: array
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-      summary: Retrieve all competitions
-      tags:
-      - Competitions
     post:
       consumes:
       - application/json

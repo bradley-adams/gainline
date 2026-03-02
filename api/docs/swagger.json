@@ -8,33 +8,6 @@
     },
     "paths": {
         "/competitions": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Competitions"
-                ],
-                "summary": "Retrieve all competitions",
-                "operationId": "get-competitions",
-                "responses": {
-                    "200": {
-                        "description": "List of competitions",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/api.CompetitionResponse"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "consumes": [
                     "application/json"
