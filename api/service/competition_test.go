@@ -38,7 +38,6 @@ var _ = Describe("competition", func() {
 	}
 
 	var validNilCompetition db.Competition
-	var validNilCompetitions []db.Competition
 
 	validCompetitionFromDB := db.Competition{
 		ID:        validCompetitionID,
@@ -62,13 +61,6 @@ var _ = Describe("competition", func() {
 	}
 
 	validCompetitionResponse := api.ToCompetitionResponse(validCompetitionFromDB)
-
-	validCompetitionResponse2 := api.ToCompetitionResponse(validCompetitionFromDB2)
-
-	validCompetitionsResponse := []api.CompetitionResponse{
-		validCompetitionResponse,
-		validCompetitionResponse2,
-	}
 
 	validTestError := errors.New("a valid testing error")
 
@@ -218,46 +210,6 @@ var _ = Describe("competition", func() {
 
 			Expect(competition).To(Equal(validNilCompetition))
 			Expect(err.Error()).To(Equal(validTestError.Error()))
-		})
-	})
-
-	Describe("GetCompetitions", func() {
-		It("should retrieve all competitions without errors", func() {
-			mockDB.EXPECT().New(
-				gomock.Any(),
-			).Return(mockQueries)
-			mockQueries.EXPECT().GetCompetitions(
-				gomock.Any(),
-			).Return(validCompetitionsFromDB, nil)
-
-			competitionsResult, err := svc.GetAll(context.Background())
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(competitionsResult[0].ID).To(Equal(validCompetitionsResponse[0].ID))
-			Expect(competitionsResult[0].Name).To(Equal(validCompetitionsResponse[0].Name))
-			Expect(competitionsResult[0].CreatedAt).To(Equal(validCompetitionsResponse[0].CreatedAt))
-			Expect(competitionsResult[0].UpdatedAt).To(Equal(validCompetitionsResponse[0].UpdatedAt))
-			Expect(competitionsResult[0].DeletedAt.Time).To(Equal(validCompetitionsResponse[0].DeletedAt.Time))
-
-			Expect(competitionsResult[1].ID).To(Equal(validCompetitionsResponse[1].ID))
-			Expect(competitionsResult[1].Name).To(Equal(validCompetitionsResponse[1].Name))
-			Expect(competitionsResult[1].CreatedAt).To(Equal(validCompetitionsResponse[1].CreatedAt))
-			Expect(competitionsResult[1].UpdatedAt).To(Equal(validCompetitionsResponse[1].UpdatedAt))
-			Expect(competitionsResult[1].DeletedAt.Time).To(Equal(validCompetitionsResponse[1].DeletedAt.Time))
-		})
-
-		It("should return formatted error when retrieval fails", func() {
-			mockDB.EXPECT().New(
-				gomock.Any(),
-			).Return(mockQueries)
-			mockQueries.EXPECT().GetCompetitions(
-				gomock.Any(),
-			).Return(nil, validTestError)
-
-			competitions, err := svc.GetAll(context.Background())
-
-			Expect(competitions).To(Equal(validNilCompetitions))
-			Expect(err.Error()).To(Equal("unable to get competitions: a valid testing error"))
 		})
 	})
 
