@@ -43,7 +43,6 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 		// competitions
 		competitionService := service.NewCompetitionService(db)
 		v1public.POST("/competitions", handleCreateCompetition(logger, validate, competitionService))
-		v1public.GET("/competitions", handleGetCompetitions(logger, competitionService))
 		v1public.GET("/competitions2", handleGetCompetitions2(logger, competitionService))
 		v1public.GET("/competitions/:competitionID", handleGetCompetition(logger, competitionService))
 		v1public.PUT("/competitions/:competitionID", handleUpdateCompetition(logger, validate, competitionService))
