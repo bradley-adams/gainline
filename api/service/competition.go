@@ -16,7 +16,6 @@ import (
 // CompetitionService defines the contract for competition-related operations.
 type CompetitionService interface {
 	Create(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error)
-	GetAll(ctx context.Context) ([]db.Competition, error)
 	GetAllPaginated(ctx context.Context, limit, offset int) ([]db.Competition, int64, error)
 	Get(ctx context.Context, id uuid.UUID) (db.Competition, error)
 	Update(ctx context.Context, id uuid.UUID, req *api.CompetitionRequest) (db.Competition, error)
@@ -46,24 +45,6 @@ func (s *competitionService) Create(ctx context.Context, req *api.CompetitionReq
 	}
 
 	return competition, nil
-}
-
-func (s *competitionService) GetAll(ctx context.Context) ([]db.Competition, error) {
-	var competitions []db.Competition
-
-	err := db_handler.Run(ctx, s.db, func(queries db_handler.Queries) error {
-		var err error
-		competitions, err = queries.GetCompetitions(ctx)
-		if err != nil {
-			return errors.Wrap(err, "unable to get competitions")
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return competitions, nil
 }
 
 func (s *competitionService) GetAllPaginated(

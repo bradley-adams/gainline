@@ -101,7 +101,6 @@ var _ = Describe("competition handlers", func() {
 
 		router = gin.New()
 		router.POST("/competitions", handleCreateCompetition(logger, validate, mockSvc))
-		router.GET("/competitions", handleGetCompetitions(logger, mockSvc))
 		router.GET("/competitions2", handleGetCompetitions2(logger, mockSvc))
 		router.GET("/competitions/:competitionID", handleGetCompetition(logger, mockSvc))
 		router.PUT("/competitions/:competitionID", handleUpdateCompetition(logger, validate, mockSvc))
@@ -149,31 +148,6 @@ var _ = Describe("competition handlers", func() {
 			req := httptest.NewRequest(http.MethodPost, "/competitions", bytes.NewBufferString(reqBody))
 			req.Header.Set("Content-Type", "application/json")
 
-			w := httptest.NewRecorder()
-			router.ServeHTTP(w, req)
-			Expect(w.Code).To(Equal(http.StatusInternalServerError))
-		})
-	})
-
-	Describe("get all competitions", func() {
-		It("returns 200 and list of competitions", func() {
-			mockSvc.GetAllFn = func(ctx context.Context) ([]db.Competition, error) {
-				return []db.Competition{{ID: uuid.New(), Name: "Comp1"}}, nil
-			}
-
-			req := httptest.NewRequest(http.MethodGet, "/competitions", nil)
-			w := httptest.NewRecorder()
-			router.ServeHTTP(w, req)
-
-			Expect(w.Code).To(Equal(http.StatusOK))
-		})
-
-		It("returns 500 when service fails", func() {
-			mockSvc.GetAllFn = func(ctx context.Context) ([]db.Competition, error) {
-				return nil, fmt.Errorf("db failure")
-			}
-
-			req := httptest.NewRequest(http.MethodGet, "/competitions", nil)
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
 			Expect(w.Code).To(Equal(http.StatusInternalServerError))

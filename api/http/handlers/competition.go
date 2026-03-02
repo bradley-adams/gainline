@@ -54,32 +54,6 @@ func handleCreateCompetition(
 	}
 }
 
-// handleGetCompetitions retrieves all competitions
-//
-//	@Summary	Retrieve all competitions
-//	@ID			get-competitions
-//	@Tags		Competitions
-//	@Produce	json
-//	@Success	200	{array}		api.CompetitionResponse	"List of competitions"
-//	@Failure	500	{object}	response.ErrorResponse	"Internal server error"
-//	@Router		/competitions [get]
-func handleGetCompetitions(logger zerolog.Logger, competitionService service.CompetitionService) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		competitions, err := competitionService.GetAll(ctx.Request.Context())
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get competitions")
-			return
-		}
-
-		competitionResponse := make([]api.CompetitionResponse, 0, len(competitions))
-		for _, competition := range competitions {
-			competitionResponse = append(competitionResponse, api.ToCompetitionResponse(competition))
-		}
-
-		response.RespondSuccess(ctx, logger, http.StatusOK, competitionResponse)
-	}
-}
-
 // handleGetCompetitions2 retrieves competitions (paginated)
 //
 //	@Summary	Retrieve competitions 2
