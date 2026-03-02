@@ -624,49 +624,6 @@ func (q *Queries) GetCompetition(ctx context.Context, id uuid.UUID) (Competition
 	return i, err
 }
 
-const getCompetitions = `-- name: GetCompetitions :many
-SELECT
-	id,
-	name,
-	created_at,
-	updated_at,
-	deleted_at 
-FROM
-	competitions
-WHERE
-	deleted_at IS NULL
-`
-
-// Fetch all competitions, excluding soft-deleted competitions
-func (q *Queries) GetCompetitions(ctx context.Context) ([]Competition, error) {
-	rows, err := q.db.QueryContext(ctx, getCompetitions)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Competition
-	for rows.Next() {
-		var i Competition
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getCompetitionsPaginated = `-- name: GetCompetitionsPaginated :many
 SELECT
     id,

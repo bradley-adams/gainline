@@ -23,13 +23,6 @@ func GetCompetition(
 	return q.GetCompetition(ctx, id)
 }
 
-func GetCompetitions(
-	ctx context.Context,
-	q Queries,
-) ([]db.Competition, error) {
-	return q.GetCompetitions(ctx)
-}
-
 func GetCompetitionsPaginated(
 	ctx context.Context,
 	q Queries,
