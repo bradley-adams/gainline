@@ -30,19 +30,6 @@ WHERE
 AND
 	deleted_at IS NULL;
 
--- name: GetCompetitions :many
--- Fetch all competitions, excluding soft-deleted competitions
-SELECT
-	id,
-	name,
-	created_at,
-	updated_at,
-	deleted_at 
-FROM
-	competitions
-WHERE
-	deleted_at IS NULL;
-
 -- name: GetCompetitionsPaginated :many
 -- Fetch competitions with limit/offset, excluding soft-deleted
 SELECT
