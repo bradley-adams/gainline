@@ -213,19 +213,19 @@ var _ = Describe("competition", func() {
 		})
 	})
 
-	Describe("GetAllPaginated", func() {
+	Describe("GetAll", func() {
 		It("should retrieve paginated competitions without errors", func() {
 			mockDB.EXPECT().New(gomock.Any()).Return(mockQueries)
 			mockQueries.EXPECT().CountCompetitions(gomock.Any()).Return(int64(len(validCompetitionsFromDB)), nil)
-			mockQueries.EXPECT().GetCompetitionsPaginated(
+			mockQueries.EXPECT().GetCompetitions(
 				gomock.Any(),
-				db.GetCompetitionsPaginatedParams{
+				db.GetCompetitionsParams{
 					Limit:  int32(10),
 					Offset: int32(0),
 				},
 			).Return(validCompetitionsFromDB, nil)
 
-			competitions, total, err := svc.GetAllPaginated(context.Background(), 10, 0)
+			competitions, total, err := svc.GetAll(context.Background(), 10, 0)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(total).To(Equal(int64(len(validCompetitionsFromDB))))
 			Expect(competitions).To(HaveLen(2))
@@ -237,25 +237,25 @@ var _ = Describe("competition", func() {
 			mockDB.EXPECT().New(gomock.Any()).Return(mockQueries)
 			mockQueries.EXPECT().CountCompetitions(gomock.Any()).Return(int64(0), validTestError)
 
-			competitions, total, err := svc.GetAllPaginated(context.Background(), 10, 0)
+			competitions, total, err := svc.GetAll(context.Background(), 10, 0)
 			Expect(competitions).To(BeNil())
 			Expect(total).To(Equal(int64(0)))
 			Expect(err).To(HaveOccurred())
 			Expect(err.Error()).To(ContainSubstring("count competitions"))
 		})
 
-		It("should return an error if GetCompetitionsPaginated fails", func() {
+		It("should return an error if GetCompetitions fails", func() {
 			mockDB.EXPECT().New(gomock.Any()).Return(mockQueries)
 			mockQueries.EXPECT().CountCompetitions(gomock.Any()).Return(int64(2), nil)
-			mockQueries.EXPECT().GetCompetitionsPaginated(
+			mockQueries.EXPECT().GetCompetitions(
 				gomock.Any(),
-				db.GetCompetitionsPaginatedParams{
+				db.GetCompetitionsParams{
 					Limit:  int32(10),
 					Offset: int32(0),
 				},
 			).Return(nil, validTestError)
 
-			competitions, total, err := svc.GetAllPaginated(context.Background(), 10, 0)
+			competitions, total, err := svc.GetAll(context.Background(), 10, 0)
 			Expect(competitions).To(BeNil())
 			Expect(total).To(Equal(int64(0)))
 			Expect(err).To(HaveOccurred())
