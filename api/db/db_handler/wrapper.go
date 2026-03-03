@@ -25,7 +25,7 @@ type Queries interface {
 	//Competition
 	CreateCompetition(ctx context.Context, arg db.CreateCompetitionParams) error
 	GetCompetition(ctx context.Context, id uuid.UUID) (db.Competition, error)
-	GetCompetitionsPaginated(ctx context.Context, arg db.GetCompetitionsPaginatedParams) ([]db.Competition, error)
+	GetCompetitions(ctx context.Context, arg db.GetCompetitionsParams) ([]db.Competition, error)
 	CountCompetitions(ctx context.Context) (int64, error)
 	UpdateCompetition(ctx context.Context, arg db.UpdateCompetitionParams) error
 	DeleteCompetition(ctx context.Context, arg db.DeleteCompetitionParams) error
