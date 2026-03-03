@@ -30,7 +30,7 @@ WHERE
 AND
 	deleted_at IS NULL;
 
--- name: GetCompetitionsPaginated :many
+-- name: GetCompetitions :many
 -- Fetch competitions with limit/offset, excluding soft-deleted
 SELECT
     id,
