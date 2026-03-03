@@ -54,25 +54,25 @@ func handleCreateCompetition(
 	}
 }
 
-// handleGetCompetitions2 retrieves competitions (paginated)
+// handleGetCompetitions retrieves competitions
 //
-//	@Summary	Retrieve competitions 2
-//	@ID			get-competitions2
+//	@Summary	Retrieve competitions
+//	@ID			get-competitions
 //	@Tags		Competitions
 //	@Produce	json
 //	@Param		page		query		int	false	"Page number"		default(1)
 //	@Param		page_size	query		int	false	"Items per page"	default(20)
 //	@Success	200			{object}	api.PaginatedResponse[api.CompetitionResponse]
 //	@Failure	500			{object}	response.ErrorResponse
-//	@Router		/competitions2 [get]
-func handleGetCompetitions2(
+//	@Router		/competitions [get]
+func handleGetCompetitions(
 	logger zerolog.Logger,
 	competitionService service.CompetitionService,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		page, pageSize, offset := getPagination(ctx)
 
-		competitions, total, err := competitionService.GetAllPaginated(
+		competitions, total, err := competitionService.GetAll(
 			ctx.Request.Context(),
 			pageSize,
 			offset,

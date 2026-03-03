@@ -23,12 +23,12 @@ func GetCompetition(
 	return q.GetCompetition(ctx, id)
 }
 
-func GetCompetitionsPaginated(
+func GetCompetitions(
 	ctx context.Context,
 	q Queries,
-	params db.GetCompetitionsPaginatedParams,
+	params db.GetCompetitionsParams,
 ) ([]db.Competition, error) {
-	return q.GetCompetitionsPaginated(ctx, params)
+	return q.GetCompetitions(ctx, params)
 }
 
 func CountCompetitions(

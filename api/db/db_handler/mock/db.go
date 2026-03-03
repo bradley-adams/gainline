@@ -510,33 +510,18 @@ func (mr *MockQueriesMockRecorder) GetCompetition(ctx, id any) *gomock.Call {
 }
 
 // GetCompetitions mocks base method.
-func (m *MockQueries) GetCompetitions(ctx context.Context) ([]db.Competition, error) {
+func (m *MockQueries) GetCompetitions(ctx context.Context, arg db.GetCompetitionsParams) ([]db.Competition, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCompetitions", ctx)
+	ret := m.ctrl.Call(m, "GetCompetitions", ctx, arg)
 	ret0, _ := ret[0].([]db.Competition)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetCompetitions indicates an expected call of GetCompetitions.
-func (mr *MockQueriesMockRecorder) GetCompetitions(ctx any) *gomock.Call {
+func (mr *MockQueriesMockRecorder) GetCompetitions(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompetitions", reflect.TypeOf((*MockQueries)(nil).GetCompetitions), ctx)
-}
-
-// GetCompetitionsPaginated mocks base method.
-func (m *MockQueries) GetCompetitionsPaginated(ctx context.Context, arg db.GetCompetitionsPaginatedParams) ([]db.Competition, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCompetitionsPaginated", ctx, arg)
-	ret0, _ := ret[0].([]db.Competition)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetCompetitionsPaginated indicates an expected call of GetCompetitionsPaginated.
-func (mr *MockQueriesMockRecorder) GetCompetitionsPaginated(ctx, arg any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompetitionsPaginated", reflect.TypeOf((*MockQueries)(nil).GetCompetitionsPaginated), ctx, arg)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCompetitions", reflect.TypeOf((*MockQueries)(nil).GetCompetitions), ctx, arg)
 }
 
 // GetGame mocks base method.

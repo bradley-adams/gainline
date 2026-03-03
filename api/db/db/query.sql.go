@@ -624,7 +624,7 @@ func (q *Queries) GetCompetition(ctx context.Context, id uuid.UUID) (Competition
 	return i, err
 }
 
-const getCompetitionsPaginated = `-- name: GetCompetitionsPaginated :many
+const getCompetitions = `-- name: GetCompetitions :many
 SELECT
     id,
     name,
@@ -637,14 +637,14 @@ ORDER BY created_at DESC
 LIMIT $1 OFFSET $2
 `
 
-type GetCompetitionsPaginatedParams struct {
+type GetCompetitionsParams struct {
 	Limit  int32
 	Offset int32
 }
 
 // Fetch competitions with limit/offset, excluding soft-deleted
-func (q *Queries) GetCompetitionsPaginated(ctx context.Context, arg GetCompetitionsPaginatedParams) ([]Competition, error) {
-	rows, err := q.db.QueryContext(ctx, getCompetitionsPaginated, arg.Limit, arg.Offset)
+func (q *Queries) GetCompetitions(ctx context.Context, arg GetCompetitionsParams) ([]Competition, error) {
+	rows, err := q.db.QueryContext(ctx, getCompetitions, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

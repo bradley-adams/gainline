@@ -256,6 +256,33 @@ info:
   version: "1.0"
 paths:
   /competitions:
+    get:
+      operationId: get-competitions
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Items per page
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.PaginatedResponse-api_CompetitionResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Retrieve competitions
+      tags:
+      - Competitions
     post:
       consumes:
       - application/json
@@ -747,34 +774,6 @@ paths:
       summary: Update a game
       tags:
       - Games
-  /competitions2:
-    get:
-      operationId: get-competitions2
-      parameters:
-      - default: 1
-        description: Page number
-        in: query
-        name: page
-        type: integer
-      - default: 20
-        description: Items per page
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/api.PaginatedResponse-api_CompetitionResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-      summary: Retrieve competitions 2
-      tags:
-      - Competitions
   /teams:
     get:
       operationId: get-teams
