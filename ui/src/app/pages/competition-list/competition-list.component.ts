@@ -36,7 +36,7 @@ export class CompetitionListComponent {
     }
 
     private loadCompetitions(): void {
-        this.competitionsService.getPaginatedCompetitions(this.page, this.pageSize).subscribe({
+        this.competitionsService.getCompetitions(this.page, this.pageSize).subscribe({
             next: (response) => {
                 this.dataSource.data = response.data
                 this.total = response.pagination.total
