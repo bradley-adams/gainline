@@ -1,15 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing'
-import { By } from '@angular/platform-browser'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
+import { ComponentFixture, TestBed } from '@angular/core/testing'
+import { By } from '@angular/platform-browser'
 import { provideRouter, Router } from '@angular/router'
 import { of, throwError } from 'rxjs'
 
-import { CompetitionListComponent } from './competition-list.component'
-import { CompetitionDetailComponent } from '../competition-detail/competition-detail.component'
 import { CompetitionsService } from '../../services/competitions/competitions.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
 import { Competition } from '../../types/api'
+import { CompetitionDetailComponent } from '../competition-detail/competition-detail.component'
+import { CompetitionListComponent } from './competition-list.component'
 
 describe('CompetitionListComponent', () => {
     let component: CompetitionListComponent
@@ -39,7 +39,17 @@ describe('CompetitionListComponent', () => {
             'getCompetitions',
             'deleteCompetition'
         ])
-        competitionsService.getCompetitions.and.returnValue(of(mockCompetitions))
+        competitionsService.getCompetitions.and.returnValue(
+            of({
+                data: mockCompetitions,
+                pagination: {
+                    page: 1,
+                    page_size: 10,
+                    total: mockCompetitions.length,
+                    total_pages: 1
+                }
+            })
+        )
         competitionsService.deleteCompetition.and.returnValue(of(undefined))
 
         notificationService = jasmine.createSpyObj('NotificationService', [

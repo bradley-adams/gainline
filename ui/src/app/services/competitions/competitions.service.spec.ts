@@ -1,9 +1,9 @@
-import { TestBed } from '@angular/core/testing'
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
-import { CompetitionsService } from './competitions.service'
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing'
+import { TestBed } from '@angular/core/testing'
 import { environment } from '../../../environments/environment'
-import { Competition } from '../../types/api'
+import { Competition, PaginatedResponse } from '../../types/api'
+import { CompetitionsService } from './competitions.service'
 
 describe('CompetitionsService', () => {
     let service: CompetitionsService
@@ -45,14 +45,33 @@ describe('CompetitionsService', () => {
         expect(service).toBeTruthy()
     })
 
-    it('should get all competitions', () => {
-        service.getCompetitions().subscribe((competitions) => {
-            expect(competitions).toEqual(mockCompetitions)
+    it('should get paginated competitions', () => {
+        const mockResponse: PaginatedResponse<Competition> = {
+            data: mockCompetitions,
+            pagination: {
+                page: 1,
+                page_size: 10,
+                total: 2,
+                total_pages: 1
+            }
+        }
+
+        service.getCompetitions(1, 10).subscribe((response) => {
+            expect(response).toEqual(mockResponse)
+            expect(response.data).toEqual(mockCompetitions)
+            expect(response.pagination.total).toBe(2)
         })
 
-        const req = httpMock.expectOne(`${baseUrl}/v1/competitions`)
+        const req = httpMock.expectOne(
+            (request) =>
+                request.url === `${baseUrl}/v1/competitions` &&
+                request.params.get('page') === '1' &&
+                request.params.get('page_size') === '10'
+        )
+
         expect(req.request.method).toBe('GET')
-        req.flush(mockCompetitions)
+
+        req.flush(mockResponse)
     })
 
     it('should get a competition by id', () => {

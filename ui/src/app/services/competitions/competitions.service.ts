@@ -11,7 +11,7 @@ export class CompetitionsService {
     private readonly path = environment.apiUrl
     private readonly http = inject(HttpClient)
 
-    getPaginatedCompetitions(page: number, pageSize: number): Observable<PaginatedResponse<Competition>> {
+    getCompetitions(page: number = 1, pageSize: number = 10): Observable<PaginatedResponse<Competition>> {
         return this.http.get<PaginatedResponse<Competition>>(`${this.path}/v1/competitions`, {
             params: {
                 page: page.toString(),
