@@ -40,5 +40,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## ToDos:
 
+- Update schedule competitions to have load more option.
 - Smaller screen friendly adjustments.
 - Look at Cypress/Playwright for e2e testing setup.

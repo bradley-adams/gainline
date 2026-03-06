@@ -151,7 +151,18 @@ describe('ScheduleComponent', () => {
 
     beforeEach(async () => {
         competitionsService = jasmine.createSpyObj('CompetitionsService', ['getCompetitions'])
-        competitionsService.getCompetitions.and.returnValue(of(mockCompetitions))
+
+        const mockPaginatedResponse = {
+            data: mockCompetitions,
+            pagination: {
+                page: 1,
+                page_size: 100,
+                total: mockCompetitions.length,
+                total_pages: 1
+            }
+        }
+
+        competitionsService.getCompetitions.and.returnValue(of(mockPaginatedResponse))
 
         seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeasons'])
         seasonsService.getSeasons.and.returnValue(of(mockSeasons))
