@@ -65,8 +65,8 @@ func (s *competitionService) GetAll(
 		}
 
 		competitions, err = q.GetCompetitions(ctx, db.GetCompetitionsParams{
-			Limit:  int32(limit),
-			Offset: int32(offset),
+			PageOffset: int32(offset),
+			PageLimit:  int32(limit),
 		})
 		if err != nil {
 			return errors.Wrap(err, "get competitions paginated")

@@ -220,8 +220,8 @@ var _ = Describe("competition", func() {
 			mockQueries.EXPECT().GetCompetitions(
 				gomock.Any(),
 				db.GetCompetitionsParams{
-					Limit:  int32(10),
-					Offset: int32(0),
+					PageLimit:  int32(10),
+					PageOffset: int32(0),
 				},
 			).Return(validCompetitionsFromDB, nil)
 
@@ -250,8 +250,8 @@ var _ = Describe("competition", func() {
 			mockQueries.EXPECT().GetCompetitions(
 				gomock.Any(),
 				db.GetCompetitionsParams{
-					Limit:  int32(10),
-					Offset: int32(0),
+					PageLimit:  int32(10),
+					PageOffset: int32(0),
 				},
 			).Return(nil, validTestError)
 
