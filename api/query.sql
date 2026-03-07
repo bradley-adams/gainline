@@ -41,7 +41,8 @@ SELECT
 FROM competitions
 WHERE deleted_at IS NULL
 ORDER BY created_at DESC
-LIMIT $1 OFFSET $2;
+LIMIT @page_limit
+OFFSET @page_offset;
 
 -- name: CountCompetitions :one
 -- Get total competitions (excluding soft-deleted)
