@@ -634,17 +634,18 @@ SELECT
 FROM competitions
 WHERE deleted_at IS NULL
 ORDER BY created_at DESC
-LIMIT $1 OFFSET $2
+LIMIT $2
+OFFSET $1
 `
 
 type GetCompetitionsParams struct {
-	Limit  int32
-	Offset int32
+	PageOffset int32
+	PageLimit  int32
 }
 
 // Fetch competitions with limit/offset, excluding soft-deleted
 func (q *Queries) GetCompetitions(ctx context.Context, arg GetCompetitionsParams) ([]Competition, error) {
-	rows, err := q.db.QueryContext(ctx, getCompetitions, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, getCompetitions, arg.PageOffset, arg.PageLimit)
 	if err != nil {
 		return nil, err
 	}
