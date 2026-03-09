@@ -159,7 +159,7 @@ var _ = Describe("competition handlers", func() {
 				}, int64(1), nil
 			}
 
-			req := httptest.NewRequest(http.MethodGet, "/competitions2?page=1&page_size=10", nil)
+			req := httptest.NewRequest(http.MethodGet, "/competitions?page=1&page_size=10", nil)
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
 
@@ -171,7 +171,7 @@ var _ = Describe("competition handlers", func() {
 				return nil, int64(0), fmt.Errorf("db failure")
 			}
 
-			req := httptest.NewRequest(http.MethodGet, "/competitions2?page=1&page_size=10", nil)
+			req := httptest.NewRequest(http.MethodGet, "/competitions?page=1&page_size=10", nil)
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
 
