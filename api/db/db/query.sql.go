@@ -25,6 +25,18 @@ func (q *Queries) CountCompetitions(ctx context.Context) (int64, error) {
 	return count, err
 }
 
+const countSeasons = `-- name: CountSeasons :one
+SELECT COUNT(*) FROM seasons WHERE competition_id = $1 AND deleted_at IS NULL
+`
+
+// Get total seasons for a competition (excluding soft-deleted)
+func (q *Queries) CountSeasons(ctx context.Context, competitionID uuid.UUID) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countSeasons, competitionID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createCompetition = `-- name: CreateCompetition :exec
 INSERT INTO competitions (
     id,
@@ -758,6 +770,64 @@ func (q *Queries) GetGames(ctx context.Context, seasonID uuid.UUID) ([]Game, err
 			&i.HomeScore,
 			&i.AwayScore,
 			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPaginatedSeasons = `-- name: GetPaginatedSeasons :many
+SELECT
+	id,
+	competition_id,
+	start_date,
+	end_date,
+	created_at,
+	updated_at,
+	deleted_at
+FROM
+	seasons
+WHERE
+	competition_id = $1
+AND
+	deleted_at IS NULL
+ORDER BY created_at DESC
+LIMIT $3
+OFFSET $2
+`
+
+type GetPaginatedSeasonsParams struct {
+	CompetitionID uuid.UUID
+	PageOffset    int32
+	PageLimit     int32
+}
+
+// Fetch all seasons for a competition, excluding soft-deleted seasons
+func (q *Queries) GetPaginatedSeasons(ctx context.Context, arg GetPaginatedSeasonsParams) ([]Season, error) {
+	rows, err := q.db.QueryContext(ctx, getPaginatedSeasons, arg.CompetitionID, arg.PageOffset, arg.PageLimit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Season
+	for rows.Next() {
+		var i Season
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompetitionID,
+			&i.StartDate,
+			&i.EndDate,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
