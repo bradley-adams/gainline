@@ -123,6 +123,30 @@ WHERE
 AND
 	deleted_at IS NULL;
 
+-- name: GetPaginatedSeasons :many
+-- Fetch all seasons for a competition, excluding soft-deleted seasons
+SELECT
+	id,
+	competition_id,
+	start_date,
+	end_date,
+	created_at,
+	updated_at,
+	deleted_at
+FROM
+	seasons
+WHERE
+	competition_id = @competition_id
+AND
+	deleted_at IS NULL
+ORDER BY created_at DESC
+LIMIT @page_limit
+OFFSET @page_offset;
+
+-- name: CountSeasons :one
+-- Get total seasons for a competition (excluding soft-deleted)
+SELECT COUNT(*) FROM seasons WHERE competition_id = @competition_id AND deleted_at IS NULL;
+
 -- name: UpdateSeason :exec
 -- Update an existing season by id
 UPDATE seasons
