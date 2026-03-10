@@ -34,6 +34,8 @@ type Queries interface {
 	CreateSeason(ctx context.Context, arg db.CreateSeasonParams) error
 	GetSeason(ctx context.Context, id uuid.UUID) (db.Season, error)
 	GetSeasons(ctx context.Context, competitionID uuid.UUID) ([]db.Season, error)
+	GetPaginatedSeasons(ctx context.Context, arg db.GetPaginatedSeasonsParams) ([]db.Season, error)
+	CountSeasons(ctx context.Context, competitionID uuid.UUID) (int64, error)
 	UpdateSeason(ctx context.Context, arg db.UpdateSeasonParams) error
 	DeleteSeason(ctx context.Context, arg db.DeleteSeasonParams) error
 	DeleteSeasonsByCompetitionID(ctx context.Context, arg db.DeleteSeasonsByCompetitionIDParams) error
