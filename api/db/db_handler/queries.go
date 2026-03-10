@@ -78,6 +78,22 @@ func GetSeasons(
 	return q.GetSeasons(ctx, competitionID)
 }
 
+func GetPaginatedSeasons(
+	ctx context.Context,
+	q Queries,
+	params db.GetPaginatedSeasonsParams,
+) ([]db.Season, error) {
+	return q.GetPaginatedSeasons(ctx, params)
+}
+
+func CountSeasons(
+	ctx context.Context,
+	q Queries,
+	competitionID uuid.UUID,
+) (int64, error) {
+	return q.CountSeasons(ctx, competitionID)
+}
+
 func UpdateSeason(
 	ctx context.Context,
 	q Queries,
