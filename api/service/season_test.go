@@ -124,6 +124,8 @@ var _ = Describe("season", func() {
 		validSeasonFromDB2,
 	}
 
+	validSeasonFromDBLength := int64(len(validSeasonsFromDB))
+
 	validRegularStageFromDB := db.Stage{
 		ID:         validStageID,
 		SeasonID:   validSeasonID,
@@ -263,6 +265,9 @@ var _ = Describe("season", func() {
 	}
 
 	validTestError := errors.New("a valid testing error")
+
+	validPageLimit := 10
+	validPageOffset := 0
 
 	Describe("CreateSeason", func() {
 		It("should create a new season without errors", func() {
@@ -769,6 +774,151 @@ var _ = Describe("season", func() {
 			Expect(seasons).To(Equal(validNilSeasonsWithTeams))
 			Expect(err.Error()).To(Equal("unable to get season teams: a valid testing error"))
 
+		})
+	})
+
+	Describe("GetPaginatedSeasons", func() {
+		It("should get all seasons paginated without errors", func() {
+			mockDB.EXPECT().
+				New(gomock.Any()).
+				Return(mockQueries)
+			mockQueries.EXPECT().GetPaginatedSeasons(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validSeasonsFromDB, nil)
+			mockQueries.EXPECT().CountSeasons(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validSeasonFromDBLength, nil)
+
+			mockQueries.EXPECT().GetSeasonTeams(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validSeasonTeamsFromDB, nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTeamFromDB, nil)
+			mockQueries.EXPECT().
+				GetTeam(gomock.Any(), gomock.Any()).
+				Return(validTeamFromDB2, nil)
+			mockQueries.EXPECT().GetSeasonTeams(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validSeasonTeamsFromDB2, nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTeamFromDB, nil)
+			mockQueries.EXPECT().GetTeam(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validTeamFromDB3, nil)
+			mockQueries.EXPECT().GetStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validStagesFromDB, nil)
+
+			mockQueries.EXPECT().GetStagesBySeasonID(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validStagesFromDB2, nil)
+
+			seasons, total, err := svc.GetAllPaginated(
+				context.Background(),
+				validCompetitionID,
+				validPageLimit,
+				validPageOffset,
+			)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(total).To(Equal(validSeasonFromDBLength))
+
+			Expect(seasons[0].ID).To(Equal(validSeasonsResponse[0].ID))
+			Expect(seasons[0].CompetitionID).To(Equal(validSeasonsResponse[0].CompetitionID))
+			Expect(seasons[0].StartDate).To(Equal(validSeasonsResponse[0].StartDate))
+			Expect(seasons[0].EndDate).To(Equal(validSeasonsResponse[0].EndDate))
+
+			Expect(seasons[0].Teams).To(HaveLen(2))
+			Expect(seasons[0].Teams).To(ConsistOf(
+				validTeamFromDB,
+				validTeamFromDB2,
+			))
+
+			Expect(seasons[0].Stages).To(HaveLen(2))
+			Expect(seasons[0].Stages).To(ConsistOf(
+				validRegularStageFromDB,
+				validFinalStagesFromDB,
+			))
+
+			Expect(seasons[1].ID).To(Equal(validSeasonsResponse[1].ID))
+			Expect(seasons[1].CompetitionID).To(Equal(validSeasonsResponse[1].CompetitionID))
+			Expect(seasons[1].StartDate).To(Equal(validSeasonsResponse[1].StartDate))
+			Expect(seasons[1].EndDate).To(Equal(validSeasonsResponse[1].EndDate))
+
+			Expect(seasons[1].Teams).To(HaveLen(2))
+			Expect(seasons[1].Teams).To(ConsistOf(
+				validTeamFromDB,
+				validTeamFromDB3,
+			))
+
+			Expect(seasons[1].Stages).To(HaveLen(2))
+			Expect(seasons[1].Stages).To(ConsistOf(
+				validRegularStageFromDB,
+				validFinalStagesFromDB2,
+			))
+		})
+
+		It("should return a formatted error when getting paginated seasons fails", func() {
+			mockDB.EXPECT().New(
+				gomock.Any(),
+			).Return(mockQueries)
+			mockQueries.EXPECT().GetPaginatedSeasons(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil, validTestError)
+
+			seasons, total, err := svc.GetAllPaginated(
+				context.Background(),
+				validCompetitionID,
+				validPageLimit,
+				validPageOffset,
+			)
+
+			Expect(seasons).To(BeNil())
+			Expect(total).To(Equal(int64(0)))
+			Expect(err.Error()).To(Equal("unable to get seasons: a valid testing error"))
+		})
+
+		It("should return a formatted error when getting season teams fails", func() {
+			mockDB.EXPECT().New(
+				gomock.Any(),
+			).Return(mockQueries)
+			mockQueries.EXPECT().GetPaginatedSeasons(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validSeasonsFromDB, nil)
+
+			mockQueries.EXPECT().CountSeasons(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validSeasonFromDBLength, nil)
+
+			mockQueries.EXPECT().GetSeasonTeams(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(nil, validTestError)
+
+			seasons, total, err := svc.GetAllPaginated(
+				context.Background(),
+				validCompetitionID,
+				validPageLimit,
+				validPageOffset,
+			)
+
+			Expect(seasons).To(BeNil())
+			Expect(total).To(Equal(int64(0)))
+			Expect(err.Error()).To(Equal("unable to get season teams: a valid testing error"))
 		})
 	})
 

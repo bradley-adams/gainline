@@ -17,6 +17,7 @@ import (
 type SeasonService interface {
 	Create(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (SeasonAggregate, error)
 	GetAll(ctx context.Context, competitionID uuid.UUID) ([]SeasonAggregate, error)
+	GetAllPaginated(ctx context.Context, competitionID uuid.UUID, limit, offset int) ([]SeasonAggregate, int64, error)
 	Get(ctx context.Context, competitionID, seasonID uuid.UUID) (SeasonAggregate, error)
 	Update(ctx context.Context, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (SeasonAggregate, error)
 	Delete(ctx context.Context, seasonID uuid.UUID) error
@@ -55,6 +56,20 @@ func (s *seasonService) GetAll(ctx context.Context, competitionID uuid.UUID) ([]
 		return nil, err
 	}
 	return seasons, nil
+}
+
+func (s *seasonService) GetAllPaginated(ctx context.Context, competitionID uuid.UUID, limit, offset int) ([]SeasonAggregate, int64, error) {
+	var seasons []SeasonAggregate
+	var total int64
+	err := db_handler.Run(ctx, s.db, func(queries db_handler.Queries) error {
+		var err error
+		seasons, total, err = getPaginatedSeasons(ctx, queries, competitionID, limit, offset)
+		return err
+	})
+	if err != nil {
+		return nil, 0, err
+	}
+	return seasons, total, nil
 }
 
 func (s *seasonService) Get(ctx context.Context, competitionID, seasonID uuid.UUID) (SeasonAggregate, error) {
@@ -306,6 +321,41 @@ func getSeasons(ctx context.Context, queries db_handler.Queries, competitionID u
 	}
 
 	return seasonAggregates, nil
+}
+
+func getPaginatedSeasons(
+	ctx context.Context,
+	queries db_handler.Queries,
+	competitionID uuid.UUID,
+	limit int,
+	offset int,
+) ([]SeasonAggregate, int64, error) {
+	seasons, err := queries.GetPaginatedSeasons(ctx, db.GetPaginatedSeasonsParams{
+		CompetitionID: competitionID,
+		PageLimit:     int32(limit),
+		PageOffset:    int32(offset),
+	})
+	if err != nil {
+		return nil, 0, errors.Wrap(err, "unable to get seasons")
+	}
+
+	total, err := queries.CountSeasons(ctx, competitionID)
+	if err != nil {
+		return nil, 0, errors.Wrap(err, "unable to count seasons")
+	}
+
+	seasonAggregates := make([]SeasonAggregate, 0, len(seasons))
+
+	for _, season := range seasons {
+		seasonAggregate, err := buildSeasonAggregate(ctx, queries, season)
+		if err != nil {
+			return nil, 0, err
+		}
+
+		seasonAggregates = append(seasonAggregates, seasonAggregate)
+	}
+
+	return seasonAggregates, total, nil
 }
 
 func updateSeason(ctx context.Context, queries db_handler.Queries, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (SeasonAggregate, error) {
