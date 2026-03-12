@@ -228,6 +228,21 @@ func (mr *MockQueriesMockRecorder) CountCompetitions(ctx any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountCompetitions", reflect.TypeOf((*MockQueries)(nil).CountCompetitions), ctx)
 }
 
+// CountSeasons mocks base method.
+func (m *MockQueries) CountSeasons(ctx context.Context, competitionID uuid.UUID) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountSeasons", ctx, competitionID)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountSeasons indicates an expected call of CountSeasons.
+func (mr *MockQueriesMockRecorder) CountSeasons(ctx, competitionID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountSeasons", reflect.TypeOf((*MockQueries)(nil).CountSeasons), ctx, competitionID)
+}
+
 // CreateCompetition mocks base method.
 func (m *MockQueries) CreateCompetition(ctx context.Context, arg db.CreateCompetitionParams) error {
 	m.ctrl.T.Helper()
@@ -552,6 +567,21 @@ func (m *MockQueries) GetGames(ctx context.Context, seasonID uuid.UUID) ([]db.Ga
 func (mr *MockQueriesMockRecorder) GetGames(ctx, seasonID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGames", reflect.TypeOf((*MockQueries)(nil).GetGames), ctx, seasonID)
+}
+
+// GetPaginatedSeasons mocks base method.
+func (m *MockQueries) GetPaginatedSeasons(ctx context.Context, arg db.GetPaginatedSeasonsParams) ([]db.Season, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPaginatedSeasons", ctx, arg)
+	ret0, _ := ret[0].([]db.Season)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetPaginatedSeasons indicates an expected call of GetPaginatedSeasons.
+func (mr *MockQueriesMockRecorder) GetPaginatedSeasons(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPaginatedSeasons", reflect.TypeOf((*MockQueries)(nil).GetPaginatedSeasons), ctx, arg)
 }
 
 // GetSeason mocks base method.

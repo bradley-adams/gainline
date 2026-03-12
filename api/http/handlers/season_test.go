@@ -21,11 +21,12 @@ import (
 
 // Manual mock for SeasonService
 type mockSeasonService struct {
-	CreateFn func(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (service.SeasonAggregate, error)
-	GetAllFn func(ctx context.Context, competitionID uuid.UUID) ([]service.SeasonAggregate, error)
-	GetFn    func(ctx context.Context, competitionID, seasonID uuid.UUID) (service.SeasonAggregate, error)
-	UpdateFn func(ctx context.Context, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (service.SeasonAggregate, error)
-	DeleteFn func(ctx context.Context, seasonID uuid.UUID) error
+	CreateFn          func(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (service.SeasonAggregate, error)
+	GetAllFn          func(ctx context.Context, competitionID uuid.UUID) ([]service.SeasonAggregate, error)
+	GetAllPaginatedFn func(ctx context.Context, competitionID uuid.UUID, limit, offset int) ([]service.SeasonAggregate, int64, error)
+	GetFn             func(ctx context.Context, competitionID, seasonID uuid.UUID) (service.SeasonAggregate, error)
+	UpdateFn          func(ctx context.Context, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (service.SeasonAggregate, error)
+	DeleteFn          func(ctx context.Context, seasonID uuid.UUID) error
 }
 
 func (m *mockSeasonService) Create(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (service.SeasonAggregate, error) {
@@ -40,6 +41,13 @@ func (m *mockSeasonService) GetAll(ctx context.Context, competitionID uuid.UUID)
 		return m.GetAllFn(ctx, competitionID)
 	}
 	return nil, nil
+}
+
+func (m *mockSeasonService) GetAllPaginated(ctx context.Context, competitionID uuid.UUID, limit, offset int) ([]service.SeasonAggregate, int64, error) {
+	if m.GetAllPaginatedFn != nil {
+		return m.GetAllPaginatedFn(ctx, competitionID, limit, offset)
+	}
+	return nil, 0, nil
 }
 
 func (m *mockSeasonService) Get(ctx context.Context, competitionID, seasonID uuid.UUID) (service.SeasonAggregate, error) {
@@ -84,6 +92,7 @@ var _ = Describe("season handlers", func() {
 
 		router.POST("/competitions/:competitionID/seasons", handleCreateSeason(logger, validate, mockSvc))
 		router.GET("/competitions/:competitionID/seasons", handleGetSeasons(logger, mockSvc))
+		router.GET("/competitions/:competitionID/seasonsPaginated", handleGetPaginatedSeasons(logger, mockSvc))
 		router.GET("/competitions/:competitionID/seasons/:seasonID", handleGetSeason(logger))
 		router.PUT("/competitions/:competitionID/seasons/:seasonID", handleUpdateSeason(logger, validate, mockSvc))
 		router.DELETE("/competitions/:competitionID/seasons/:seasonID", handleDeleteSeason(logger, mockSvc))
@@ -177,6 +186,33 @@ var _ = Describe("season handlers", func() {
 			}
 
 			req := httptest.NewRequest(http.MethodGet, "/competitions/"+compID.String()+"/seasons", nil)
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+			Expect(w.Code).To(Equal(http.StatusInternalServerError))
+		})
+	})
+
+	Describe("get all paginated seasons", func() {
+		It("returns 200 and paginated list of seasons", func() {
+			compID := uuid.New()
+			mockSvc.GetAllPaginatedFn = func(ctx context.Context, competitionID uuid.UUID, limit, offset int) ([]service.SeasonAggregate, int64, error) {
+				return []service.SeasonAggregate{{ID: uuid.New()}}, 1, nil
+			}
+
+			req := httptest.NewRequest(http.MethodGet, "/competitions/"+compID.String()+"/seasonsPaginated?page=1&page_size=10", nil)
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+
+			Expect(w.Code).To(Equal(http.StatusOK))
+		})
+
+		It("returns 500 when service fails", func() {
+			compID := uuid.New()
+			mockSvc.GetAllPaginatedFn = func(ctx context.Context, competitionID uuid.UUID, limit, offset int) ([]service.SeasonAggregate, int64, error) {
+				return nil, 0, fmt.Errorf("db failure")
+			}
+
+			req := httptest.NewRequest(http.MethodGet, "/competitions/"+compID.String()+"/seasonsPaginated?page=1&page_size=10", nil)
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
 			Expect(w.Code).To(Equal(http.StatusInternalServerError))
