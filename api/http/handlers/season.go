@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/bradley-adams/gainline/http/api"
 	"github.com/bradley-adams/gainline/http/response"
@@ -91,6 +92,66 @@ func handleGetSeasons(logger zerolog.Logger, seasonService service.SeasonService
 		}
 
 		response.RespondSuccess(ctx, logger, http.StatusOK, seasonsResponse)
+	}
+}
+
+// handleGetPaginatedSeasons retrieves paginated seasons for a given competition
+//
+//	@Summary	Retrieve paginated seasons for a competition
+//	@ID			get-seasons-paginated
+//	@Tags		Seasons
+//	@Produce	json
+//	@Param		competitionID	path		string					true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
+//	@Param		page			query		int						false	"Page number"		default(1)
+//	@Param		page_size		query		int						false	"Page size"			default(10)
+//	@Success	200				{object}	map[string]interface{}	"Paginated seasons"
+//	@Failure	400				{object}	response.ErrorResponse	"Invalid competition ID"
+//	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
+//	@Router		/competitions/{competitionID}/seasonsPaginated [get]
+func handleGetPaginatedSeasons(logger zerolog.Logger, seasonService service.SeasonService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
+		if err != nil {
+			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid competition ID")
+			return
+		}
+
+		page := 1
+		pageSize := 10
+
+		if p := ctx.Query("page"); p != "" {
+			if parsed, err := strconv.Atoi(p); err == nil && parsed > 0 {
+				page = parsed
+			}
+		}
+
+		if ps := ctx.Query("page_size"); ps != "" {
+			if parsed, err := strconv.Atoi(ps); err == nil && parsed > 0 {
+				pageSize = parsed
+			}
+		}
+
+		limit := pageSize
+		offset := (page - 1) * pageSize
+
+		seasons, total, err := seasonService.GetAllPaginated(ctx.Request.Context(), competitionID, limit, offset)
+		if err != nil {
+			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get seasons")
+			return
+		}
+
+		seasonsResponse := make([]api.SeasonResponse, 0, len(seasons))
+		for _, season := range seasons {
+			seasonsResponse = append(seasonsResponse, service.ToSeasonResponse(season))
+		}
+
+		response.RespondSuccess(ctx, logger, http.StatusOK, gin.H{
+			"data":      seasonsResponse,
+			"page":      page,
+			"page_size": pageSize,
+			"total":     total,
+		})
 	}
 }
 
