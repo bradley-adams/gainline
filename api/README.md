@@ -85,7 +85,11 @@ mockgen \
 
 ## Todo:
 
+- Add Validateion of pagination params. EG cant be zero, negative etc.
 - Create/Update competition swagger default violates unique constraint.
 - Expand DB handler testing (integration with mock DB).
 - Error response standardisation (consistent shape for errors).
 - Aggregates should be assembled using aggregate-shaped queries (Season)
+- Try mockery instead of mockgen.
+- Intergration testing for the API.
+  -Change from Ginkgo/Gomega to the standard Go testing.
