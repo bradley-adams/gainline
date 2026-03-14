@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
-import { Season } from '../../types/api'
-import { environment } from '../../../environments/environment'
+import { inject, Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
+import { environment } from '../../../environments/environment'
+import { PaginatedResponse, Season } from '../../types/api'
 
 @Injectable({
     providedIn: 'root'
@@ -13,6 +13,22 @@ export class SeasonsService {
 
     getSeasons(competitionId: string): Observable<Season[]> {
         return this.http.get<Season[]>(`${this.path}/v1/competitions/${competitionId}/seasons`)
+    }
+
+    getPaginatedSeasons(
+        competitionId: string,
+        page = 1,
+        pageSize = 10
+    ): Observable<PaginatedResponse<Season>> {
+        return this.http.get<PaginatedResponse<Season>>(
+            `${this.path}/v1/competitions/${competitionId}/seasons`,
+            {
+                params: {
+                    page,
+                    page_size: pageSize
+                }
+            }
+        )
     }
 
     getSeason(competitionId: string, id: string): Observable<Season> {
