@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"math"
 	"net/http"
 	"strconv"
 
@@ -141,16 +142,21 @@ func handleGetPaginatedSeasons(logger zerolog.Logger, seasonService service.Seas
 			return
 		}
 
-		seasonsResponse := make([]api.SeasonResponse, 0, len(seasons))
+		data := make([]api.SeasonResponse, 0, len(seasons))
 		for _, season := range seasons {
-			seasonsResponse = append(seasonsResponse, service.ToSeasonResponse(season))
+			data = append(data, service.ToSeasonResponse(season))
 		}
 
-		response.RespondSuccess(ctx, logger, http.StatusOK, gin.H{
-			"data":      seasonsResponse,
-			"page":      page,
-			"page_size": pageSize,
-			"total":     total,
+		totalPages := int(math.Ceil(float64(total) / float64(pageSize)))
+
+		response.RespondSuccess(ctx, logger, http.StatusOK, api.PaginatedResponse[api.SeasonResponse]{
+			Data: data,
+			Pagination: api.PaginationMeta{
+				Page:       page,
+				PageSize:   pageSize,
+				Total:      total,
+				TotalPages: totalPages,
+			},
 		})
 	}
 }
