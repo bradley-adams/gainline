@@ -21,7 +21,7 @@ export class SeasonsService {
         pageSize = 10
     ): Observable<PaginatedResponse<Season>> {
         return this.http.get<PaginatedResponse<Season>>(
-            `${this.path}/v1/competitions/${competitionId}/seasons`,
+            `${this.path}/v1/competitions/${competitionId}/seasonsPaginated`,
             {
                 params: {
                     page,
