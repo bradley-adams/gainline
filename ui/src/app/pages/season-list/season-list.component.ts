@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common'
 import { Component, inject } from '@angular/core'
-import { MaterialModule } from '../../shared/material/material.module'
-import { ActivatedRoute, RouterModule } from '@angular/router'
 import { MatTableDataSource } from '@angular/material/table'
-import { Season } from '../../types/api'
-import { SeasonsService } from '../../services/seasons/seasons.service'
+import { ActivatedRoute, RouterModule } from '@angular/router'
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { SeasonsService } from '../../services/seasons/seasons.service'
+import { MaterialModule } from '../../shared/material/material.module'
+import { Season } from '../../types/api'
 
 @Component({
     selector: 'app-season-list',
@@ -33,9 +33,9 @@ export class SeasonListComponent {
     }
 
     private loadSeasons(competitionId: string): void {
-        this.seasonsService.getSeasons(competitionId).subscribe({
-            next: (seasons) => {
-                this.dataSource.data = seasons
+        this.seasonsService.getPaginatedSeasons(competitionId).subscribe({
+            next: (response) => {
+                this.dataSource.data = response.data
             },
             error: (err) => {
                 this.notificationService.showErrorAndLog('Load Error', 'Failed to load seasons', err)

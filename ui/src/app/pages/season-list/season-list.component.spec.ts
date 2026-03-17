@@ -106,8 +106,18 @@ describe('SeasonListComponent', () => {
     ]
 
     beforeEach(async () => {
-        seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeasons', 'deleteSeason'])
-        seasonsService.getSeasons.and.returnValue(of(mockSeasons))
+        seasonsService = jasmine.createSpyObj('SeasonsService', ['getPaginatedSeasons', 'deleteSeason'])
+        seasonsService.getPaginatedSeasons.and.returnValue(
+            of({
+                data: mockSeasons,
+                pagination: {
+                    page: 1,
+                    page_size: 10,
+                    total: mockSeasons.length,
+                    total_pages: 1
+                }
+            })
+        )
         seasonsService.deleteSeason.and.returnValue(of(undefined))
 
         notificationService = jasmine.createSpyObj('NotificationService', [
@@ -167,7 +177,7 @@ describe('SeasonListComponent', () => {
 
     it('should show error when getSeasons fails', () => {
         const mockError = new Error('Failed')
-        seasonsService.getSeasons.and.returnValue(throwError(() => mockError))
+        seasonsService.getPaginatedSeasons.and.returnValue(throwError(() => mockError))
         component.ngOnInit()
         expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
             'Load Error',
