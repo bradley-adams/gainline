@@ -151,8 +151,11 @@ describe('ScheduleComponent', () => {
 
     beforeEach(async () => {
         competitionsService = jasmine.createSpyObj('CompetitionsService', ['getCompetitions'])
+        seasonsService = jasmine.createSpyObj('SeasonsService', ['getPaginatedSeasons'])
+        gamesService = jasmine.createSpyObj('GamesService', ['getGames'])
+        notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
 
-        const mockPaginatedResponse = {
+        const mockPaginatedCompetitionsResponse = {
             data: mockCompetitions,
             pagination: {
                 page: 1,
@@ -162,15 +165,19 @@ describe('ScheduleComponent', () => {
             }
         }
 
-        competitionsService.getCompetitions.and.returnValue(of(mockPaginatedResponse))
+        const mockPaginatedSeasonsResponse = {
+            data: mockSeasons,
+            pagination: {
+                page: 1,
+                page_size: 10,
+                total: mockSeasons.length,
+                total_pages: 1
+            }
+        }
 
-        seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeasons'])
-        seasonsService.getSeasons.and.returnValue(of(mockSeasons))
-
-        gamesService = jasmine.createSpyObj('GamesService', ['getGames'])
+        competitionsService.getCompetitions.and.returnValue(of(mockPaginatedCompetitionsResponse))
+        seasonsService.getPaginatedSeasons.and.returnValue(of(mockPaginatedSeasonsResponse))
         gamesService.getGames.and.returnValue(of(mockGames))
-
-        notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
 
         await TestBed.configureTestingModule({
             imports: [ScheduleComponent, NoopAnimationsModule],
@@ -204,7 +211,7 @@ describe('ScheduleComponent', () => {
 
         component.scheduleForm.get('competition')!.setValue(compId)
 
-        expect(seasonsService.getSeasons).toHaveBeenCalledWith(compId)
+        expect(seasonsService.getPaginatedSeasons).toHaveBeenCalledWith(compId, 1)
         expect(component.seasons.length).toBe(mockSeasons.length)
         expect(component.scheduleForm.get('season')!.value).toBe(mockSeasons[0].id)
     })
