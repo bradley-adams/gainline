@@ -234,43 +234,6 @@
             }
         },
         "/competitions/{competitionID}/seasons": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Seasons"
-                ],
-                "summary": "Retrieve all seasons for a competition",
-                "operationId": "get-seasons",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
-                        "description": "Competition ID",
-                        "name": "competitionID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of seasons",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/api.SeasonResponse"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "consumes": [
                     "application/json"
