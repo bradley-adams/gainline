@@ -111,17 +111,28 @@ export class ScheduleComponent implements OnInit {
     }
 
     private loadSeasons(competitionId: string): void {
-        this.seasonsService.getSeasons(competitionId).subscribe({
-            next: (seasons) => {
-                this.seasons = seasons
-                if (seasons.length > 0) {
-                    this.scheduleForm.patchValue({ season: seasons[0].id }, { emitEvent: true })
+        const allSeasons: Season[] = []
+
+        const fetchPage = (page = 1) => {
+            this.seasonsService.getPaginatedSeasons(competitionId, page).subscribe({
+                next: (response) => {
+                    allSeasons.push(...response.data)
+                    if (page < response.pagination.total_pages) {
+                        fetchPage(page + 1)
+                    } else {
+                        this.seasons = allSeasons
+                        if (allSeasons.length > 0) {
+                            this.scheduleForm.patchValue({ season: allSeasons[0].id }, { emitEvent: true })
+                        }
+                    }
+                },
+                error: (err) => {
+                    this.notificationService.showErrorAndLog('Load Error', 'Failed to load seasons', err)
                 }
-            },
-            error: (err) => {
-                this.notificationService.showErrorAndLog('Load Error', 'Failed to load seasons', err)
-            }
-        })
+            })
+        }
+
+        fetchPage()
     }
 
     private loadGames(competitionId: string, seasonId: string): void {
