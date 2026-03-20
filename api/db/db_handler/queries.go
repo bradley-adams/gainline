@@ -70,14 +70,6 @@ func GetSeason(
 	return q.GetSeason(ctx, id)
 }
 
-func GetSeasons(
-	ctx context.Context,
-	q Queries,
-	competitionID uuid.UUID,
-) ([]db.Season, error) {
-	return q.GetSeasons(ctx, competitionID)
-}
-
 func GetPaginatedSeasons(
 	ctx context.Context,
 	q Queries,
