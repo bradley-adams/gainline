@@ -934,55 +934,6 @@ func (q *Queries) GetSeasonTeams(ctx context.Context, seasonID uuid.UUID) ([]Get
 	return items, nil
 }
 
-const getSeasons = `-- name: GetSeasons :many
-SELECT
-	id,
-	competition_id,
-	start_date,
-	end_date,
-	created_at,
-	updated_at,
-	deleted_at
-FROM
-	seasons
-WHERE
-	competition_id = $1
-AND
-	deleted_at IS NULL
-`
-
-// Fetch all seasons for a competition, excluding soft-deleted seasons
-func (q *Queries) GetSeasons(ctx context.Context, competitionID uuid.UUID) ([]Season, error) {
-	rows, err := q.db.QueryContext(ctx, getSeasons, competitionID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Season
-	for rows.Next() {
-		var i Season
-		if err := rows.Scan(
-			&i.ID,
-			&i.CompetitionID,
-			&i.StartDate,
-			&i.EndDate,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getStagesBySeasonID = `-- name: GetStagesBySeasonID :many
 SELECT
   id,

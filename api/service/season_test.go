@@ -231,7 +231,6 @@ var _ = Describe("season", func() {
 	}
 
 	var validNilSeasonWithTeams SeasonAggregate
-	var validNilSeasonsWithTeams []SeasonAggregate
 
 	validSeasonWithTeams := SeasonAggregate{
 		ID:            validSeasonFromDB.ID,
@@ -656,124 +655,6 @@ var _ = Describe("season", func() {
 
 			Expect(season).To(Equal(validNilSeasonWithTeams))
 			Expect(err.Error()).To(Equal("a valid testing error"))
-		})
-	})
-
-	Describe("GetSeasons", func() {
-		It("should get all seasons without errors", func() {
-			mockDB.EXPECT().New(
-				gomock.Any(),
-			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeasons(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonsFromDB, nil)
-			mockQueries.EXPECT().GetSeasonTeams(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonTeamsFromDB, nil)
-			mockQueries.EXPECT().GetTeam(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validTeamFromDB, nil)
-			mockQueries.EXPECT().GetTeam(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validTeamFromDB2, nil)
-			mockQueries.EXPECT().GetSeasonTeams(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonTeamsFromDB2, nil)
-			mockQueries.EXPECT().GetTeam(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validTeamFromDB, nil)
-			mockQueries.EXPECT().GetTeam(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validTeamFromDB3, nil)
-			mockQueries.EXPECT().GetStagesBySeasonID(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validStagesFromDB, nil)
-			mockQueries.EXPECT().GetStagesBySeasonID(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validStagesFromDB2, nil)
-
-			seasons, err := svc.GetAll(context.Background(), validCompetitionID)
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(seasons[0].ID).To(Equal(validSeasonsResponse[0].ID))
-			Expect(seasons[0].CompetitionID).To(Equal(validSeasonsResponse[0].CompetitionID))
-			Expect(seasons[0].StartDate).To(Equal(validSeasonsResponse[0].StartDate))
-			Expect(seasons[0].EndDate).To(Equal(validSeasonsResponse[0].EndDate))
-			Expect(seasons[0].Teams).To(HaveLen(2))
-			Expect(seasons[0].Teams).To(ConsistOf(
-				validTeamFromDB,
-				validTeamFromDB2,
-			))
-			Expect(seasons[0].Stages).To(HaveLen(2))
-			Expect(seasons[0].Stages).To(ConsistOf(
-				validRegularStageFromDB,
-				validFinalStagesFromDB,
-			))
-			Expect(seasons[0].CreatedAt).To(Equal(validSeasonsResponse[0].CreatedAt))
-			Expect(seasons[0].UpdatedAt).To(Equal(validSeasonsResponse[0].UpdatedAt))
-			Expect(seasons[0].DeletedAt.Time).To(Equal(validSeasonsResponse[0].DeletedAt.Time))
-
-			Expect(seasons[1].ID).To(Equal(validSeasonsResponse[1].ID))
-			Expect(seasons[1].CompetitionID).To(Equal(validSeasonsResponse[1].CompetitionID))
-			Expect(seasons[1].StartDate).To(Equal(validSeasonsResponse[1].StartDate))
-			Expect(seasons[1].EndDate).To(Equal(validSeasonsResponse[1].EndDate))
-			Expect(seasons[1].Teams).To(HaveLen(2))
-			Expect(seasons[1].Teams).To(ConsistOf(
-				validTeamFromDB,
-				validTeamFromDB3,
-			))
-			Expect(seasons[1].Stages).To(HaveLen(2))
-			Expect(seasons[1].Stages).To(ConsistOf(
-				validRegularStageFromDB,
-				validFinalStagesFromDB2,
-			))
-			Expect(seasons[1].CreatedAt).To(Equal(validSeasonsResponse[1].CreatedAt))
-			Expect(seasons[1].UpdatedAt).To(Equal(validSeasonsResponse[1].UpdatedAt))
-			Expect(seasons[1].DeletedAt.Time).To(Equal(validSeasonsResponse[1].DeletedAt.Time))
-		})
-
-		It("should return a formatted error when getting seasons fails", func() {
-			mockDB.EXPECT().New(
-				gomock.Any(),
-			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeasons(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(nil, validTestError)
-
-			seasons, err := svc.GetAll(context.Background(), validCompetitionID)
-
-			Expect(seasons).To(Equal(validNilSeasonsWithTeams))
-			Expect(err.Error()).To(Equal("unable to get seasons: a valid testing error"))
-		})
-
-		It("should return a formatted error when getting season teams fails", func() {
-			mockDB.EXPECT().New(
-				gomock.Any(),
-			).Return(mockQueries)
-			mockQueries.EXPECT().GetSeasons(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validSeasonsFromDB, nil)
-			mockQueries.EXPECT().GetSeasonTeams(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(nil, validTestError)
-
-			seasons, err := svc.GetAll(context.Background(), validCompetitionID)
-
-			Expect(seasons).To(Equal(validNilSeasonsWithTeams))
-			Expect(err.Error()).To(Equal("unable to get season teams: a valid testing error"))
-
 		})
 	})
 
