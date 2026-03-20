@@ -63,39 +63,6 @@ func handleCreateSeason(
 	}
 }
 
-// handleGetSeasons retrieves all seasons for a given competition
-//
-//	@Summary	Retrieve all seasons for a competition
-//	@ID			get-seasons
-//	@Tags		Seasons
-//	@Produce	json
-//	@Param		competitionID	path		string					true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
-//	@Success	200				{array}		api.SeasonResponse		"List of seasons"
-//	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
-//	@Router		/competitions/{competitionID}/seasons [get]
-func handleGetSeasons(logger zerolog.Logger, seasonService service.SeasonService) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid competition ID")
-			return
-		}
-
-		seasons, err := seasonService.GetAll(ctx.Request.Context(), competitionID)
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get seasons")
-			return
-		}
-
-		seasonsResponse := make([]api.SeasonResponse, 0, len(seasons))
-		for _, season := range seasons {
-			seasonsResponse = append(seasonsResponse, service.ToSeasonResponse(season))
-		}
-
-		response.RespondSuccess(ctx, logger, http.StatusOK, seasonsResponse)
-	}
-}
-
 // handleGetPaginatedSeasons retrieves paginated seasons for a given competition
 //
 //	@Summary	Retrieve paginated seasons for a competition

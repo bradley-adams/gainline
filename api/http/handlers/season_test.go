@@ -36,13 +36,6 @@ func (m *mockSeasonService) Create(ctx context.Context, req *api.SeasonRequest, 
 	return service.SeasonAggregate{}, nil
 }
 
-func (m *mockSeasonService) GetAll(ctx context.Context, competitionID uuid.UUID) ([]service.SeasonAggregate, error) {
-	if m.GetAllFn != nil {
-		return m.GetAllFn(ctx, competitionID)
-	}
-	return nil, nil
-}
-
 func (m *mockSeasonService) GetAllPaginated(ctx context.Context, competitionID uuid.UUID, limit, offset int) ([]service.SeasonAggregate, int64, error) {
 	if m.GetAllPaginatedFn != nil {
 		return m.GetAllPaginatedFn(ctx, competitionID, limit, offset)
@@ -91,7 +84,6 @@ var _ = Describe("season handlers", func() {
 		router = gin.New()
 
 		router.POST("/competitions/:competitionID/seasons", handleCreateSeason(logger, validate, mockSvc))
-		router.GET("/competitions/:competitionID/seasons", handleGetSeasons(logger, mockSvc))
 		router.GET("/competitions/:competitionID/seasonsPaginated", handleGetPaginatedSeasons(logger, mockSvc))
 		router.GET("/competitions/:competitionID/seasons/:seasonID", handleGetSeason(logger))
 		router.PUT("/competitions/:competitionID/seasons/:seasonID", handleUpdateSeason(logger, validate, mockSvc))
@@ -159,33 +151,6 @@ var _ = Describe("season handlers", func() {
 			req := httptest.NewRequest(http.MethodPost, "/competitions/"+compID.String()+"/seasons", bytes.NewBufferString(reqBody))
 			req.Header.Set("Content-Type", "application/json")
 
-			w := httptest.NewRecorder()
-			router.ServeHTTP(w, req)
-			Expect(w.Code).To(Equal(http.StatusInternalServerError))
-		})
-	})
-
-	Describe("get all seasons", func() {
-		It("returns 200 and list of seasons", func() {
-			compID := uuid.New()
-			mockSvc.GetAllFn = func(ctx context.Context, competitionID uuid.UUID) ([]service.SeasonAggregate, error) {
-				return []service.SeasonAggregate{{ID: uuid.New()}}, nil
-			}
-
-			req := httptest.NewRequest(http.MethodGet, "/competitions/"+compID.String()+"/seasons", nil)
-			w := httptest.NewRecorder()
-			router.ServeHTTP(w, req)
-
-			Expect(w.Code).To(Equal(http.StatusOK))
-		})
-
-		It("returns 500 when service fails", func() {
-			compID := uuid.New()
-			mockSvc.GetAllFn = func(ctx context.Context, competitionID uuid.UUID) ([]service.SeasonAggregate, error) {
-				return nil, fmt.Errorf("db failure")
-			}
-
-			req := httptest.NewRequest(http.MethodGet, "/competitions/"+compID.String()+"/seasons", nil)
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
 			Expect(w.Code).To(Equal(http.StatusInternalServerError))
