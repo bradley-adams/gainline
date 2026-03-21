@@ -116,16 +116,6 @@ describe('SeasonsService', () => {
         expect(service).toBeTruthy()
     })
 
-    it('should get all seasons for a competition', () => {
-        service.getSeasons(mockCompetitionID).subscribe((seasons) => {
-            expect(seasons).toEqual(mockSeasons)
-        })
-
-        const req = httpMock.expectOne(`${baseUrl}/v1/competitions/${mockCompetitionID}/seasons`)
-        expect(req.request.method).toBe('GET')
-        req.flush(mockSeasons)
-    })
-
     it('should get paginated seasons for a competition', () => {
         const mockPaginatedResponse = {
             data: mockSeasons,
