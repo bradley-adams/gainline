@@ -11,17 +11,13 @@ export class SeasonsService {
     private readonly path = environment.apiUrl
     private readonly http = inject(HttpClient)
 
-    getSeasons(competitionId: string): Observable<Season[]> {
-        return this.http.get<Season[]>(`${this.path}/v1/competitions/${competitionId}/seasons`)
-    }
-
     getPaginatedSeasons(
         competitionId: string,
         page = 1,
         pageSize = 10
     ): Observable<PaginatedResponse<Season>> {
         return this.http.get<PaginatedResponse<Season>>(
-            `${this.path}/v1/competitions/${competitionId}/seasonsPaginated`,
+            `${this.path}/v1/competitions/${competitionId}/seasons`,
             {
                 params: {
                     page,

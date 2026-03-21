@@ -175,7 +175,7 @@ describe('SeasonListComponent', () => {
         expect(noDataRow.textContent).toContain('No seasons found')
     })
 
-    it('should show error when getSeasons fails', () => {
+    it('should show error when getPaginatedSeasons fails', () => {
         const mockError = new Error('Failed')
         seasonsService.getPaginatedSeasons.and.returnValue(throwError(() => mockError))
         component.ngOnInit()
