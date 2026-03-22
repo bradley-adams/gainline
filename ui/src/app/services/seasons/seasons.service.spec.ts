@@ -127,13 +127,13 @@ describe('SeasonsService', () => {
             }
         }
 
-        service.getPaginatedSeasons(mockCompetitionID).subscribe((response) => {
+        service.getSeasons(mockCompetitionID).subscribe((response) => {
             expect(response).toEqual(mockPaginatedResponse)
         })
 
         const req = httpMock.expectOne(
             (request) =>
-                request.url === `${baseUrl}/v1/competitions/${mockCompetitionID}/seasonsPaginated` &&
+                request.url === `${baseUrl}/v1/competitions/${mockCompetitionID}/seasons` &&
                 request.params.get('page') === '1' &&
                 request.params.get('page_size') === '10'
         )
