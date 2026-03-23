@@ -16,7 +16,7 @@ import (
 // SeasonService defines the contract for season-related operations.
 type SeasonService interface {
 	Create(ctx context.Context, req *api.SeasonRequest, competitionID uuid.UUID) (SeasonAggregate, error)
-	GetAllPaginated(ctx context.Context, competitionID uuid.UUID, limit, offset int) ([]SeasonAggregate, int64, error)
+	GetAll(ctx context.Context, competitionID uuid.UUID, limit, offset int) ([]SeasonAggregate, int64, error)
 	Get(ctx context.Context, competitionID, seasonID uuid.UUID) (SeasonAggregate, error)
 	Update(ctx context.Context, req *api.SeasonRequest, competitionID, seasonID uuid.UUID) (SeasonAggregate, error)
 	Delete(ctx context.Context, seasonID uuid.UUID) error
@@ -44,12 +44,12 @@ func (s *seasonService) Create(ctx context.Context, req *api.SeasonRequest, comp
 	return season, nil
 }
 
-func (s *seasonService) GetAllPaginated(ctx context.Context, competitionID uuid.UUID, limit, offset int) ([]SeasonAggregate, int64, error) {
+func (s *seasonService) GetAll(ctx context.Context, competitionID uuid.UUID, limit, offset int) ([]SeasonAggregate, int64, error) {
 	var seasons []SeasonAggregate
 	var total int64
 	err := db_handler.Run(ctx, s.db, func(queries db_handler.Queries) error {
 		var err error
-		seasons, total, err = getPaginatedSeasons(ctx, queries, competitionID, limit, offset)
+		seasons, total, err = getSeasons(ctx, queries, competitionID, limit, offset)
 		return err
 	})
 	if err != nil {
@@ -291,14 +291,14 @@ func dedupeUUIDs(ids []uuid.UUID) []uuid.UUID {
 	return out
 }
 
-func getPaginatedSeasons(
+func getSeasons(
 	ctx context.Context,
 	queries db_handler.Queries,
 	competitionID uuid.UUID,
 	limit int,
 	offset int,
 ) ([]SeasonAggregate, int64, error) {
-	seasons, err := queries.GetPaginatedSeasons(ctx, db.GetPaginatedSeasonsParams{
+	seasons, err := queries.GetSeasons(ctx, db.GetSeasonsParams{
 		CompetitionID: competitionID,
 		PageLimit:     int32(limit),
 		PageOffset:    int32(offset),

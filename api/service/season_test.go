@@ -658,12 +658,12 @@ var _ = Describe("season", func() {
 		})
 	})
 
-	Describe("GetPaginatedSeasons", func() {
+	Describe("GetSeasons", func() {
 		It("should get all seasons paginated without errors", func() {
 			mockDB.EXPECT().
 				New(gomock.Any()).
 				Return(mockQueries)
-			mockQueries.EXPECT().GetPaginatedSeasons(
+			mockQueries.EXPECT().GetSeasons(
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validSeasonsFromDB, nil)
@@ -705,7 +705,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Return(validStagesFromDB2, nil)
 
-			seasons, total, err := svc.GetAllPaginated(
+			seasons, total, err := svc.GetAll(
 				context.Background(),
 				validCompetitionID,
 				validPageLimit,
@@ -754,12 +754,12 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetPaginatedSeasons(
+			mockQueries.EXPECT().GetSeasons(
 				gomock.Any(),
 				gomock.Any(),
 			).Return(nil, validTestError)
 
-			seasons, total, err := svc.GetAllPaginated(
+			seasons, total, err := svc.GetAll(
 				context.Background(),
 				validCompetitionID,
 				validPageLimit,
@@ -775,7 +775,7 @@ var _ = Describe("season", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)
-			mockQueries.EXPECT().GetPaginatedSeasons(
+			mockQueries.EXPECT().GetSeasons(
 				gomock.Any(),
 				gomock.Any(),
 			).Return(validSeasonsFromDB, nil)
@@ -790,7 +790,7 @@ var _ = Describe("season", func() {
 				gomock.Any(),
 			).Return(nil, validTestError)
 
-			seasons, total, err := svc.GetAllPaginated(
+			seasons, total, err := svc.GetAll(
 				context.Background(),
 				validCompetitionID,
 				validPageLimit,
