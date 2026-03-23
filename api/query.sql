@@ -106,7 +106,7 @@ WHERE
 AND
 	deleted_at IS NULL;
 
--- name: GetPaginatedSeasons :many
+-- name: GetSeasons :many
 -- Fetch all seasons for a competition, excluding soft-deleted seasons
 SELECT
 	id,
