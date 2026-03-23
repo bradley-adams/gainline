@@ -151,7 +151,7 @@ describe('ScheduleComponent', () => {
 
     beforeEach(async () => {
         competitionsService = jasmine.createSpyObj('CompetitionsService', ['getCompetitions'])
-        seasonsService = jasmine.createSpyObj('SeasonsService', ['getPaginatedSeasons'])
+        seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeasons'])
         gamesService = jasmine.createSpyObj('GamesService', ['getGames'])
         notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
 
@@ -176,7 +176,7 @@ describe('ScheduleComponent', () => {
         }
 
         competitionsService.getCompetitions.and.returnValue(of(mockPaginatedCompetitionsResponse))
-        seasonsService.getPaginatedSeasons.and.returnValue(of(mockPaginatedSeasonsResponse))
+        seasonsService.getSeasons.and.returnValue(of(mockPaginatedSeasonsResponse))
         gamesService.getGames.and.returnValue(of(mockGames))
 
         await TestBed.configureTestingModule({
@@ -211,7 +211,7 @@ describe('ScheduleComponent', () => {
 
         component.scheduleForm.get('competition')!.setValue(compId)
 
-        expect(seasonsService.getPaginatedSeasons).toHaveBeenCalledWith(compId, 1)
+        expect(seasonsService.getSeasons).toHaveBeenCalledWith(compId, 1)
         expect(component.seasons.length).toBe(mockSeasons.length)
         expect(component.scheduleForm.get('season')!.value).toBe(mockSeasons[0].id)
     })

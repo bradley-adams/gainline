@@ -33,7 +33,7 @@ export class SeasonListComponent {
     }
 
     private loadSeasons(competitionId: string): void {
-        this.seasonsService.getPaginatedSeasons(competitionId).subscribe({
+        this.seasonsService.getSeasons(competitionId).subscribe({
             next: (response) => {
                 this.dataSource.data = response.data
             },

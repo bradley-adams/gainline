@@ -114,7 +114,7 @@ export class ScheduleComponent implements OnInit {
         const allSeasons: Season[] = []
 
         const fetchPage = (page = 1) => {
-            this.seasonsService.getPaginatedSeasons(competitionId, page).subscribe({
+            this.seasonsService.getSeasons(competitionId, page).subscribe({
                 next: (response) => {
                     allSeasons.push(...response.data)
                     if (page < response.pagination.total_pages) {
