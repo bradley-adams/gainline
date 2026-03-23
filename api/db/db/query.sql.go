@@ -787,64 +787,6 @@ func (q *Queries) GetGames(ctx context.Context, seasonID uuid.UUID) ([]Game, err
 	return items, nil
 }
 
-const getPaginatedSeasons = `-- name: GetPaginatedSeasons :many
-SELECT
-	id,
-	competition_id,
-	start_date,
-	end_date,
-	created_at,
-	updated_at,
-	deleted_at
-FROM
-	seasons
-WHERE
-	competition_id = $1
-AND
-	deleted_at IS NULL
-ORDER BY created_at DESC
-LIMIT $3
-OFFSET $2
-`
-
-type GetPaginatedSeasonsParams struct {
-	CompetitionID uuid.UUID
-	PageOffset    int32
-	PageLimit     int32
-}
-
-// Fetch all seasons for a competition, excluding soft-deleted seasons
-func (q *Queries) GetPaginatedSeasons(ctx context.Context, arg GetPaginatedSeasonsParams) ([]Season, error) {
-	rows, err := q.db.QueryContext(ctx, getPaginatedSeasons, arg.CompetitionID, arg.PageOffset, arg.PageLimit)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Season
-	for rows.Next() {
-		var i Season
-		if err := rows.Scan(
-			&i.ID,
-			&i.CompetitionID,
-			&i.StartDate,
-			&i.EndDate,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getSeason = `-- name: GetSeason :one
 SELECT
 	id,
@@ -917,6 +859,64 @@ func (q *Queries) GetSeasonTeams(ctx context.Context, seasonID uuid.UUID) ([]Get
 			&i.ID,
 			&i.TeamID,
 			&i.SeasonID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getSeasons = `-- name: GetSeasons :many
+SELECT
+	id,
+	competition_id,
+	start_date,
+	end_date,
+	created_at,
+	updated_at,
+	deleted_at
+FROM
+	seasons
+WHERE
+	competition_id = $1
+AND
+	deleted_at IS NULL
+ORDER BY created_at DESC
+LIMIT $3
+OFFSET $2
+`
+
+type GetSeasonsParams struct {
+	CompetitionID uuid.UUID
+	PageOffset    int32
+	PageLimit     int32
+}
+
+// Fetch all seasons for a competition, excluding soft-deleted seasons
+func (q *Queries) GetSeasons(ctx context.Context, arg GetSeasonsParams) ([]Season, error) {
+	rows, err := q.db.QueryContext(ctx, getSeasons, arg.CompetitionID, arg.PageOffset, arg.PageLimit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Season
+	for rows.Next() {
+		var i Season
+		if err := rows.Scan(
+			&i.ID,
+			&i.CompetitionID,
+			&i.StartDate,
+			&i.EndDate,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,

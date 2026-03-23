@@ -242,6 +242,61 @@ const docTemplate = `{
             }
         },
         "/competitions/{competitionID}/seasons": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Seasons"
+                ],
+                "summary": "Retrieve paginated seasons for a competition",
+                "operationId": "get-seasons",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
+                        "description": "Competition ID",
+                        "name": "competitionID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated seasons",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid competition ID",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -729,63 +784,6 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Invalid game ID",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/competitions/{competitionID}/seasonsPaginated": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Seasons"
-                ],
-                "summary": "Retrieve paginated seasons for a competition",
-                "operationId": "get-seasons-paginated",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
-                        "description": "Competition ID",
-                        "name": "competitionID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page number",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Page size",
-                        "name": "page_size",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Paginated seasons",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid competition ID",
                         "schema": {
                             "$ref": "#/definitions/response.ErrorResponse"
                         }

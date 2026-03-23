@@ -70,12 +70,12 @@ func GetSeason(
 	return q.GetSeason(ctx, id)
 }
 
-func GetPaginatedSeasons(
+func GetSeasons(
 	ctx context.Context,
 	q Queries,
-	params db.GetPaginatedSeasonsParams,
+	params db.GetSeasonsParams,
 ) ([]db.Season, error) {
-	return q.GetPaginatedSeasons(ctx, params)
+	return q.GetSeasons(ctx, params)
 }
 
 func CountSeasons(

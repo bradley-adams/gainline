@@ -569,21 +569,6 @@ func (mr *MockQueriesMockRecorder) GetGames(ctx, seasonID any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGames", reflect.TypeOf((*MockQueries)(nil).GetGames), ctx, seasonID)
 }
 
-// GetPaginatedSeasons mocks base method.
-func (m *MockQueries) GetPaginatedSeasons(ctx context.Context, arg db.GetPaginatedSeasonsParams) ([]db.Season, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPaginatedSeasons", ctx, arg)
-	ret0, _ := ret[0].([]db.Season)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetPaginatedSeasons indicates an expected call of GetPaginatedSeasons.
-func (mr *MockQueriesMockRecorder) GetPaginatedSeasons(ctx, arg any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPaginatedSeasons", reflect.TypeOf((*MockQueries)(nil).GetPaginatedSeasons), ctx, arg)
-}
-
 // GetSeason mocks base method.
 func (m *MockQueries) GetSeason(ctx context.Context, id uuid.UUID) (db.Season, error) {
 	m.ctrl.T.Helper()
@@ -615,18 +600,18 @@ func (mr *MockQueriesMockRecorder) GetSeasonTeams(ctx, seasonID any) *gomock.Cal
 }
 
 // GetSeasons mocks base method.
-func (m *MockQueries) GetSeasons(ctx context.Context, competitionID uuid.UUID) ([]db.Season, error) {
+func (m *MockQueries) GetSeasons(ctx context.Context, arg db.GetSeasonsParams) ([]db.Season, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSeasons", ctx, competitionID)
+	ret := m.ctrl.Call(m, "GetSeasons", ctx, arg)
 	ret0, _ := ret[0].([]db.Season)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetSeasons indicates an expected call of GetSeasons.
-func (mr *MockQueriesMockRecorder) GetSeasons(ctx, competitionID any) *gomock.Call {
+func (mr *MockQueriesMockRecorder) GetSeasons(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSeasons", reflect.TypeOf((*MockQueries)(nil).GetSeasons), ctx, competitionID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSeasons", reflect.TypeOf((*MockQueries)(nil).GetSeasons), ctx, arg)
 }
 
 // GetStagesBySeasonID mocks base method.

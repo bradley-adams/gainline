@@ -407,6 +407,44 @@ paths:
       tags:
       - Competitions
   /competitions/{competitionID}/seasons:
+    get:
+      operationId: get-seasons
+      parameters:
+      - default: 44dd315c-1abc-43aa-9843-642f920190d1
+        description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Paginated seasons
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid competition ID
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Retrieve paginated seasons for a competition
+      tags:
+      - Seasons
     post:
       consumes:
       - application/json
@@ -749,45 +787,6 @@ paths:
       summary: Update a game
       tags:
       - Games
-  /competitions/{competitionID}/seasonsPaginated:
-    get:
-      operationId: get-seasons-paginated
-      parameters:
-      - default: 44dd315c-1abc-43aa-9843-642f920190d1
-        description: Competition ID
-        in: path
-        name: competitionID
-        required: true
-        type: string
-      - default: 1
-        description: Page number
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: Page size
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Paginated seasons
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Invalid competition ID
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-      summary: Retrieve paginated seasons for a competition
-      tags:
-      - Seasons
   /teams:
     get:
       operationId: get-teams
