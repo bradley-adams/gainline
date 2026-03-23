@@ -50,7 +50,7 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 
 		// seasons
 		v1public.POST("/competitions/:competitionID/seasons", handleCreateSeason(logger, validate, seasonService))
-		v1public.GET("/competitions/:competitionID/seasons", handleGetPaginatedSeasons(logger, seasonService))
+		v1public.GET("/competitions/:competitionID/seasons", handleGetSeasons(logger, seasonService))
 		v1public.GET("/competitions/:competitionID/seasons/:seasonID", handleGetSeason(logger))
 		v1public.PUT("/competitions/:competitionID/seasons/:seasonID", handleUpdateSeason(logger, validate, seasonService))
 		v1public.DELETE("/competitions/:competitionID/seasons/:seasonID", handleDeleteSeason(logger, seasonService))

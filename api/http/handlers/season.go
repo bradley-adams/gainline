@@ -63,10 +63,10 @@ func handleCreateSeason(
 	}
 }
 
-// handleGetPaginatedSeasons retrieves paginated seasons for a given competition
+// handleGetSeasons retrieves paginated seasons for a given competition
 //
 //	@Summary	Retrieve paginated seasons for a competition
-//	@ID			get-seasons-paginated
+//	@ID			get-seasons
 //	@Tags		Seasons
 //	@Produce	json
 //	@Param		competitionID	path		string					true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
@@ -75,8 +75,8 @@ func handleCreateSeason(
 //	@Success	200				{object}	map[string]interface{}	"Paginated seasons"
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid competition ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
-//	@Router		/competitions/{competitionID}/seasonsPaginated [get]
-func handleGetPaginatedSeasons(logger zerolog.Logger, seasonService service.SeasonService) gin.HandlerFunc {
+//	@Router		/competitions/{competitionID}/seasons [get]
+func handleGetSeasons(logger zerolog.Logger, seasonService service.SeasonService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
@@ -103,7 +103,7 @@ func handleGetPaginatedSeasons(logger zerolog.Logger, seasonService service.Seas
 		limit := pageSize
 		offset := (page - 1) * pageSize
 
-		seasons, total, err := seasonService.GetAllPaginated(ctx.Request.Context(), competitionID, limit, offset)
+		seasons, total, err := seasonService.GetAll(ctx.Request.Context(), competitionID, limit, offset)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get seasons")
 			return
