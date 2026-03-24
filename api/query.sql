@@ -475,6 +475,35 @@ WHERE
 AND
     deleted_at IS NULL;
 
+-- name: GetGamesPaginated :many
+-- Fetch all games paginated for a season, excluding soft-deleted games
+SELECT
+    id,
+    season_id,
+    stage_id,
+    date,
+    home_team_id,
+    away_team_id,
+    home_score,
+    away_score,
+    status,
+    created_at,
+    updated_at,
+    deleted_at
+FROM 
+    games
+WHERE 
+    season_id = @season_id
+AND 
+    deleted_at IS NULL
+ORDER BY created_at DESC
+LIMIT @page_limit
+OFFSET @page_offset;
+
+-- name: CountGames :one
+-- Get total games for a season (excluding soft-deleted)
+SELECT COUNT(*) FROM games WHERE season_id = @season_id AND deleted_at IS NULL;
+
 -- name: UpdateGame :exec
 -- Update an existing game by id
 UPDATE games
