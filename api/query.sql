@@ -40,7 +40,7 @@ SELECT
     deleted_at
 FROM competitions
 WHERE deleted_at IS NULL
-ORDER BY created_at DESC
+ORDER BY created_at DESC, id DESC
 LIMIT @page_limit
 OFFSET @page_offset;
 
@@ -122,7 +122,7 @@ WHERE
 	competition_id = @competition_id
 AND
 	deleted_at IS NULL
-ORDER BY created_at DESC
+ORDER BY created_at DESC, id DESC
 LIMIT @page_limit
 OFFSET @page_offset;
 
@@ -496,7 +496,7 @@ WHERE
     season_id = @season_id
 AND 
     deleted_at IS NULL
-ORDER BY created_at DESC
+ORDER BY created_at DESC, id DESC
 LIMIT @page_limit
 OFFSET @page_offset;
 
