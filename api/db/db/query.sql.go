@@ -657,7 +657,7 @@ SELECT
     deleted_at
 FROM competitions
 WHERE deleted_at IS NULL
-ORDER BY created_at DESC
+ORDER BY created_at DESC, id DESC
 LIMIT $2
 OFFSET $1
 `
@@ -819,7 +819,7 @@ WHERE
     season_id = $1
 AND 
     deleted_at IS NULL
-ORDER BY created_at DESC
+ORDER BY created_at DESC, id DESC
 LIMIT $3
 OFFSET $2
 `
@@ -971,7 +971,7 @@ WHERE
 	competition_id = $1
 AND
 	deleted_at IS NULL
-ORDER BY created_at DESC
+ORDER BY created_at DESC, id DESC
 LIMIT $3
 OFFSET $2
 `
