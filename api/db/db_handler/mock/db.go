@@ -228,6 +228,21 @@ func (mr *MockQueriesMockRecorder) CountCompetitions(ctx any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountCompetitions", reflect.TypeOf((*MockQueries)(nil).CountCompetitions), ctx)
 }
 
+// CountGames mocks base method.
+func (m *MockQueries) CountGames(ctx context.Context, seasonID uuid.UUID) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountGames", ctx, seasonID)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountGames indicates an expected call of CountGames.
+func (mr *MockQueriesMockRecorder) CountGames(ctx, seasonID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountGames", reflect.TypeOf((*MockQueries)(nil).CountGames), ctx, seasonID)
+}
+
 // CountSeasons mocks base method.
 func (m *MockQueries) CountSeasons(ctx context.Context, competitionID uuid.UUID) (int64, error) {
 	m.ctrl.T.Helper()
@@ -567,6 +582,21 @@ func (m *MockQueries) GetGames(ctx context.Context, seasonID uuid.UUID) ([]db.Ga
 func (mr *MockQueriesMockRecorder) GetGames(ctx, seasonID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGames", reflect.TypeOf((*MockQueries)(nil).GetGames), ctx, seasonID)
+}
+
+// GetGamesPaginated mocks base method.
+func (m *MockQueries) GetGamesPaginated(ctx context.Context, arg db.GetGamesPaginatedParams) ([]db.Game, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGamesPaginated", ctx, arg)
+	ret0, _ := ret[0].([]db.Game)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGamesPaginated indicates an expected call of GetGamesPaginated.
+func (mr *MockQueriesMockRecorder) GetGamesPaginated(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGamesPaginated", reflect.TypeOf((*MockQueries)(nil).GetGamesPaginated), ctx, arg)
 }
 
 // GetSeason mocks base method.
