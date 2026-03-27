@@ -341,6 +341,84 @@ var _ = Describe("game", func() {
 		})
 	})
 
+	Describe("GetGamesPaginated", func() {
+		It("should retrieve paginated games without errors", func() {
+			mockDB.EXPECT().
+				New(gomock.Any()).
+				Return(mockQueries)
+			mockQueries.EXPECT().
+				GetGamesPaginated(
+					gomock.Any(),
+					gomock.Any(),
+				).
+				Return(validGamesFromDB, nil)
+			mockQueries.EXPECT().
+				CountGames(
+					gomock.Any(),
+					gomock.Any(),
+				).
+				Return(int64(len(validGamesFromDB)), nil)
+
+			games, total, err := svc.GetAllPaginated(context.Background(), validSeasonID, 10, 0)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(total).To(Equal(int64(len(validGamesFromDB))))
+
+			Expect(games).To(HaveLen(2))
+			Expect(games[0].ID).To(Equal(validGamesFromDB[0].ID))
+			Expect(games[1].ID).To(Equal(validGamesFromDB[1].ID))
+		})
+
+		It("should return error if GetGamesPaginated fails", func() {
+			mockDB.EXPECT().
+				New(gomock.Any()).
+				Return(mockQueries)
+			mockQueries.EXPECT().
+				GetGamesPaginated(
+					gomock.Any(),
+					gomock.Any(),
+				).
+				Return(nil, validTestError)
+			mockQueries.EXPECT().
+				CountGames(gomock.Any(), gomock.Any()).
+				Times(0)
+
+			games, total, err := svc.GetAllPaginated(context.Background(), validSeasonID, 10, 0)
+
+			Expect(games).To(BeNil())
+			Expect(total).To(Equal(int64(0)))
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(Equal("unable to get paginated games: a valid testing error"))
+		})
+
+		It("should return error if CountGames fails", func() {
+			mockDB.EXPECT().
+				New(gomock.Any()).
+				Return(mockQueries)
+
+			mockQueries.EXPECT().
+				GetGamesPaginated(
+					gomock.Any(),
+					gomock.Any(),
+				).
+				Return(validGamesFromDB, nil)
+
+			mockQueries.EXPECT().
+				CountGames(
+					gomock.Any(),
+					gomock.Any(),
+				).
+				Return(int64(0), validTestError)
+
+			games, total, err := svc.GetAllPaginated(context.Background(), validSeasonID, 10, 0)
+
+			Expect(games).To(BeNil())
+			Expect(total).To(Equal(int64(0)))
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(Equal("unable to get paginated games: a valid testing error"))
+		})
+	})
+
 	Describe("GetGame", func() {
 		It("should retrieve a game without errors", func() {
 			mockDB.EXPECT().New(
