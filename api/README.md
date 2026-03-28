@@ -85,6 +85,7 @@ mockgen \
 
 ## Todo:
 
+- Find a auto formatter for query.sql.
 - Add Validateion of pagination params. EG cant be zero, negative etc.
 - Create/Update competition swagger default violates unique constraint.
 - Expand DB handler testing (integration with mock DB).
