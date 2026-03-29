@@ -23,11 +23,12 @@ import (
 
 // Manual mock for GameService
 type mockGameService struct {
-	CreateFn func(ctx context.Context, req *api.GameRequest, season service.SeasonAggregate) (db.Game, error)
-	GetAllFn func(ctx context.Context, seasonID uuid.UUID) ([]db.Game, error)
-	GetFn    func(ctx context.Context, gameID uuid.UUID) (db.Game, error)
-	UpdateFn func(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season service.SeasonAggregate) (db.Game, error)
-	DeleteFn func(ctx context.Context, gameID uuid.UUID) error
+	CreateFn          func(ctx context.Context, req *api.GameRequest, season service.SeasonAggregate) (db.Game, error)
+	GetAllFn          func(ctx context.Context, seasonID uuid.UUID) ([]db.Game, error)
+	GetAllPaginatedFn func(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error)
+	GetFn             func(ctx context.Context, gameID uuid.UUID) (db.Game, error)
+	UpdateFn          func(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season service.SeasonAggregate) (db.Game, error)
+	DeleteFn          func(ctx context.Context, gameID uuid.UUID) error
 }
 
 func (m *mockGameService) Create(ctx context.Context, req *api.GameRequest, season service.SeasonAggregate) (db.Game, error) {
@@ -41,6 +42,12 @@ func (m *mockGameService) GetAll(ctx context.Context, seasonID uuid.UUID) ([]db.
 		return m.GetAllFn(ctx, seasonID)
 	}
 	return nil, nil
+}
+func (m *mockGameService) GetAllPaginated(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error) {
+	if m.GetAllPaginatedFn != nil {
+		return m.GetAllPaginatedFn(ctx, seasonID, limit, offset)
+	}
+	return nil, 0, nil
 }
 func (m *mockGameService) Get(ctx context.Context, gameID uuid.UUID) (db.Game, error) {
 	if m.GetFn != nil {
@@ -98,6 +105,10 @@ var _ = Describe("game handlers", func() {
 			handleCreateGame(logger, validate, mockSvc)(c)
 		})
 		router.GET("/seasons/:seasonID/games", handleGetGames(logger, mockSvc))
+		router.GET(
+			"/competitions/:competitionID/seasons/:seasonID/gamespaginated",
+			handleGetPaginatedGames(logger, mockSvc),
+		)
 		router.GET("/seasons/:seasonID/games/:gameID", handleGetGame(logger, mockSvc))
 		router.PUT("/seasons/:seasonID/games/:gameID", func(c *gin.Context) {
 			c.Set("season", season)
@@ -166,6 +177,40 @@ var _ = Describe("game handlers", func() {
 			req := httptest.NewRequest(http.MethodGet, "/seasons/"+season.ID.String()+"/games", nil)
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
+			Expect(w.Code).To(Equal(http.StatusInternalServerError))
+		})
+	})
+
+	Describe("get paginated games", func() {
+		It("returns 200 with paginated games", func() {
+			mockSvc.GetAllPaginatedFn = func(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error) {
+				return []db.Game{{ID: uuid.New(), SeasonID: seasonID}}, 1, nil
+			}
+
+			req := httptest.NewRequest(
+				http.MethodGet,
+				"/competitions/"+uuid.New().String()+"/seasons/"+season.ID.String()+"/gamespaginated?page=1&page_size=10",
+				nil,
+			)
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+
+			Expect(w.Code).To(Equal(http.StatusOK))
+		})
+
+		It("returns 500 when service fails", func() {
+			mockSvc.GetAllPaginatedFn = func(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error) {
+				return nil, 0, fmt.Errorf("db failure")
+			}
+
+			req := httptest.NewRequest(
+				http.MethodGet,
+				"/competitions/"+uuid.New().String()+"/seasons/"+season.ID.String()+"/gamespaginated?page=1&page_size=10",
+				nil,
+			)
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+
 			Expect(w.Code).To(Equal(http.StatusInternalServerError))
 		})
 	})

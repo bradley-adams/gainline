@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"math"
 	"net/http"
+	"strconv"
 
 	"github.com/bradley-adams/gainline/http/api"
 	"github.com/bradley-adams/gainline/http/response"
@@ -88,6 +90,72 @@ func handleGetGames(logger zerolog.Logger, gameService service.GameService) gin.
 		}
 
 		response.RespondSuccess(ctx, logger, http.StatusOK, resp)
+	}
+}
+
+// handleGetPaginatedGames retrieves paginated games for a season
+//
+//	@Summary	Get paginated games for a season
+//	@ID			get-paginated-games
+//	@Tags		Games
+//	@Produce	json
+//	@Param		competitionID	path		string									true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
+//	@Param		seasonID		path		string									true	"Season ID"			default(9300778f-cce0-4efe-af6c-e399d8170315)
+//	@Param		page			query		int										false	"Page number"		default(1)
+//	@Param		page_size		query		int										false	"Page size"			default(10)
+//	@Success	200				{object}	api.PaginatedResponse[api.GameResponse]	"Paginated games"
+//	@Failure	400				{object}	response.ErrorResponse					"Invalid season ID"
+//	@Failure	500				{object}	response.ErrorResponse					"Internal server error"
+//	@Router		/competitions/{competitionID}/seasons/{seasonID}/gamespaginated [get]
+func handleGetPaginatedGames(logger zerolog.Logger, gameService service.GameService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+
+		seasonID, err := uuid.Parse(ctx.Param("seasonID"))
+		if err != nil {
+			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid season ID")
+			return
+		}
+
+		page := 1
+		pageSize := 10
+
+		if p := ctx.Query("page"); p != "" {
+			if parsed, err := strconv.Atoi(p); err == nil && parsed > 0 {
+				page = parsed
+			}
+		}
+
+		if ps := ctx.Query("page_size"); ps != "" {
+			if parsed, err := strconv.Atoi(ps); err == nil && parsed > 0 {
+				pageSize = parsed
+			}
+		}
+
+		limit := pageSize
+		offset := (page - 1) * pageSize
+
+		games, total, err := gameService.GetAllPaginated(ctx.Request.Context(), seasonID, limit, offset)
+		if err != nil {
+			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get games")
+			return
+		}
+
+		data := make([]api.GameResponse, 0, len(games))
+		for _, g := range games {
+			data = append(data, api.ToGameResponse(g))
+		}
+
+		totalPages := int(math.Ceil(float64(total) / float64(pageSize)))
+
+		response.RespondSuccess(ctx, logger, http.StatusOK, api.PaginatedResponse[api.GameResponse]{
+			Data: data,
+			Pagination: api.PaginationMeta{
+				Page:       page,
+				PageSize:   pageSize,
+				Total:      total,
+				TotalPages: totalPages,
+			},
+		})
 	}
 }
 
