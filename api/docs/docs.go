@@ -797,6 +797,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/competitions/{competitionID}/seasons/{seasonID}/gamespaginated": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Games"
+                ],
+                "summary": "Get paginated games for a season",
+                "operationId": "get-paginated-games",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
+                        "description": "Competition ID",
+                        "name": "competitionID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "9300778f-cce0-4efe-af6c-e399d8170315",
+                        "description": "Season ID",
+                        "name": "seasonID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated games",
+                        "schema": {
+                            "$ref": "#/definitions/api.PaginatedResponse-api_GameResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid season ID",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/teams": {
             "get": {
                 "produces": [
@@ -1142,6 +1206,20 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/api.CompetitionResponse"
+                    }
+                },
+                "pagination": {
+                    "$ref": "#/definitions/api.PaginationMeta"
+                }
+            }
+        },
+        "api.PaginatedResponse-api_GameResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.GameResponse"
                     }
                 },
                 "pagination": {
