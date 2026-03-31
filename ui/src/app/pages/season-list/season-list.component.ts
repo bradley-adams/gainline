@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, inject } from '@angular/core'
+import { MatPaginator, PageEvent } from '@angular/material/paginator'
 import { MatTableDataSource } from '@angular/material/table'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
@@ -11,7 +12,7 @@ import { Season } from '../../types/api'
 @Component({
     selector: 'app-season-list',
     standalone: true,
-    imports: [CommonModule, MaterialModule, RouterModule, BreadcrumbComponent],
+    imports: [CommonModule, MaterialModule, RouterModule, BreadcrumbComponent, MatPaginator],
     templateUrl: './season-list.component.html',
     styleUrl: './season-list.component.scss'
 })
@@ -21,8 +22,11 @@ export class SeasonListComponent {
     private readonly notificationService = inject(NotificationService)
 
     public dataSource = new MatTableDataSource<Season>([])
-
     public competitionId: string | null = null
+
+    public total = 0
+    public page = 1
+    public pageSize = 10
 
     ngOnInit(): void {
         this.competitionId = this.route.snapshot.paramMap.get('competition-id')
@@ -32,10 +36,19 @@ export class SeasonListComponent {
         }
     }
 
+    public onPageChange(event: PageEvent): void {
+        this.page = event.pageIndex + 1
+        this.pageSize = event.pageSize
+        if (this.competitionId) {
+            this.loadSeasons(this.competitionId)
+        }
+    }
+
     private loadSeasons(competitionId: string): void {
-        this.seasonsService.getSeasons(competitionId).subscribe({
+        this.seasonsService.getSeasons(competitionId, this.page, this.pageSize).subscribe({
             next: (response) => {
                 this.dataSource.data = response.data
+                this.total = response.pagination.total
             },
             error: (err) => {
                 this.notificationService.showErrorAndLog('Load Error', 'Failed to load seasons', err)

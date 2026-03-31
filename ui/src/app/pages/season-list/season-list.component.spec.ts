@@ -107,12 +107,12 @@ describe('SeasonListComponent', () => {
 
     beforeEach(async () => {
         seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeasons', 'deleteSeason'])
-        seasonsService.getSeasons.and.returnValue(
+        seasonsService.getSeasons.and.callFake((_, page = 1, pageSize = 10) =>
             of({
                 data: mockSeasons,
                 pagination: {
-                    page: 1,
-                    page_size: 10,
+                    page,
+                    page_size: pageSize,
                     total: mockSeasons.length,
                     total_pages: 1
                 }
@@ -159,6 +159,22 @@ describe('SeasonListComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy()
+    })
+
+    it('should call getSeasons with pagination params', () => {
+        expect(seasonsService.getSeasons).toHaveBeenCalledWith('comp1', 1, 10)
+    })
+
+    it('should set total from pagination response', () => {
+        expect(component.total).toBe(mockSeasons.length)
+    })
+
+    it('should load new page on paginator change', () => {
+        component.onPageChange({ pageIndex: 1, pageSize: 25, length: 2 } as any)
+
+        expect(component.page).toBe(2)
+        expect(component.pageSize).toBe(25)
+        expect(seasonsService.getSeasons).toHaveBeenCalledWith('comp1', 2, 25)
     })
 
     it('should load seasons into the table on init', () => {
