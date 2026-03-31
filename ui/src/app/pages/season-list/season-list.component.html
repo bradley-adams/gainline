@@ -68,3 +68,9 @@
         <td class="mat-cell text-center" colspan="5">No seasons found</td>
     </tr>
 </table>
+
+<mat-paginator
+    [length]="total"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    (page)="onPageChange($event)"></mat-paginator>
