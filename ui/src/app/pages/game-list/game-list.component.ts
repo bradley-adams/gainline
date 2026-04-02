@@ -1,18 +1,24 @@
-import { Component, inject, OnInit } from '@angular/core'
-import { GamesService } from '../../services/games/games.service'
-import { MatTableDataSource } from '@angular/material/table'
-import { Game, Season, Team } from '../../types/api'
 import { CommonModule } from '@angular/common'
-import { MaterialModule } from '../../shared/material/material.module'
+import { Component, inject, OnInit } from '@angular/core'
+import { MatPaginator, PageEvent } from '@angular/material/paginator'
+import { MatTableDataSource } from '@angular/material/table'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { BreadcrumbComponent } from '../../components/breadcrumb/breadcrumb.component'
-import { SeasonsService } from '../../services/seasons/seasons.service'
+import { GamesService } from '../../services/games/games.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { SeasonsService } from '../../services/seasons/seasons.service'
+import { MaterialModule } from '../../shared/material/material.module'
+import { Game, Season, Team } from '../../types/api'
+
+type GameWithNames = Game & {
+    home_team_name: string
+    away_team_name: string
+}
 
 @Component({
     selector: 'app-game-list',
     standalone: true,
-    imports: [CommonModule, MaterialModule, RouterModule, BreadcrumbComponent],
+    imports: [CommonModule, MaterialModule, RouterModule, BreadcrumbComponent, MatPaginator],
     templateUrl: './game-list.component.html',
     styleUrl: './game-list.component.scss'
 })
@@ -22,10 +28,15 @@ export class GameListComponent implements OnInit {
     private readonly seasonsService = inject(SeasonsService)
     private readonly notificationService = inject(NotificationService)
 
-    dataSource = new MatTableDataSource<Game>()
+    dataSource = new MatTableDataSource<GameWithNames>([])
+
     public competitionId: string | null = null
     public seasonId: string | null = null
     public teams: Team[] = []
+
+    public total = 0
+    public page = 1
+    public pageSize = 10
 
     ngOnInit(): void {
         this.competitionId = this.route.snapshot.paramMap.get('competition-id')
@@ -36,10 +47,18 @@ export class GameListComponent implements OnInit {
         }
     }
 
+    public onPageChange(event: PageEvent): void {
+        this.page = event.pageIndex + 1
+        this.pageSize = event.pageSize
+
+        if (this.competitionId && this.seasonId) {
+            this.loadGames(this.competitionId, this.seasonId)
+        }
+    }
+
     private loadSeasonAndGames(competitionId: string, seasonId: string): void {
         this.seasonsService.getSeason(competitionId, seasonId).subscribe({
             next: (season: Season) => {
-                // Store only the teams for this season
                 this.teams = season.teams.map((t) =>
                     typeof t === 'string' ? ({ id: t, name: t } as Team) : t
                 )
@@ -52,10 +71,11 @@ export class GameListComponent implements OnInit {
     }
 
     private loadGames(competitionId: string, seasonId: string): void {
-        this.gamesService.getGames(competitionId, seasonId).subscribe({
-            next: (games) => {
-                // Precompute team names for each game
-                const gamesWithNames = games.map((game) => ({
+        this.gamesService.getGamesPaginated(competitionId, seasonId, this.page, this.pageSize).subscribe({
+            next: (response) => {
+                this.total = response.pagination.total
+
+                const gamesWithNames = response.data.map((game) => ({
                     ...game,
                     home_team_name:
                         this.teams.find((t) => t.id === game.home_team_id)?.name || game.home_team_id,
