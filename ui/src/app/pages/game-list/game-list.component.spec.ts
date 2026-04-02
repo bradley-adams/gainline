@@ -124,18 +124,29 @@ describe('GameListComponent', () => {
     ]
 
     beforeEach(async () => {
-        gamesService = jasmine.createSpyObj('GamesService', ['getGames', 'deleteGame'])
+        gamesService = jasmine.createSpyObj('GamesService', ['getGamesPaginated', 'deleteGame'])
+        gamesService.getGamesPaginated.and.callFake((_, __, page = 1, pageSize = 10) =>
+            of({
+                data: mockGames,
+                pagination: {
+                    page,
+                    page_size: pageSize,
+                    total: mockGames.length,
+                    total_pages: 1
+                }
+            })
+        )
+        gamesService.deleteGame.and.returnValue(of(undefined))
+
         seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeason'])
+        seasonsService.getSeason.and.returnValue(of(mockSeason))
+
         notificationService = jasmine.createSpyObj('NotificationService', [
             'showConfirm',
             'showErrorAndLog',
             'showWarnAndLog',
             'showSnackbar'
         ])
-
-        gamesService.getGames.and.returnValue(of(mockGames))
-        gamesService.deleteGame.and.returnValue(of(undefined))
-        seasonsService.getSeason.and.returnValue(of(mockSeason))
 
         await TestBed.configureTestingModule({
             imports: [GameListComponent],
@@ -253,7 +264,7 @@ describe('GameListComponent', () => {
 
     it('should show error when games fail to load', () => {
         const mockError = new Error('Failed')
-        gamesService.getGames.and.returnValue(throwError(() => mockError))
+        gamesService.getGamesPaginated.and.returnValue(throwError(() => mockError))
 
         component.ngOnInit()
 
