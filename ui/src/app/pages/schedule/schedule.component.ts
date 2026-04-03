@@ -136,23 +136,34 @@ export class ScheduleComponent implements OnInit {
     }
 
     private loadGames(competitionId: string, seasonId: string): void {
-        this.gamesService.getGames(competitionId, seasonId).subscribe({
-            next: (games) => {
-                this.games = games
+        const allGames: Game[] = []
 
-                const selectedStageId = this.scheduleForm.get('stage')!.value
-                if (!selectedStageId && this.stages.length > 0) {
-                    this.scheduleForm.patchValue({ stage: this.stages[0].id }, { emitEvent: false })
+        const fetchPage = (page = 1) => {
+            this.gamesService.getGamesPaginated(competitionId, seasonId, page).subscribe({
+                next: (response) => {
+                    allGames.push(...response.data)
+
+                    if (page < response.pagination.total_pages) {
+                        fetchPage(page + 1)
+                    } else {
+                        this.games = allGames
+
+                        const selectedStageId = this.scheduleForm.get('stage')!.value
+                        if (!selectedStageId && this.stages.length > 0) {
+                            this.scheduleForm.patchValue({ stage: this.stages[0].id }, { emitEvent: false })
+                        }
+
+                        this.filterGamesByRound()
+                    }
+                },
+                error: (err) => {
+                    this.notificationService.showErrorAndLog('Load Error', 'Failed to load games', err)
                 }
+            })
+        }
 
-                this.filterGamesByRound()
-            },
-            error: (err) => {
-                this.notificationService.showErrorAndLog('Load Error', 'Failed to load games', err)
-            }
-        })
+        fetchPage()
     }
-
     private filterGamesByRound(): void {
         const selectedRoundId = this.scheduleForm.get('stage')!.value
         if (selectedRoundId) {
