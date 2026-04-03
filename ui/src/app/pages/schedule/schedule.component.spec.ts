@@ -152,7 +152,7 @@ describe('ScheduleComponent', () => {
     beforeEach(async () => {
         competitionsService = jasmine.createSpyObj('CompetitionsService', ['getCompetitions'])
         seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeasons'])
-        gamesService = jasmine.createSpyObj('GamesService', ['getGames'])
+        gamesService = jasmine.createSpyObj('GamesService', ['getGamesPaginated'])
         notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
 
         const mockPaginatedCompetitionsResponse = {
@@ -177,7 +177,17 @@ describe('ScheduleComponent', () => {
 
         competitionsService.getCompetitions.and.returnValue(of(mockPaginatedCompetitionsResponse))
         seasonsService.getSeasons.and.returnValue(of(mockPaginatedSeasonsResponse))
-        gamesService.getGames.and.returnValue(of(mockGames))
+        gamesService.getGamesPaginated.and.callFake((_, __, page = 1, pageSize = 10) =>
+            of({
+                data: mockGames,
+                pagination: {
+                    page,
+                    page_size: pageSize,
+                    total: mockGames.length,
+                    total_pages: 1
+                }
+            })
+        )
 
         await TestBed.configureTestingModule({
             imports: [ScheduleComponent, NoopAnimationsModule],
