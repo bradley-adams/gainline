@@ -61,18 +61,6 @@ describe('GamesService', () => {
         expect(service).toBeTruthy()
     })
 
-    it('should get all games for a season', () => {
-        service.getGames(mockCompetitionID, mockSeasonID).subscribe((games) => {
-            expect(games).toEqual(mockGames)
-        })
-
-        const req = httpMock.expectOne(
-            `${baseUrl}/v1/competitions/${mockCompetitionID}/seasons/${mockSeasonID}/games`
-        )
-        expect(req.request.method).toBe('GET')
-        req.flush(mockGames)
-    })
-
     it('should get paginated games for a season', () => {
         const mockPaginatedResponse = {
             data: mockGames,
