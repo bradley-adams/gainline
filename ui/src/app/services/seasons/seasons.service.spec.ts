@@ -116,7 +116,7 @@ describe('SeasonsService', () => {
         expect(service).toBeTruthy()
     })
 
-    it('should get paginated seasons for a competition', () => {
+    it('should get seasons for a competition', () => {
         const mockPaginatedResponse = {
             data: mockSeasons,
             pagination: {

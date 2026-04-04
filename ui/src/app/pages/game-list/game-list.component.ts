@@ -71,7 +71,7 @@ export class GameListComponent implements OnInit {
     }
 
     private loadGames(competitionId: string, seasonId: string): void {
-        this.gamesService.getGamesPaginated(competitionId, seasonId, this.page, this.pageSize).subscribe({
+        this.gamesService.getGames(competitionId, seasonId, this.page, this.pageSize).subscribe({
             next: (response) => {
                 this.total = response.pagination.total
 

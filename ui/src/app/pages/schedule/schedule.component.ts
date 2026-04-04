@@ -139,7 +139,7 @@ export class ScheduleComponent implements OnInit {
         const allGames: Game[] = []
 
         const fetchPage = (page = 1) => {
-            this.gamesService.getGamesPaginated(competitionId, seasonId, page).subscribe({
+            this.gamesService.getGames(competitionId, seasonId, page).subscribe({
                 next: (response) => {
                     allGames.push(...response.data)
 
