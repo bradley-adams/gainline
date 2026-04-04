@@ -124,8 +124,8 @@ describe('GameListComponent', () => {
     ]
 
     beforeEach(async () => {
-        gamesService = jasmine.createSpyObj('GamesService', ['getGamesPaginated', 'deleteGame'])
-        gamesService.getGamesPaginated.and.callFake((_, __, page = 1, pageSize = 10) =>
+        gamesService = jasmine.createSpyObj('GamesService', ['getGames', 'deleteGame'])
+        gamesService.getGames.and.callFake((_, __, page = 1, pageSize = 10) =>
             of({
                 data: mockGames,
                 pagination: {
@@ -264,7 +264,7 @@ describe('GameListComponent', () => {
 
     it('should show error when games fail to load', () => {
         const mockError = new Error('Failed')
-        gamesService.getGamesPaginated.and.returnValue(throwError(() => mockError))
+        gamesService.getGames.and.returnValue(throwError(() => mockError))
 
         component.ngOnInit()
 

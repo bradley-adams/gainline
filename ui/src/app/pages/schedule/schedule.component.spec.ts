@@ -152,7 +152,7 @@ describe('ScheduleComponent', () => {
     beforeEach(async () => {
         competitionsService = jasmine.createSpyObj('CompetitionsService', ['getCompetitions'])
         seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeasons'])
-        gamesService = jasmine.createSpyObj('GamesService', ['getGamesPaginated'])
+        gamesService = jasmine.createSpyObj('GamesService', ['getGames'])
         notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
 
         const mockPaginatedCompetitionsResponse = {
@@ -177,7 +177,7 @@ describe('ScheduleComponent', () => {
 
         competitionsService.getCompetitions.and.returnValue(of(mockPaginatedCompetitionsResponse))
         seasonsService.getSeasons.and.returnValue(of(mockPaginatedSeasonsResponse))
-        gamesService.getGamesPaginated.and.callFake((_, __, page = 1, pageSize = 10) =>
+        gamesService.getGames.and.callFake((_, __, page = 1, pageSize = 10) =>
             of({
                 data: mockGames,
                 pagination: {

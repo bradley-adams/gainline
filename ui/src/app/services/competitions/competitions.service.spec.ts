@@ -45,7 +45,7 @@ describe('CompetitionsService', () => {
         expect(service).toBeTruthy()
     })
 
-    it('should get paginated competitions', () => {
+    it('should get competitions', () => {
         const mockResponse: PaginatedResponse<Competition> = {
             data: mockCompetitions,
             pagination: {
