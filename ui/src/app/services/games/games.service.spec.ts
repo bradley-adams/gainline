@@ -61,7 +61,7 @@ describe('GamesService', () => {
         expect(service).toBeTruthy()
     })
 
-    it('should get paginated games for a season', () => {
+    it('should get games for a season', () => {
         const mockPaginatedResponse = {
             data: mockGames,
             pagination: {
@@ -72,14 +72,14 @@ describe('GamesService', () => {
             }
         }
 
-        service.getGamesPaginated(mockCompetitionID, mockSeasonID).subscribe((res) => {
+        service.getGames(mockCompetitionID, mockSeasonID).subscribe((res) => {
             expect(res).toEqual(mockPaginatedResponse)
         })
 
         const req = httpMock.expectOne(
             (request) =>
                 request.url ===
-                    `${baseUrl}/v1/competitions/${mockCompetitionID}/seasons/${mockSeasonID}/gamespaginated` &&
+                    `${baseUrl}/v1/competitions/${mockCompetitionID}/seasons/${mockSeasonID}/games` &&
                 request.params.get('page') === '1' &&
                 request.params.get('page_size') === '10'
         )
