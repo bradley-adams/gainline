@@ -453,28 +453,6 @@ WHERE
 AND
     deleted_at IS NULL;
 
--- name: GetGames :many
--- Fetch all games for a season, excluding soft-deleted games
-SELECT
-    id,
-    season_id,
-    stage_id,
-    date,
-    home_team_id,
-    away_team_id,
-    home_score,
-    away_score,
-    status,
-    created_at,
-    updated_at,
-    deleted_at
-FROM
-    games
-WHERE
-    season_id = @season_id
-AND
-    deleted_at IS NULL;
-
 -- name: GetGamesPaginated :many
 -- Fetch all games paginated for a season, excluding soft-deleted games
 SELECT

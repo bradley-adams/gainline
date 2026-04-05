@@ -253,14 +253,6 @@ func GetGame(
 	return q.GetGame(ctx, id)
 }
 
-func GetGames(
-	ctx context.Context,
-	q Queries,
-	seasonID uuid.UUID,
-) ([]db.Game, error) {
-	return q.GetGames(ctx, seasonID)
-}
-
 func GetGamesPaginated(
 	ctx context.Context,
 	q Queries,
