@@ -740,65 +740,6 @@ func (q *Queries) GetGame(ctx context.Context, id uuid.UUID) (Game, error) {
 	return i, err
 }
 
-const getGames = `-- name: GetGames :many
-SELECT
-    id,
-    season_id,
-    stage_id,
-    date,
-    home_team_id,
-    away_team_id,
-    home_score,
-    away_score,
-    status,
-    created_at,
-    updated_at,
-    deleted_at
-FROM
-    games
-WHERE
-    season_id = $1
-AND
-    deleted_at IS NULL
-`
-
-// Fetch all games for a season, excluding soft-deleted games
-func (q *Queries) GetGames(ctx context.Context, seasonID uuid.UUID) ([]Game, error) {
-	rows, err := q.db.QueryContext(ctx, getGames, seasonID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Game
-	for rows.Next() {
-		var i Game
-		if err := rows.Scan(
-			&i.ID,
-			&i.SeasonID,
-			&i.StageID,
-			&i.Date,
-			&i.HomeTeamID,
-			&i.AwayTeamID,
-			&i.HomeScore,
-			&i.AwayScore,
-			&i.Status,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getGamesPaginated = `-- name: GetGamesPaginated :many
 SELECT
     id,

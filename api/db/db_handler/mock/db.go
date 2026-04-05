@@ -569,21 +569,6 @@ func (mr *MockQueriesMockRecorder) GetGame(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGame", reflect.TypeOf((*MockQueries)(nil).GetGame), ctx, id)
 }
 
-// GetGames mocks base method.
-func (m *MockQueries) GetGames(ctx context.Context, seasonID uuid.UUID) ([]db.Game, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetGames", ctx, seasonID)
-	ret0, _ := ret[0].([]db.Game)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetGames indicates an expected call of GetGames.
-func (mr *MockQueriesMockRecorder) GetGames(ctx, seasonID any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGames", reflect.TypeOf((*MockQueries)(nil).GetGames), ctx, seasonID)
-}
-
 // GetGamesPaginated mocks base method.
 func (m *MockQueries) GetGamesPaginated(ctx context.Context, arg db.GetGamesPaginatedParams) ([]db.Game, error) {
 	m.ctrl.T.Helper()

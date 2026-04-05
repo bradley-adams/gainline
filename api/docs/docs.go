@@ -506,57 +506,6 @@ const docTemplate = `{
             }
         },
         "/competitions/{competitionID}/seasons/{seasonID}/games": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Games"
-                ],
-                "summary": "Get all games for a season",
-                "operationId": "get-games",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
-                        "description": "Competition ID",
-                        "name": "competitionID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "default": "9300778f-cce0-4efe-af6c-e399d8170315",
-                        "description": "Season ID",
-                        "name": "seasonID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of games",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/api.GameResponse"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid ID",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "consumes": [
                     "application/json"

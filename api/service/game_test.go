@@ -51,7 +51,6 @@ var _ = Describe("game", func() {
 	}
 
 	var validNilGame db.Game
-	var validNilGames []db.Game
 
 	validGameFromDB := db.Game{
 		ID:         validGameID,
@@ -281,66 +280,6 @@ var _ = Describe("game", func() {
 		})
 	})
 
-	Describe("GetGames", func() {
-		It("should retrieve all games without errors", func() {
-			mockDB.EXPECT().New(
-				gomock.Any(),
-			).Return(mockQueries)
-			mockQueries.EXPECT().GetGames(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(validGamesFromDB, nil)
-
-			games, err := svc.GetAll(context.Background(), validSeasonID)
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(games[0].ID).To(Equal(validGamesResponse[0].ID))
-			Expect(games[0].SeasonID).To(Equal(validGamesResponse[0].SeasonID))
-			Expect(games[0].StageID).To(Equal(validGamesResponse[0].StageID))
-			Expect(games[0].Date).To(Equal(validGamesResponse[0].Date))
-			Expect(games[0].HomeTeamID).To(Equal(validGamesResponse[0].HomeTeamID))
-			Expect(games[0].AwayTeamID).To(Equal(validGamesResponse[0].AwayTeamID))
-			Expect(games[0].HomeScore.Valid).To(BeTrue())
-			Expect(games[0].HomeScore.Int32).To(Equal(*validGamesResponse[0].HomeScore))
-			Expect(games[0].AwayScore.Valid).To(BeTrue())
-			Expect(games[0].AwayScore.Int32).To(Equal(*validGamesResponse[0].AwayScore))
-			Expect(string(games[0].Status)).To(Equal(string(validGamesResponse[0].Status)))
-			Expect(games[0].CreatedAt).To(Equal(validGamesResponse[0].CreatedAt))
-			Expect(games[0].UpdatedAt).To(Equal(validGamesResponse[0].UpdatedAt))
-			Expect(games[0].DeletedAt.Time).To(Equal(validGamesResponse[0].DeletedAt.Time))
-
-			Expect(games[1].ID).To(Equal(validGamesResponse[1].ID))
-			Expect(games[1].SeasonID).To(Equal(validGamesResponse[1].SeasonID))
-			Expect(games[1].StageID).To(Equal(validGamesResponse[1].StageID))
-			Expect(games[1].Date).To(Equal(validGamesResponse[1].Date))
-			Expect(games[1].HomeTeamID).To(Equal(validGamesResponse[1].HomeTeamID))
-			Expect(games[1].AwayTeamID).To(Equal(validGamesResponse[1].AwayTeamID))
-			Expect(games[1].HomeScore.Valid).To(BeTrue())
-			Expect(games[1].HomeScore.Int32).To(Equal(*validGamesResponse[1].HomeScore))
-			Expect(games[1].AwayScore.Valid).To(BeTrue())
-			Expect(games[1].AwayScore.Int32).To(Equal(*validGamesResponse[1].AwayScore))
-			Expect(string(games[1].Status)).To(Equal(string(validGamesResponse[1].Status)))
-			Expect(games[1].CreatedAt).To(Equal(validGamesResponse[1].CreatedAt))
-			Expect(games[1].UpdatedAt).To(Equal(validGamesResponse[1].UpdatedAt))
-			Expect(games[1].DeletedAt.Time).To(Equal(validGamesResponse[1].DeletedAt.Time))
-		})
-
-		It("should return formatted error when retrieval fails", func() {
-			mockDB.EXPECT().New(
-				gomock.Any(),
-			).Return(mockQueries)
-			mockQueries.EXPECT().GetGames(
-				gomock.Any(),
-				gomock.Any(),
-			).Return(nil, validTestError)
-
-			games, err := svc.GetAll(context.Background(), validSeasonID)
-
-			Expect(games).To(Equal(validNilGames))
-			Expect(err.Error()).To(Equal("unable to get games: a valid testing error"))
-		})
-	})
-
 	Describe("GetGamesPaginated", func() {
 		It("should retrieve paginated games without errors", func() {
 			mockDB.EXPECT().
@@ -365,8 +304,39 @@ var _ = Describe("game", func() {
 			Expect(total).To(Equal(int64(len(validGamesFromDB))))
 
 			Expect(games).To(HaveLen(2))
-			Expect(games[0].ID).To(Equal(validGamesFromDB[0].ID))
-			Expect(games[1].ID).To(Equal(validGamesFromDB[1].ID))
+			Expect(games).To(HaveLen(2))
+
+			// First game
+			Expect(games[0].ID).To(Equal(validGamesResponse[0].ID))
+			Expect(games[0].SeasonID).To(Equal(validGamesResponse[0].SeasonID))
+			Expect(games[0].StageID).To(Equal(validGamesResponse[0].StageID))
+			Expect(games[0].Date).To(Equal(validGamesResponse[0].Date))
+			Expect(games[0].HomeTeamID).To(Equal(validGamesResponse[0].HomeTeamID))
+			Expect(games[0].AwayTeamID).To(Equal(validGamesResponse[0].AwayTeamID))
+			Expect(games[0].HomeScore.Valid).To(BeTrue())
+			Expect(games[0].HomeScore.Int32).To(Equal(*validGamesResponse[0].HomeScore))
+			Expect(games[0].AwayScore.Valid).To(BeTrue())
+			Expect(games[0].AwayScore.Int32).To(Equal(*validGamesResponse[0].AwayScore))
+			Expect(string(games[0].Status)).To(Equal(string(validGamesResponse[0].Status)))
+			Expect(games[0].CreatedAt).To(Equal(validGamesResponse[0].CreatedAt))
+			Expect(games[0].UpdatedAt).To(Equal(validGamesResponse[0].UpdatedAt))
+			Expect(games[0].DeletedAt.Time).To(Equal(validGamesResponse[0].DeletedAt.Time))
+
+			// Second game (same checks)
+			Expect(games[1].ID).To(Equal(validGamesResponse[1].ID))
+			Expect(games[1].SeasonID).To(Equal(validGamesResponse[1].SeasonID))
+			Expect(games[1].StageID).To(Equal(validGamesResponse[1].StageID))
+			Expect(games[1].Date).To(Equal(validGamesResponse[1].Date))
+			Expect(games[1].HomeTeamID).To(Equal(validGamesResponse[1].HomeTeamID))
+			Expect(games[1].AwayTeamID).To(Equal(validGamesResponse[1].AwayTeamID))
+			Expect(games[1].HomeScore.Valid).To(BeTrue())
+			Expect(games[1].HomeScore.Int32).To(Equal(*validGamesResponse[1].HomeScore))
+			Expect(games[1].AwayScore.Valid).To(BeTrue())
+			Expect(games[1].AwayScore.Int32).To(Equal(*validGamesResponse[1].AwayScore))
+			Expect(string(games[1].Status)).To(Equal(string(validGamesResponse[1].Status)))
+			Expect(games[1].CreatedAt).To(Equal(validGamesResponse[1].CreatedAt))
+			Expect(games[1].UpdatedAt).To(Equal(validGamesResponse[1].UpdatedAt))
+			Expect(games[1].DeletedAt.Time).To(Equal(validGamesResponse[1].DeletedAt.Time))
 		})
 
 		It("should return error if GetGamesPaginated fails", func() {

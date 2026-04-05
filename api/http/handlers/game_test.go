@@ -104,7 +104,6 @@ var _ = Describe("game handlers", func() {
 			c.Set("season", season)
 			handleCreateGame(logger, validate, mockSvc)(c)
 		})
-		router.GET("/seasons/:seasonID/games", handleGetGames(logger, mockSvc))
 		router.GET(
 			"/competitions/:competitionID/seasons/:seasonID/gamespaginated",
 			handleGetPaginatedGames(logger, mockSvc),
@@ -153,28 +152,6 @@ var _ = Describe("game handlers", func() {
 
 			req := httptest.NewRequest(http.MethodPost, "/seasons/"+season.ID.String()+"/games", bytes.NewBufferString(reqBody))
 			req.Header.Set("Content-Type", "application/json")
-			w := httptest.NewRecorder()
-			router.ServeHTTP(w, req)
-			Expect(w.Code).To(Equal(http.StatusInternalServerError))
-		})
-	})
-
-	Describe("get all games", func() {
-		It("returns 200 with games", func() {
-			mockSvc.GetAllFn = func(ctx context.Context, seasonID uuid.UUID) ([]db.Game, error) {
-				return []db.Game{{ID: uuid.New(), SeasonID: seasonID}}, nil
-			}
-			req := httptest.NewRequest(http.MethodGet, "/seasons/"+season.ID.String()+"/games", nil)
-			w := httptest.NewRecorder()
-			router.ServeHTTP(w, req)
-			Expect(w.Code).To(Equal(http.StatusOK))
-		})
-
-		It("returns 500 when service fails", func() {
-			mockSvc.GetAllFn = func(ctx context.Context, seasonID uuid.UUID) ([]db.Game, error) {
-				return nil, fmt.Errorf("db failure")
-			}
-			req := httptest.NewRequest(http.MethodGet, "/seasons/"+season.ID.String()+"/games", nil)
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
 			Expect(w.Code).To(Equal(http.StatusInternalServerError))
