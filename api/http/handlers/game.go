@@ -58,41 +58,6 @@ func handleCreateGame(
 	}
 }
 
-// handleGetGames retrieves all games for a season
-//
-//	@Summary	Get all games for a season
-//	@ID			get-games
-//	@Tags		Games
-//	@Produce	json
-//	@Param		competitionID	path		string					true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
-//	@Param		seasonID		path		string					true	"Season ID"			default(9300778f-cce0-4efe-af6c-e399d8170315)
-//	@Success	200				{array}		api.GameResponse		"List of games"
-//	@Failure	400				{object}	response.ErrorResponse	"Invalid ID"
-//	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
-//	@Router		/competitions/{competitionID}/seasons/{seasonID}/games [get]
-func handleGetGames(logger zerolog.Logger, gameService service.GameService) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		seasonID, err := uuid.Parse(ctx.Param("seasonID"))
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid season ID")
-			return
-		}
-
-		games, err := gameService.GetAll(ctx.Request.Context(), seasonID)
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get games")
-			return
-		}
-
-		resp := make([]api.GameResponse, 0, len(games))
-		for _, g := range games {
-			resp = append(resp, api.ToGameResponse(g))
-		}
-
-		response.RespondSuccess(ctx, logger, http.StatusOK, resp)
-	}
-}
-
 // handleGetPaginatedGames retrieves paginated games for a season
 //
 //	@Summary	Get paginated games for a season
