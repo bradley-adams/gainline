@@ -87,6 +87,7 @@ make clean
 
 ## Todo
 
+- Should paginated seasons games by stages.
 - Run tests in PRs
 - Implement search across core entities (teams, games, seasons, competitions).
 - Add pagination to API responses and frontend tables.
