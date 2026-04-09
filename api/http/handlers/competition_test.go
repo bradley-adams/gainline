@@ -147,7 +147,7 @@ var _ = Describe("competition handlers", func() {
 	})
 
 	Describe("get all competitions", func() {
-		It("returns 200 and paginated competitions", func() {
+		It("returns 200 and competitions", func() {
 			id := uuid.New()
 
 			mockSvc.GetAllFn = func(ctx context.Context, limit, offset int) ([]db.Competition, int64, error) {

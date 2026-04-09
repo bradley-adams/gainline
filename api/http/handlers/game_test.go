@@ -23,12 +23,11 @@ import (
 
 // Manual mock for GameService
 type mockGameService struct {
-	CreateFn          func(ctx context.Context, req *api.GameRequest, season service.SeasonAggregate) (db.Game, error)
-	GetAllFn          func(ctx context.Context, seasonID uuid.UUID) ([]db.Game, error)
-	GetAllPaginatedFn func(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error)
-	GetFn             func(ctx context.Context, gameID uuid.UUID) (db.Game, error)
-	UpdateFn          func(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season service.SeasonAggregate) (db.Game, error)
-	DeleteFn          func(ctx context.Context, gameID uuid.UUID) error
+	CreateFn func(ctx context.Context, req *api.GameRequest, season service.SeasonAggregate) (db.Game, error)
+	GetAllFn func(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error)
+	GetFn    func(ctx context.Context, gameID uuid.UUID) (db.Game, error)
+	UpdateFn func(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season service.SeasonAggregate) (db.Game, error)
+	DeleteFn func(ctx context.Context, gameID uuid.UUID) error
 }
 
 func (m *mockGameService) Create(ctx context.Context, req *api.GameRequest, season service.SeasonAggregate) (db.Game, error) {
@@ -37,15 +36,9 @@ func (m *mockGameService) Create(ctx context.Context, req *api.GameRequest, seas
 	}
 	return db.Game{}, nil
 }
-func (m *mockGameService) GetAll(ctx context.Context, seasonID uuid.UUID) ([]db.Game, error) {
+func (m *mockGameService) GetAll(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error) {
 	if m.GetAllFn != nil {
-		return m.GetAllFn(ctx, seasonID)
-	}
-	return nil, nil
-}
-func (m *mockGameService) GetAllPaginated(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error) {
-	if m.GetAllPaginatedFn != nil {
-		return m.GetAllPaginatedFn(ctx, seasonID, limit, offset)
+		return m.GetAllFn(ctx, seasonID, limit, offset)
 	}
 	return nil, 0, nil
 }
@@ -105,8 +98,8 @@ var _ = Describe("game handlers", func() {
 			handleCreateGame(logger, validate, mockSvc)(c)
 		})
 		router.GET(
-			"/competitions/:competitionID/seasons/:seasonID/gamespaginated",
-			handleGetPaginatedGames(logger, mockSvc),
+			"/competitions/:competitionID/seasons/:seasonID/games",
+			handleGetGames(logger, mockSvc),
 		)
 		router.GET("/seasons/:seasonID/games/:gameID", handleGetGame(logger, mockSvc))
 		router.PUT("/seasons/:seasonID/games/:gameID", func(c *gin.Context) {
@@ -158,15 +151,15 @@ var _ = Describe("game handlers", func() {
 		})
 	})
 
-	Describe("get paginated games", func() {
-		It("returns 200 with paginated games", func() {
-			mockSvc.GetAllPaginatedFn = func(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error) {
+	Describe("get games", func() {
+		It("returns 200 with games", func() {
+			mockSvc.GetAllFn = func(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error) {
 				return []db.Game{{ID: uuid.New(), SeasonID: seasonID}}, 1, nil
 			}
 
 			req := httptest.NewRequest(
 				http.MethodGet,
-				"/competitions/"+uuid.New().String()+"/seasons/"+season.ID.String()+"/gamespaginated?page=1&page_size=10",
+				"/competitions/"+uuid.New().String()+"/seasons/"+season.ID.String()+"/games?page=1&page_size=10",
 				nil,
 			)
 			w := httptest.NewRecorder()
@@ -176,13 +169,13 @@ var _ = Describe("game handlers", func() {
 		})
 
 		It("returns 500 when service fails", func() {
-			mockSvc.GetAllPaginatedFn = func(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error) {
+			mockSvc.GetAllFn = func(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error) {
 				return nil, 0, fmt.Errorf("db failure")
 			}
 
 			req := httptest.NewRequest(
 				http.MethodGet,
-				"/competitions/"+uuid.New().String()+"/seasons/"+season.ID.String()+"/gamespaginated?page=1&page_size=10",
+				"/competitions/"+uuid.New().String()+"/seasons/"+season.ID.String()+"/games?page=1&page_size=10",
 				nil,
 			)
 			w := httptest.NewRecorder()

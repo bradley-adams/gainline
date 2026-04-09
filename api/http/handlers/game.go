@@ -58,10 +58,10 @@ func handleCreateGame(
 	}
 }
 
-// handleGetPaginatedGames retrieves paginated games for a season
+// handleGetGames retrieves games for a season
 //
-//	@Summary	Get paginated games for a season
-//	@ID			get-paginated-games
+//	@Summary	Get games for a season
+//	@ID			get-games
 //	@Tags		Games
 //	@Produce	json
 //	@Param		competitionID	path		string									true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
@@ -71,8 +71,8 @@ func handleCreateGame(
 //	@Success	200				{object}	api.PaginatedResponse[api.GameResponse]	"Paginated games"
 //	@Failure	400				{object}	response.ErrorResponse					"Invalid season ID"
 //	@Failure	500				{object}	response.ErrorResponse					"Internal server error"
-//	@Router		/competitions/{competitionID}/seasons/{seasonID}/gamespaginated [get]
-func handleGetPaginatedGames(logger zerolog.Logger, gameService service.GameService) gin.HandlerFunc {
+//	@Router		/competitions/{competitionID}/seasons/{seasonID}/games [get]
+func handleGetGames(logger zerolog.Logger, gameService service.GameService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		seasonID, err := uuid.Parse(ctx.Param("seasonID"))
@@ -99,7 +99,7 @@ func handleGetPaginatedGames(logger zerolog.Logger, gameService service.GameServ
 		limit := pageSize
 		offset := (page - 1) * pageSize
 
-		games, total, err := gameService.GetAllPaginated(ctx.Request.Context(), seasonID, limit, offset)
+		games, total, err := gameService.GetAll(ctx.Request.Context(), seasonID, limit, offset)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get games")
 			return
