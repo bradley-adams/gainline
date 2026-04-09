@@ -69,7 +69,7 @@ func (s *competitionService) GetAll(
 			PageLimit:  int32(limit),
 		})
 		if err != nil {
-			return errors.Wrap(err, "get competitions paginated")
+			return errors.Wrap(err, "get competitions")
 		}
 
 		return nil
