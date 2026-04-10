@@ -740,7 +740,7 @@ func (q *Queries) GetGame(ctx context.Context, id uuid.UUID) (Game, error) {
 	return i, err
 }
 
-const getGamesPaginated = `-- name: GetGamesPaginated :many
+const getGames = `-- name: GetGames :many
 SELECT
     id,
     season_id,
@@ -765,15 +765,15 @@ LIMIT $3
 OFFSET $2
 `
 
-type GetGamesPaginatedParams struct {
+type GetGamesParams struct {
 	SeasonID   uuid.UUID
 	PageOffset int32
 	PageLimit  int32
 }
 
-// Fetch all games paginated for a season, excluding soft-deleted games
-func (q *Queries) GetGamesPaginated(ctx context.Context, arg GetGamesPaginatedParams) ([]Game, error) {
-	rows, err := q.db.QueryContext(ctx, getGamesPaginated, arg.SeasonID, arg.PageOffset, arg.PageLimit)
+// Fetch all games for a season, excluding soft-deleted games
+func (q *Queries) GetGames(ctx context.Context, arg GetGamesParams) ([]Game, error) {
+	rows, err := q.db.QueryContext(ctx, getGames, arg.SeasonID, arg.PageOffset, arg.PageLimit)
 	if err != nil {
 		return nil, err
 	}

@@ -214,7 +214,7 @@ var _ = Describe("competition", func() {
 	})
 
 	Describe("GetAll", func() {
-		It("should retrieve paginated competitions without errors", func() {
+		It("should retrieve competitions without errors", func() {
 			mockDB.EXPECT().New(gomock.Any()).Return(mockQueries)
 			mockQueries.EXPECT().CountCompetitions(gomock.Any()).Return(int64(len(validCompetitionsFromDB)), nil)
 			mockQueries.EXPECT().GetCompetitions(
@@ -259,7 +259,7 @@ var _ = Describe("competition", func() {
 			Expect(competitions).To(BeNil())
 			Expect(total).To(Equal(int64(0)))
 			Expect(err).To(HaveOccurred())
-			Expect(err.Error()).To(ContainSubstring("get competitions paginated"))
+			Expect(err.Error()).To(ContainSubstring("get competitions"))
 		})
 	})
 

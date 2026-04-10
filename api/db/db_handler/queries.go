@@ -253,12 +253,12 @@ func GetGame(
 	return q.GetGame(ctx, id)
 }
 
-func GetGamesPaginated(
+func GetGames(
 	ctx context.Context,
 	q Queries,
-	params db.GetGamesPaginatedParams,
+	params db.GetGamesParams,
 ) ([]db.Game, error) {
-	return q.GetGamesPaginated(ctx, params)
+	return q.GetGames(ctx, params)
 }
 
 func CountGames(

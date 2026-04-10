@@ -659,7 +659,7 @@ var _ = Describe("season", func() {
 	})
 
 	Describe("GetSeasons", func() {
-		It("should get all seasons paginated without errors", func() {
+		It("should get all seasons without errors", func() {
 			mockDB.EXPECT().
 				New(gomock.Any()).
 				Return(mockQueries)
@@ -750,7 +750,7 @@ var _ = Describe("season", func() {
 			))
 		})
 
-		It("should return a formatted error when getting paginated seasons fails", func() {
+		It("should return a formatted error when getting seasons fails", func() {
 			mockDB.EXPECT().New(
 				gomock.Any(),
 			).Return(mockQueries)

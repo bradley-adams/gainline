@@ -15,7 +15,7 @@ import (
 // GameService defines the contract for game-related operations.
 type GameService interface {
 	Create(ctx context.Context, req *api.GameRequest, season SeasonAggregate) (db.Game, error)
-	GetAllPaginated(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error)
+	GetAll(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error)
 	Get(ctx context.Context, gameID uuid.UUID) (db.Game, error)
 	Update(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season SeasonAggregate) (db.Game, error)
 	Delete(ctx context.Context, gameID uuid.UUID) error
@@ -45,7 +45,7 @@ func (s *gameService) Create(ctx context.Context, req *api.GameRequest, season S
 	return game, nil
 }
 
-func (s *gameService) GetAllPaginated(
+func (s *gameService) GetAll(
 	ctx context.Context,
 	seasonID uuid.UUID,
 	limit,
@@ -58,7 +58,7 @@ func (s *gameService) GetAllPaginated(
 	err := db_handler.Run(ctx, s.db, func(q db_handler.Queries) error {
 		var err error
 
-		games, err = q.GetGamesPaginated(ctx, db.GetGamesPaginatedParams{
+		games, err = q.GetGames(ctx, db.GetGamesParams{
 			SeasonID:   seasonID,
 			PageLimit:  int32(limit),
 			PageOffset: int32(offset),
@@ -72,7 +72,7 @@ func (s *gameService) GetAllPaginated(
 	})
 
 	if err != nil {
-		return nil, 0, errors.Wrap(err, "unable to get paginated games")
+		return nil, 0, errors.Wrap(err, "unable to get games")
 	}
 
 	return games, total, nil

@@ -157,7 +157,7 @@ var _ = Describe("season handlers", func() {
 	})
 
 	Describe("get all seasons", func() {
-		It("returns 200 and paginated list of seasons", func() {
+		It("returns 200 and seasons", func() {
 			compID := uuid.New()
 			mockSvc.GetAllFn = func(ctx context.Context, competitionID uuid.UUID, limit, offset int) ([]service.SeasonAggregate, int64, error) {
 				return []service.SeasonAggregate{{ID: uuid.New()}}, 1, nil

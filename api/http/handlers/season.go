@@ -63,9 +63,9 @@ func handleCreateSeason(
 	}
 }
 
-// handleGetSeasons retrieves paginated seasons for a given competition
+// handleGetSeasons retrieves seasons for a given competition
 //
-//	@Summary	Retrieve paginated seasons for a competition
+//	@Summary	Retrieve seasons for a competition
 //	@ID			get-seasons
 //	@Tags		Seasons
 //	@Produce	json
