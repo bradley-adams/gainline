@@ -808,6 +808,73 @@ func (q *Queries) GetGames(ctx context.Context, arg GetGamesParams) ([]Game, err
 	return items, nil
 }
 
+const getGamesByStageID = `-- name: GetGamesByStageID :many
+SELECT
+    id,
+    season_id,
+    stage_id,
+    date,
+    home_team_id,
+    away_team_id,
+    home_score,
+    away_score,
+    status,
+    created_at,
+    updated_at,
+    deleted_at
+FROM
+    games
+WHERE
+    stage_id = $1
+AND
+    season_id = $2
+AND
+    deleted_at IS NULL
+ORDER BY date ASC, id ASC
+`
+
+type GetGamesByStageIDParams struct {
+	StageID  uuid.UUID
+	SeasonID uuid.UUID
+}
+
+// Fetch all games for a stage, excluding soft-deleted games
+func (q *Queries) GetGamesByStageID(ctx context.Context, arg GetGamesByStageIDParams) ([]Game, error) {
+	rows, err := q.db.QueryContext(ctx, getGamesByStageID, arg.StageID, arg.SeasonID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Game
+	for rows.Next() {
+		var i Game
+		if err := rows.Scan(
+			&i.ID,
+			&i.SeasonID,
+			&i.StageID,
+			&i.Date,
+			&i.HomeTeamID,
+			&i.AwayTeamID,
+			&i.HomeScore,
+			&i.AwayScore,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getSeason = `-- name: GetSeason :one
 SELECT
 	id,
