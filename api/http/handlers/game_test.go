@@ -23,11 +23,12 @@ import (
 
 // Manual mock for GameService
 type mockGameService struct {
-	CreateFn func(ctx context.Context, req *api.GameRequest, season service.SeasonAggregate) (db.Game, error)
-	GetAllFn func(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error)
-	GetFn    func(ctx context.Context, gameID uuid.UUID) (db.Game, error)
-	UpdateFn func(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season service.SeasonAggregate) (db.Game, error)
-	DeleteFn func(ctx context.Context, gameID uuid.UUID) error
+	CreateFn        func(ctx context.Context, req *api.GameRequest, season service.SeasonAggregate) (db.Game, error)
+	GetAllByStageFn func(ctx context.Context, seasonID, stageID uuid.UUID) ([]db.Game, error)
+	GetAllFn        func(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error)
+	GetFn           func(ctx context.Context, gameID uuid.UUID) (db.Game, error)
+	UpdateFn        func(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season service.SeasonAggregate) (db.Game, error)
+	DeleteFn        func(ctx context.Context, gameID uuid.UUID) error
 }
 
 func (m *mockGameService) Create(ctx context.Context, req *api.GameRequest, season service.SeasonAggregate) (db.Game, error) {
@@ -35,6 +36,12 @@ func (m *mockGameService) Create(ctx context.Context, req *api.GameRequest, seas
 		return m.CreateFn(ctx, req, season)
 	}
 	return db.Game{}, nil
+}
+func (m *mockGameService) GetAllByStage(ctx context.Context, seasonID, stageID uuid.UUID) ([]db.Game, error) {
+	if m.GetAllByStageFn != nil {
+		return m.GetAllByStageFn(ctx, seasonID, stageID)
+	}
+	return nil, nil
 }
 func (m *mockGameService) GetAll(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error) {
 	if m.GetAllFn != nil {
@@ -98,6 +105,10 @@ var _ = Describe("game handlers", func() {
 			handleCreateGame(logger, validate, mockSvc)(c)
 		})
 		router.GET(
+			"/competitions/:competitionID/seasons/:seasonID/stages/:stageID/games",
+			handleGetGamesByStage(logger, mockSvc),
+		)
+		router.GET(
 			"/competitions/:competitionID/seasons/:seasonID/games",
 			handleGetGames(logger, mockSvc),
 		)
@@ -145,6 +156,52 @@ var _ = Describe("game handlers", func() {
 
 			req := httptest.NewRequest(http.MethodPost, "/seasons/"+season.ID.String()+"/games", bytes.NewBufferString(reqBody))
 			req.Header.Set("Content-Type", "application/json")
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+			Expect(w.Code).To(Equal(http.StatusInternalServerError))
+		})
+	})
+
+	Describe("get games by stage", func() {
+		It("returns 200 with games for the stage", func() {
+			stageID := uuid.New()
+			mockSvc.GetAllByStageFn = func(ctx context.Context, seasonID, sID uuid.UUID) ([]db.Game, error) {
+				return []db.Game{{ID: uuid.New(), SeasonID: seasonID, StageID: sID}}, nil
+			}
+
+			req := httptest.NewRequest(
+				http.MethodGet,
+				"/competitions/"+uuid.New().String()+"/seasons/"+season.ID.String()+"/stages/"+stageID.String()+"/games",
+				nil,
+			)
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+			Expect(w.Code).To(Equal(http.StatusOK))
+		})
+
+		It("returns 400 for invalid season UUID", func() {
+			stageID := uuid.New()
+			req := httptest.NewRequest(
+				http.MethodGet,
+				"/competitions/"+uuid.New().String()+"/seasons/invalid/stages/"+stageID.String()+"/games",
+				nil,
+			)
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+			Expect(w.Code).To(Equal(http.StatusBadRequest))
+		})
+
+		It("returns 500 when service fails", func() {
+			stageID := uuid.New()
+			mockSvc.GetAllByStageFn = func(ctx context.Context, seasonID, sID uuid.UUID) ([]db.Game, error) {
+				return nil, fmt.Errorf("db failure")
+			}
+
+			req := httptest.NewRequest(
+				http.MethodGet,
+				"/competitions/"+uuid.New().String()+"/seasons/"+season.ID.String()+"/stages/"+stageID.String()+"/games",
+				nil,
+			)
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
 			Expect(w.Code).To(Equal(http.StatusInternalServerError))
