@@ -58,6 +58,48 @@ func handleCreateGame(
 	}
 }
 
+// handleGetGamesByStage retrieves all games for a specific stage
+//
+//	@Summary	Get games for a stage
+//	@ID			get-games-by-stage
+//	@Tags		Games
+//	@Produce	json
+//	@Param		competitionID	path		string					true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
+//	@Param		seasonID		path		string					true	"Season ID"			default(9300778f-cce0-4efe-af6c-e399d8170315)
+//	@Param		stageID			path		string					true	"Stage ID"			default(eab15533-dea6-4a3d-8a95-d38e4fba2d5a)
+//	@Success	200				{array}		api.GameResponse		"Games for stage"
+//	@Failure	400				{object}	response.ErrorResponse	"Invalid ID"
+//	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
+//	@Router		/competitions/{competitionID}/seasons/{seasonID}/stages/{stageID}/games [get]
+func handleGetGamesByStage(logger zerolog.Logger, gameService service.GameService) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		seasonID, err := uuid.Parse(ctx.Param("seasonID"))
+		if err != nil {
+			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid season ID")
+			return
+		}
+
+		stageID, err := uuid.Parse(ctx.Param("stageID"))
+		if err != nil {
+			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid stage ID")
+			return
+		}
+
+		games, err := gameService.GetAllByStage(ctx.Request.Context(), seasonID, stageID)
+		if err != nil {
+			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get games")
+			return
+		}
+
+		data := make([]api.GameResponse, 0, len(games))
+		for _, g := range games {
+			data = append(data, api.ToGameResponse(g))
+		}
+
+		response.RespondSuccess(ctx, logger, http.StatusOK, data)
+	}
+}
+
 // handleGetGames retrieves games for a season
 //
 //	@Summary	Get games for a season
