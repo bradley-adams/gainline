@@ -15,6 +15,7 @@ import (
 // GameService defines the contract for game-related operations.
 type GameService interface {
 	Create(ctx context.Context, req *api.GameRequest, season SeasonAggregate) (db.Game, error)
+	GetAllByStage(ctx context.Context, seasonID, stageID uuid.UUID) ([]db.Game, error)
 	GetAll(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error)
 	Get(ctx context.Context, gameID uuid.UUID) (db.Game, error)
 	Update(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season SeasonAggregate) (db.Game, error)
@@ -43,6 +44,24 @@ func (s *gameService) Create(ctx context.Context, req *api.GameRequest, season S
 	}
 
 	return game, nil
+}
+
+func (s *gameService) GetAllByStage(ctx context.Context, seasonID, stageID uuid.UUID) ([]db.Game, error) {
+	var games []db.Game
+
+	err := db_handler.Run(ctx, s.db, func(q db_handler.Queries) error {
+		var err error
+		games, err = q.GetGamesByStageID(ctx, db.GetGamesByStageIDParams{
+			SeasonID: seasonID,
+			StageID:  stageID,
+		})
+		return err
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "unable to get games by stage")
+	}
+
+	return games, nil
 }
 
 func (s *gameService) GetAll(
