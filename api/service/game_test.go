@@ -31,7 +31,7 @@ var _ = Describe("game", func() {
 
 	validGameID := uuid.MustParse("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb")
 	validSeasonID := uuid.MustParse("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
-	validStageID := uuid.MustParse("cccccccc-cccc-cccc-cccc-cccccccccccc")
+	validStageID := uuid.MustParse("cccccccc-cccc-4ccc-8ccc-cccccccccccc")
 	validHomeTeamID := uuid.MustParse("11111111-1111-4111-8111-111111111111")
 	validAwayTeamID := uuid.MustParse("22222222-2222-4222-8222-222222222222")
 
@@ -277,6 +277,74 @@ var _ = Describe("game", func() {
 
 			Expect(game).To(Equal(validNilGame))
 			Expect(err.Error()).To(Equal(validTestError.Error()))
+		})
+	})
+
+	Describe("GetAllByStage", func() {
+		It("should retrieve games by stage without errors", func() {
+			mockDB.EXPECT().
+				New(gomock.Any()).
+				Return(mockQueries)
+			mockQueries.EXPECT().
+				GetGamesByStageID(
+					gomock.Any(),
+					gomock.Any(),
+				).
+				Return(validGamesFromDB, nil)
+
+			games, err := svc.GetAllByStage(context.Background(), validSeasonID, validStageID)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(games).To(HaveLen(2))
+
+			// First game
+			Expect(games[0].ID).To(Equal(validGamesResponse[0].ID))
+			Expect(games[0].SeasonID).To(Equal(validGamesResponse[0].SeasonID))
+			Expect(games[0].StageID).To(Equal(validGamesResponse[0].StageID))
+			Expect(games[0].Date).To(Equal(validGamesResponse[0].Date))
+			Expect(games[0].HomeTeamID).To(Equal(validGamesResponse[0].HomeTeamID))
+			Expect(games[0].AwayTeamID).To(Equal(validGamesResponse[0].AwayTeamID))
+			Expect(games[0].HomeScore.Valid).To(BeTrue())
+			Expect(games[0].HomeScore.Int32).To(Equal(*validGamesResponse[0].HomeScore))
+			Expect(games[0].AwayScore.Valid).To(BeTrue())
+			Expect(games[0].AwayScore.Int32).To(Equal(*validGamesResponse[0].AwayScore))
+			Expect(string(games[0].Status)).To(Equal(string(validGamesResponse[0].Status)))
+			Expect(games[0].CreatedAt).To(Equal(validGamesResponse[0].CreatedAt))
+			Expect(games[0].UpdatedAt).To(Equal(validGamesResponse[0].UpdatedAt))
+			Expect(games[0].DeletedAt.Time).To(Equal(validGamesResponse[0].DeletedAt.Time))
+
+			// Second game (same checks)
+			Expect(games[1].ID).To(Equal(validGamesResponse[1].ID))
+			Expect(games[1].SeasonID).To(Equal(validGamesResponse[1].SeasonID))
+			Expect(games[1].StageID).To(Equal(validGamesResponse[1].StageID))
+			Expect(games[1].Date).To(Equal(validGamesResponse[1].Date))
+			Expect(games[1].HomeTeamID).To(Equal(validGamesResponse[1].HomeTeamID))
+			Expect(games[1].AwayTeamID).To(Equal(validGamesResponse[1].AwayTeamID))
+			Expect(games[1].HomeScore.Valid).To(BeTrue())
+			Expect(games[1].HomeScore.Int32).To(Equal(*validGamesResponse[1].HomeScore))
+			Expect(games[1].AwayScore.Valid).To(BeTrue())
+			Expect(games[1].AwayScore.Int32).To(Equal(*validGamesResponse[1].AwayScore))
+			Expect(string(games[1].Status)).To(Equal(string(validGamesResponse[1].Status)))
+			Expect(games[1].CreatedAt).To(Equal(validGamesResponse[1].CreatedAt))
+			Expect(games[1].UpdatedAt).To(Equal(validGamesResponse[1].UpdatedAt))
+			Expect(games[1].DeletedAt.Time).To(Equal(validGamesResponse[1].DeletedAt.Time))
+		})
+
+		It("should return error if GetGamesByStageID fails", func() {
+			mockDB.EXPECT().
+				New(gomock.Any()).
+				Return(mockQueries)
+			mockQueries.EXPECT().
+				GetGamesByStageID(
+					gomock.Any(),
+					gomock.Any(),
+				).
+				Return(nil, validTestError)
+
+			games, err := svc.GetAllByStage(context.Background(), validSeasonID, validStageID)
+
+			Expect(games).To(BeNil())
+			Expect(err.Error()).To(Equal("unable to get games by stage: a valid testing error"))
 		})
 	})
 
