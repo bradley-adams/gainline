@@ -249,7 +249,7 @@ const docTemplate = `{
                 "tags": [
                     "Seasons"
                 ],
-                "summary": "Retrieve paginated seasons for a competition",
+                "summary": "Retrieve seasons for a competition",
                 "operationId": "get-seasons",
                 "parameters": [
                     {
@@ -506,6 +506,68 @@ const docTemplate = `{
             }
         },
         "/competitions/{competitionID}/seasons/{seasonID}/games": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Games"
+                ],
+                "summary": "Get games for a season",
+                "operationId": "get-games",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "44dd315c-1abc-43aa-9843-642f920190d1",
+                        "description": "Competition ID",
+                        "name": "competitionID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "9300778f-cce0-4efe-af6c-e399d8170315",
+                        "description": "Season ID",
+                        "name": "seasonID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated games",
+                        "schema": {
+                            "$ref": "#/definitions/api.PaginatedResponse-api_GameResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid season ID",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -746,7 +808,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/competitions/{competitionID}/seasons/{seasonID}/gamespaginated": {
+        "/competitions/{competitionID}/seasons/{seasonID}/stages/{stageID}/games": {
             "get": {
                 "produces": [
                     "application/json"
@@ -754,8 +816,8 @@ const docTemplate = `{
                 "tags": [
                     "Games"
                 ],
-                "summary": "Get paginated games for a season",
-                "operationId": "get-paginated-games",
+                "summary": "Get games for a stage",
+                "operationId": "get-games-by-stage",
                 "parameters": [
                     {
                         "type": "string",
@@ -774,29 +836,26 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page number",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Page size",
-                        "name": "page_size",
-                        "in": "query"
+                        "type": "string",
+                        "default": "eab15533-dea6-4a3d-8a95-d38e4fba2d5a",
+                        "description": "Stage ID",
+                        "name": "stageID",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Paginated games",
+                        "description": "Games for stage",
                         "schema": {
-                            "$ref": "#/definitions/api.PaginatedResponse-api_GameResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/api.GameResponse"
+                            }
                         }
                     },
                     "400": {
-                        "description": "Invalid season ID",
+                        "description": "Invalid ID",
                         "schema": {
                             "$ref": "#/definitions/response.ErrorResponse"
                         }

@@ -57,6 +57,7 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 
 		// games
 		v1public.POST("/competitions/:competitionID/seasons/:seasonID/games", handleCreateGame(logger, validate, gameService))
+		v1public.GET("/competitions/:competitionID/seasons/:seasonID/stages/:stageID/games", handleGetGamesByStage(logger, gameService))
 		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games", handleGetGames(logger, gameService))
 		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleGetGame(logger, gameService))
 		v1public.PUT("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleUpdateGame(logger, gameService, validate))
