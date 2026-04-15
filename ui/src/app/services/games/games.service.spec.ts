@@ -61,6 +61,20 @@ describe('GamesService', () => {
         expect(service).toBeTruthy()
     })
 
+    it('should get games by stage', () => {
+        const mockStageID = 'stage1'
+
+        service.getGamesByStage(mockCompetitionID, mockSeasonID, mockStageID).subscribe((games) => {
+            expect(games).toEqual(mockGames)
+        })
+
+        const req = httpMock.expectOne(
+            `${baseUrl}/v1/competitions/${mockCompetitionID}/seasons/${mockSeasonID}/stages/${mockStageID}/games`
+        )
+        expect(req.request.method).toBe('GET')
+        req.flush(mockGames)
+    })
+
     it('should get games for a season', () => {
         const mockPaginatedResponse = {
             data: mockGames,
