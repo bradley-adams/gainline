@@ -80,8 +80,12 @@
     </tr>
 </table>
 
-<mat-paginator
-    [length]="total"
-    [pageSize]="pageSize"
-    [pageSizeOptions]="[5, 10, 25, 50]"
-    (page)="onPageChange($event)"></mat-paginator>
+<div class="stage-nav">
+    <button mat-icon-button [disabled]="!hasPrev" (click)="prevStage()" aria-label="Previous stage">
+        <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="stage-label">{{ currentStage?.name ?? 'No stages' }}</span>
+    <button mat-icon-button [disabled]="!hasNext" (click)="nextStage()" aria-label="Next stage">
+        <mat-icon>chevron_right</mat-icon>
+    </button>
+</div>
