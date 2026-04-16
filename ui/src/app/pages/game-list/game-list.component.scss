@@ -1,0 +1,14 @@
+.stage-nav {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 8px 0;
+
+    .stage-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        min-width: 120px;
+        text-align: center;
+    }
+}
