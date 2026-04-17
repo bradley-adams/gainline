@@ -46,9 +46,7 @@ export class ScheduleComponent implements OnInit {
     private initFormListeners(): void {
         this.scheduleForm.get('competition')!.valueChanges.subscribe(this.onCompetitionChange.bind(this))
         this.scheduleForm.get('season')!.valueChanges.subscribe(this.onSeasonChange.bind(this))
-        this.scheduleForm.get('stage')!.valueChanges.subscribe(() => {
-            this.filterGamesByRound()
-        })
+        this.scheduleForm.get('stage')!.valueChanges.subscribe(this.onStageChange.bind(this))
     }
 
     private onCompetitionChange(compId: string): void {
@@ -64,22 +62,30 @@ export class ScheduleComponent implements OnInit {
 
         if (!season) return
 
-        this.stages = season.stages || []
+        this.stages = [...(season.stages ?? [])].sort((a, b) => a.order_index - b.order_index)
+        this.games = []
+        this.dataSource.data = []
 
         if (this.stages.length > 0) {
-            this.scheduleForm.patchValue({ stage: this.stages[0].id }, { emitEvent: false })
+            this.scheduleForm.patchValue({ stage: this.stages[0].id }, { emitEvent: true })
         }
+    }
 
-        if (compId) {
-            this.loadGames(compId, seasonId)
+    private onStageChange(stageId: string): void {
+        const compId = this.scheduleForm.get('competition')!.value
+        const seasonId = this.scheduleForm.get('season')!.value
+
+        if (compId && seasonId && stageId) {
+            this.loadGames(compId, seasonId, stageId)
         }
     }
 
     private resetSeasons(): void {
         this.seasons = []
         this.games = []
+        this.stages = []
         this.dataSource.data = []
-        this.scheduleForm.patchValue({ season: '' }, { emitEvent: false })
+        this.scheduleForm.patchValue({ season: '', stage: '' }, { emitEvent: false })
     }
 
     private loadCompetitions(): void {
@@ -135,41 +141,15 @@ export class ScheduleComponent implements OnInit {
         fetchPage()
     }
 
-    private loadGames(competitionId: string, seasonId: string): void {
-        const allGames: Game[] = []
-
-        const fetchPage = (page = 1) => {
-            this.gamesService.getGames(competitionId, seasonId, page).subscribe({
-                next: (response) => {
-                    allGames.push(...response.data)
-
-                    if (page < response.pagination.total_pages) {
-                        fetchPage(page + 1)
-                    } else {
-                        this.games = allGames
-
-                        const selectedStageId = this.scheduleForm.get('stage')!.value
-                        if (!selectedStageId && this.stages.length > 0) {
-                            this.scheduleForm.patchValue({ stage: this.stages[0].id }, { emitEvent: false })
-                        }
-
-                        this.filterGamesByRound()
-                    }
-                },
-                error: (err) => {
-                    this.notificationService.showErrorAndLog('Load Error', 'Failed to load games', err)
-                }
-            })
-        }
-
-        fetchPage()
-    }
-    private filterGamesByRound(): void {
-        const selectedRoundId = this.scheduleForm.get('stage')!.value
-        if (selectedRoundId) {
-            this.dataSource.data = this.games.filter((game) => game.stage_id === selectedRoundId)
-        } else {
-            this.dataSource.data = this.games
-        }
+    private loadGames(competitionId: string, seasonId: string, stageId: string): void {
+        this.gamesService.getGamesByStage(competitionId, seasonId, stageId).subscribe({
+            next: (games) => {
+                this.games = games
+                this.dataSource.data = games
+            },
+            error: (err) => {
+                this.notificationService.showErrorAndLog('Load Error', 'Failed to load games', err)
+            }
+        })
     }
 }
