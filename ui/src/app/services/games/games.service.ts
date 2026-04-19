@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { inject, Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
 import { environment } from '../../../environments/environment'
-import { Game, PaginatedResponse } from '../../types/api'
+import { Game } from '../../types/api'
 
 @Injectable({
     providedIn: 'root'
@@ -14,23 +14,6 @@ export class GamesService {
     getGamesByStage(competitionId: string, seasonId: string, stageId: string): Observable<Game[]> {
         return this.http.get<Game[]>(
             `${this.path}/v1/competitions/${competitionId}/seasons/${seasonId}/stages/${stageId}/games`
-        )
-    }
-
-    getGames(
-        competitionId: string,
-        seasonId: string,
-        page = 1,
-        pageSize = 10
-    ): Observable<PaginatedResponse<Game>> {
-        return this.http.get<PaginatedResponse<Game>>(
-            `${this.path}/v1/competitions/${competitionId}/seasons/${seasonId}/games`,
-            {
-                params: {
-                    page,
-                    page_size: pageSize
-                }
-            }
         )
     }
 
