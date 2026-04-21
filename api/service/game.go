@@ -16,7 +16,6 @@ import (
 type GameService interface {
 	Create(ctx context.Context, req *api.GameRequest, season SeasonAggregate) (db.Game, error)
 	GetAllByStage(ctx context.Context, seasonID, stageID uuid.UUID) ([]db.Game, error)
-	GetAll(ctx context.Context, seasonID uuid.UUID, limit, offset int) ([]db.Game, int64, error)
 	Get(ctx context.Context, gameID uuid.UUID) (db.Game, error)
 	Update(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season SeasonAggregate) (db.Game, error)
 	Delete(ctx context.Context, gameID uuid.UUID) error
@@ -62,39 +61,6 @@ func (s *gameService) GetAllByStage(ctx context.Context, seasonID, stageID uuid.
 	}
 
 	return games, nil
-}
-
-func (s *gameService) GetAll(
-	ctx context.Context,
-	seasonID uuid.UUID,
-	limit,
-	offset int,
-) ([]db.Game, int64, error) {
-
-	var games []db.Game
-	var total int64
-
-	err := db_handler.Run(ctx, s.db, func(q db_handler.Queries) error {
-		var err error
-
-		games, err = q.GetGames(ctx, db.GetGamesParams{
-			SeasonID:   seasonID,
-			PageLimit:  int32(limit),
-			PageOffset: int32(offset),
-		})
-		if err != nil {
-			return err
-		}
-
-		total, err = q.CountGames(ctx, seasonID)
-		return err
-	})
-
-	if err != nil {
-		return nil, 0, errors.Wrap(err, "unable to get games")
-	}
-
-	return games, total, nil
 }
 
 func (s *gameService) Get(ctx context.Context, gameID uuid.UUID) (db.Game, error) {
