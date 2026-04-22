@@ -65,7 +65,6 @@ type Queries interface {
 	CreateGame(ctx context.Context, arg db.CreateGameParams) error
 	GetGame(ctx context.Context, id uuid.UUID) (db.Game, error)
 	GetGamesByStageID(ctx context.Context, arg db.GetGamesByStageIDParams) ([]db.Game, error)
-	GetGames(ctx context.Context, arg db.GetGamesParams) ([]db.Game, error)
 	CountGames(ctx context.Context, seasonID uuid.UUID) (int64, error)
 	UpdateGame(ctx context.Context, arg db.UpdateGameParams) error
 	DeleteGame(ctx context.Context, arg db.DeleteGameParams) error
