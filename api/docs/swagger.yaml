@@ -99,15 +99,6 @@ definitions:
       pagination:
         $ref: '#/definitions/api.PaginationMeta'
     type: object
-  api.PaginatedResponse-api_GameResponse:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/api.GameResponse'
-        type: array
-      pagination:
-        $ref: '#/definitions/api.PaginationMeta'
-    type: object
   api.PaginationMeta:
     properties:
       page:
@@ -596,49 +587,6 @@ paths:
       tags:
       - Seasons
   /competitions/{competitionID}/seasons/{seasonID}/games:
-    get:
-      operationId: get-games
-      parameters:
-      - default: 44dd315c-1abc-43aa-9843-642f920190d1
-        description: Competition ID
-        in: path
-        name: competitionID
-        required: true
-        type: string
-      - default: 9300778f-cce0-4efe-af6c-e399d8170315
-        description: Season ID
-        in: path
-        name: seasonID
-        required: true
-        type: string
-      - default: 1
-        description: Page number
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: Page size
-        in: query
-        name: page_size
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Paginated games
-          schema:
-            $ref: '#/definitions/api.PaginatedResponse-api_GameResponse'
-        "400":
-          description: Invalid season ID
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-      summary: Get games for a season
-      tags:
-      - Games
     post:
       consumes:
       - application/json
