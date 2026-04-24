@@ -754,7 +754,7 @@ paths:
       - Games
   /competitions/{competitionID}/seasons/{seasonID}/stages/{stageID}/games:
     get:
-      operationId: get-games-by-stage
+      operationId: get-games
       parameters:
       - default: 44dd315c-1abc-43aa-9843-642f920190d1
         description: Competition ID
@@ -791,7 +791,7 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/response.ErrorResponse'
-      summary: Get games for a stage
+      summary: Get games
       tags:
       - Games
   /teams:
