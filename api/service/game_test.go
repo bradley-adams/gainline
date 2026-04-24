@@ -292,7 +292,7 @@ var _ = Describe("game", func() {
 				).
 				Return(validGamesFromDB, nil)
 
-			games, err := svc.GetAllByStage(context.Background(), validSeasonID, validStageID)
+			games, err := svc.GetAll(context.Background(), validSeasonID, validStageID)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(games).To(HaveLen(2))
@@ -341,7 +341,7 @@ var _ = Describe("game", func() {
 				).
 				Return(nil, validTestError)
 
-			games, err := svc.GetAllByStage(context.Background(), validSeasonID, validStageID)
+			games, err := svc.GetAll(context.Background(), validSeasonID, validStageID)
 
 			Expect(games).To(BeNil())
 			Expect(err.Error()).To(Equal("unable to get games by stage: a valid testing error"))
