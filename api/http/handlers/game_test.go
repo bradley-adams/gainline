@@ -23,11 +23,11 @@ import (
 
 // Manual mock for GameService
 type mockGameService struct {
-	CreateFn        func(ctx context.Context, req *api.GameRequest, season service.SeasonAggregate) (db.Game, error)
-	GetAllByStageFn func(ctx context.Context, seasonID, stageID uuid.UUID) ([]db.Game, error)
-	GetFn           func(ctx context.Context, gameID uuid.UUID) (db.Game, error)
-	UpdateFn        func(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season service.SeasonAggregate) (db.Game, error)
-	DeleteFn        func(ctx context.Context, gameID uuid.UUID) error
+	CreateFn func(ctx context.Context, req *api.GameRequest, season service.SeasonAggregate) (db.Game, error)
+	GetAllFn func(ctx context.Context, seasonID, stageID uuid.UUID) ([]db.Game, error)
+	GetFn    func(ctx context.Context, gameID uuid.UUID) (db.Game, error)
+	UpdateFn func(ctx context.Context, req *api.GameRequest, gameID uuid.UUID, season service.SeasonAggregate) (db.Game, error)
+	DeleteFn func(ctx context.Context, gameID uuid.UUID) error
 }
 
 func (m *mockGameService) Create(ctx context.Context, req *api.GameRequest, season service.SeasonAggregate) (db.Game, error) {
@@ -36,9 +36,9 @@ func (m *mockGameService) Create(ctx context.Context, req *api.GameRequest, seas
 	}
 	return db.Game{}, nil
 }
-func (m *mockGameService) GetAllByStage(ctx context.Context, seasonID, stageID uuid.UUID) ([]db.Game, error) {
-	if m.GetAllByStageFn != nil {
-		return m.GetAllByStageFn(ctx, seasonID, stageID)
+func (m *mockGameService) GetAll(ctx context.Context, seasonID, stageID uuid.UUID) ([]db.Game, error) {
+	if m.GetAllFn != nil {
+		return m.GetAllFn(ctx, seasonID, stageID)
 	}
 	return nil, nil
 }
@@ -99,7 +99,7 @@ var _ = Describe("game handlers", func() {
 		})
 		router.GET(
 			"/competitions/:competitionID/seasons/:seasonID/stages/:stageID/games",
-			handleGetGamesByStage(logger, mockSvc),
+			handleGetGames(logger, mockSvc),
 		)
 		router.GET("/seasons/:seasonID/games/:gameID", handleGetGame(logger, mockSvc))
 		router.PUT("/seasons/:seasonID/games/:gameID", func(c *gin.Context) {
@@ -154,7 +154,7 @@ var _ = Describe("game handlers", func() {
 	Describe("get games by stage", func() {
 		It("returns 200 with games for the stage", func() {
 			stageID := uuid.New()
-			mockSvc.GetAllByStageFn = func(ctx context.Context, seasonID, sID uuid.UUID) ([]db.Game, error) {
+			mockSvc.GetAllFn = func(ctx context.Context, seasonID, sID uuid.UUID) ([]db.Game, error) {
 				return []db.Game{{ID: uuid.New(), SeasonID: seasonID, StageID: sID}}, nil
 			}
 
@@ -182,7 +182,7 @@ var _ = Describe("game handlers", func() {
 
 		It("returns 500 when service fails", func() {
 			stageID := uuid.New()
-			mockSvc.GetAllByStageFn = func(ctx context.Context, seasonID, sID uuid.UUID) ([]db.Game, error) {
+			mockSvc.GetAllFn = func(ctx context.Context, seasonID, sID uuid.UUID) ([]db.Game, error) {
 				return nil, fmt.Errorf("db failure")
 			}
 

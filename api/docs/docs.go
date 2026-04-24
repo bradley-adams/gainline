@@ -754,8 +754,8 @@ const docTemplate = `{
                 "tags": [
                     "Games"
                 ],
-                "summary": "Get games for a stage",
-                "operationId": "get-games-by-stage",
+                "summary": "Get games",
+                "operationId": "get-games",
                 "parameters": [
                     {
                         "type": "string",

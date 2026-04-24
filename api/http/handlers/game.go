@@ -56,10 +56,10 @@ func handleCreateGame(
 	}
 }
 
-// handleGetGamesByStage retrieves all games for a specific stage
+// handleGetGames retrieves all games for a specific stage
 //
-//	@Summary	Get games for a stage
-//	@ID			get-games-by-stage
+//	@Summary	Get games
+//	@ID			get-games
 //	@Tags		Games
 //	@Produce	json
 //	@Param		competitionID	path		string					true	"Competition ID"	default(44dd315c-1abc-43aa-9843-642f920190d1)
@@ -69,7 +69,7 @@ func handleCreateGame(
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID}/seasons/{seasonID}/stages/{stageID}/games [get]
-func handleGetGamesByStage(logger zerolog.Logger, gameService service.GameService) gin.HandlerFunc {
+func handleGetGames(logger zerolog.Logger, gameService service.GameService) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		seasonID, err := uuid.Parse(ctx.Param("seasonID"))
 		if err != nil {
@@ -83,7 +83,7 @@ func handleGetGamesByStage(logger zerolog.Logger, gameService service.GameServic
 			return
 		}
 
-		games, err := gameService.GetAllByStage(ctx.Request.Context(), seasonID, stageID)
+		games, err := gameService.GetAll(ctx.Request.Context(), seasonID, stageID)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get games")
 			return
