@@ -177,17 +177,7 @@ describe('ScheduleComponent', () => {
 
         competitionsService.getCompetitions.and.returnValue(of(mockPaginatedCompetitionsResponse))
         seasonsService.getSeasons.and.returnValue(of(mockPaginatedSeasonsResponse))
-        gamesService.getGames.and.callFake((_, __, page = 1, pageSize = 10) =>
-            of({
-                data: mockGames,
-                pagination: {
-                    page,
-                    page_size: pageSize,
-                    total: mockGames.length,
-                    total_pages: 1
-                }
-            })
-        )
+        gamesService.getGames.and.callFake(() => of(mockGames))
 
         await TestBed.configureTestingModule({
             imports: [ScheduleComponent, NoopAnimationsModule],
