@@ -124,8 +124,8 @@ describe('GameListComponent', () => {
     ]
 
     beforeEach(async () => {
-        gamesService = jasmine.createSpyObj('GamesService', ['getGamesByStage', 'deleteGame'])
-        gamesService.getGamesByStage.and.callFake(() => of(mockGames))
+        gamesService = jasmine.createSpyObj('GamesService', ['getGames', 'deleteGame'])
+        gamesService.getGames.and.callFake(() => of(mockGames))
         gamesService.deleteGame.and.returnValue(of(undefined))
 
         seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeason'])
@@ -261,7 +261,7 @@ describe('GameListComponent', () => {
 
     it('should show error when games fail to load', () => {
         const mockError = new Error('Failed')
-        gamesService.getGamesByStage.and.returnValue(throwError(() => mockError))
+        gamesService.getGames.and.returnValue(throwError(() => mockError))
 
         component.ngOnInit()
 
