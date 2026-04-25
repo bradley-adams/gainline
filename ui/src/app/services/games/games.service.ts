@@ -11,7 +11,7 @@ export class GamesService {
     private readonly path = environment.apiUrl
     private readonly http = inject(HttpClient)
 
-    getGamesByStage(competitionId: string, seasonId: string, stageId: string): Observable<Game[]> {
+    getGames(competitionId: string, seasonId: string, stageId: string): Observable<Game[]> {
         return this.http.get<Game[]>(
             `${this.path}/v1/competitions/${competitionId}/seasons/${seasonId}/stages/${stageId}/games`
         )

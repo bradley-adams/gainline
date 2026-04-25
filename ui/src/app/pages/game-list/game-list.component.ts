@@ -90,7 +90,7 @@ export class GameListComponent implements OnInit {
         const stage = this.currentStage
         if (!stage) return
 
-        this.gamesService.getGamesByStage(competitionId, seasonId, stage.id).subscribe({
+        this.gamesService.getGames(competitionId, seasonId, stage.id).subscribe({
             next: (games) => {
                 this.dataSource.data = games.map((game) => ({
                     ...game,

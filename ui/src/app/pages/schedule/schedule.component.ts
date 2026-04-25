@@ -142,7 +142,7 @@ export class ScheduleComponent implements OnInit {
     }
 
     private loadGames(competitionId: string, seasonId: string, stageId: string): void {
-        this.gamesService.getGamesByStage(competitionId, seasonId, stageId).subscribe({
+        this.gamesService.getGames(competitionId, seasonId, stageId).subscribe({
             next: (games) => {
                 this.games = games
                 this.dataSource.data = games
