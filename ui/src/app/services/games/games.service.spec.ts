@@ -64,7 +64,7 @@ describe('GamesService', () => {
     it('should get games by stage', () => {
         const mockStageID = 'stage1'
 
-        service.getGamesByStage(mockCompetitionID, mockSeasonID, mockStageID).subscribe((games) => {
+        service.getGames(mockCompetitionID, mockSeasonID, mockStageID).subscribe((games) => {
             expect(games).toEqual(mockGames)
         })
 
