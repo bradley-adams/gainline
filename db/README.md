@@ -127,4 +127,4 @@ just db-test-clean
 
 - Adding season sponsor column. (Remove from competition name).
 - Handle shield challenge games (Side competitions/trophies).
-- Points tables and bonus points.
+- Points standings tables and bonus points.
