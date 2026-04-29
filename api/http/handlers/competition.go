@@ -3,7 +3,6 @@ package handlers
 import (
 	"math"
 	"net/http"
-	"strconv"
 
 	"github.com/bradley-adams/gainline/http/api"
 	"github.com/bradley-adams/gainline/http/response"
@@ -67,15 +66,28 @@ func handleCreateCompetition(
 //	@Router		/competitions [get]
 func handleGetCompetitions(
 	logger zerolog.Logger,
+	validate *validator.Validate,
 	competitionService service.CompetitionService,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		page, pageSize, offset := getPagination(ctx)
+		q := api.PaginationRequest{}
+
+		if err := ctx.ShouldBindQuery(&q); err != nil {
+			response.RespondError(ctx, logger, err, http.StatusBadRequest, "invalid query params")
+			return
+		}
+
+		if err := validate.Struct(q); err != nil {
+			response.RespondError(ctx, logger, err, http.StatusBadRequest, "invalid pagination params")
+			return
+		}
+
+		q.SetDefaults()
 
 		competitions, total, err := competitionService.GetAll(
 			ctx.Request.Context(),
-			pageSize,
-			offset,
+			q.PageSize,
+			q.Offset(),
 		)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get competitions")
@@ -87,13 +99,12 @@ func handleGetCompetitions(
 			data = append(data, api.ToCompetitionResponse(competition))
 		}
 
-		totalPages := int(math.Ceil(float64(total) / float64(pageSize)))
-
+		totalPages := int(math.Ceil(float64(total) / float64(q.PageSize)))
 		response.RespondSuccess(ctx, logger, http.StatusOK, api.PaginatedResponse[api.CompetitionResponse]{
 			Data: data,
 			Pagination: api.PaginationMeta{
-				Page:       page,
-				PageSize:   pageSize,
+				Page:       q.Page,
+				PageSize:   q.PageSize,
 				Total:      total,
 				TotalPages: totalPages,
 			},
@@ -206,20 +217,4 @@ func handleDeleteCompetition(logger zerolog.Logger, competitionService service.C
 
 		response.RespondSuccess(ctx, logger, http.StatusNoContent, nil)
 	}
-}
-
-func getPagination(ctx *gin.Context) (page, pageSize, offset int) {
-	page = 1
-	pageSize = 20
-
-	if p, err := strconv.Atoi(ctx.Query("page")); err == nil && p > 0 {
-		page = p
-	}
-
-	if ps, err := strconv.Atoi(ctx.Query("page_size")); err == nil && ps > 0 && ps <= 100 {
-		pageSize = ps
-	}
-
-	offset = (page - 1) * pageSize
-	return
 }
