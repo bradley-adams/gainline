@@ -93,7 +93,7 @@ var _ = Describe("competition handlers", func() {
 
 		router = gin.New()
 		router.POST("/competitions", handleCreateCompetition(logger, validate, mockSvc))
-		router.GET("/competitions", handleGetCompetitions(logger, mockSvc))
+		router.GET("/competitions", handleGetCompetitions(logger, validate, mockSvc))
 		router.GET("/competitions/:competitionID", handleGetCompetition(logger, mockSvc))
 		router.PUT("/competitions/:competitionID", handleUpdateCompetition(logger, validate, mockSvc))
 		router.DELETE("/competitions/:competitionID", handleDeleteCompetition(logger, mockSvc))

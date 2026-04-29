@@ -3,7 +3,6 @@ package handlers
 import (
 	"math"
 	"net/http"
-	"strconv"
 
 	"github.com/bradley-adams/gainline/http/api"
 	"github.com/bradley-adams/gainline/http/response"
@@ -76,7 +75,11 @@ func handleCreateSeason(
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid competition ID"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID}/seasons [get]
-func handleGetSeasons(logger zerolog.Logger, seasonService service.SeasonService) gin.HandlerFunc {
+func handleGetSeasons(
+	logger zerolog.Logger,
+	validate *validator.Validate,
+	seasonService service.SeasonService,
+) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		competitionID, err := uuid.Parse(ctx.Param("competitionID"))
@@ -85,25 +88,26 @@ func handleGetSeasons(logger zerolog.Logger, seasonService service.SeasonService
 			return
 		}
 
-		page := 1
-		pageSize := 10
+		q := api.PaginationRequest{}
 
-		if p := ctx.Query("page"); p != "" {
-			if parsed, err := strconv.Atoi(p); err == nil && parsed > 0 {
-				page = parsed
-			}
+		if err := ctx.ShouldBindQuery(&q); err != nil {
+			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid query params")
+			return
 		}
 
-		if ps := ctx.Query("page_size"); ps != "" {
-			if parsed, err := strconv.Atoi(ps); err == nil && parsed > 0 {
-				pageSize = parsed
-			}
+		if err := validate.Struct(q); err != nil {
+			response.RespondError(ctx, logger, err, http.StatusBadRequest, "Invalid pagination params")
+			return
 		}
 
-		limit := pageSize
-		offset := (page - 1) * pageSize
+		q.SetDefaults()
 
-		seasons, total, err := seasonService.GetAll(ctx.Request.Context(), competitionID, limit, offset)
+		seasons, total, err := seasonService.GetAll(
+			ctx.Request.Context(),
+			competitionID,
+			q.PageSize,
+			q.Offset(),
+		)
 		if err != nil {
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get seasons")
 			return
@@ -114,13 +118,13 @@ func handleGetSeasons(logger zerolog.Logger, seasonService service.SeasonService
 			data = append(data, service.ToSeasonResponse(season))
 		}
 
-		totalPages := int(math.Ceil(float64(total) / float64(pageSize)))
+		totalPages := int(math.Ceil(float64(total) / float64(q.PageSize)))
 
 		response.RespondSuccess(ctx, logger, http.StatusOK, api.PaginatedResponse[api.SeasonResponse]{
 			Data: data,
 			Pagination: api.PaginationMeta{
-				Page:       page,
-				PageSize:   pageSize,
+				Page:       q.Page,
+				PageSize:   q.PageSize,
 				Total:      total,
 				TotalPages: totalPages,
 			},

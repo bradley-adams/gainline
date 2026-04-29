@@ -85,7 +85,7 @@ mockgen \
 
 ## Todo:
 
-- Add Validateion of pagination params. EG cant be zero, negative etc.
+- Paginate get teams.
 - Create/Update competition swagger default violates unique constraint.
 - Error response standardisation (consistent shape for errors).
 - Aggregates should be assembled using aggregate-shaped queries (Season)
