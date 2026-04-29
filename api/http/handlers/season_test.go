@@ -83,7 +83,7 @@ var _ = Describe("season handlers", func() {
 		router = gin.New()
 
 		router.POST("/competitions/:competitionID/seasons", handleCreateSeason(logger, validate, mockSvc))
-		router.GET("/competitions/:competitionID/seasons", handleGetSeasons(logger, mockSvc))
+		router.GET("/competitions/:competitionID/seasons", handleGetSeasons(logger, validate, mockSvc))
 		router.GET("/competitions/:competitionID/seasons/:seasonID", handleGetSeason(logger))
 		router.PUT("/competitions/:competitionID/seasons/:seasonID", handleUpdateSeason(logger, validate, mockSvc))
 		router.DELETE("/competitions/:competitionID/seasons/:seasonID", handleDeleteSeason(logger, mockSvc))
