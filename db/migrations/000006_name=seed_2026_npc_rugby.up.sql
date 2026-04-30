@@ -459,7 +459,8 @@ VALUES
 ('ff000000-0000-4000-8000-000000000070', 'cc000000-0000-4000-8000-000000000001', 'ee000000-0000-4000-8000-000000000010',
  TIMESTAMPTZ '2026-10-04 19:10+12',
  '6b5c3642-c026-4e89-81f7-024c40638f9a', '15c76909-f78a-4d89-bc19-7c80265e1e08',
- NULL, NULL, 'scheduled', now(), now()), -- CMK v STL
+ NULL, NULL, 'scheduled', now(), now()); -- CMK v STL
+
 
 -- Quarterfinals (10–11 Oct 2026) — TBD matchups, placeholders only
 -- 4 QF games: 1v8, 2v7, 3v6, 4v5 (seedings unknown until end of regular season)
