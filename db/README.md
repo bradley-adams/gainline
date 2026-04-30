@@ -125,6 +125,7 @@ just db-test-clean
 
 ## Todo
 
+- Timezones in migrations should all be the same. UTC.
 - Adding season sponsor column. (Remove from competition name).
 - Handle shield challenge games (Side competitions/trophies).
 - Points standings tables and bonus points.
