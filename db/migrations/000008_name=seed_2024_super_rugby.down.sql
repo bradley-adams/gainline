@@ -1,0 +1,4 @@
+DELETE FROM games        WHERE season_id = 'srp2024aa-0000-4000-8000-000000000001';
+DELETE FROM stages       WHERE season_id = 'srp2024aa-0000-4000-8000-000000000001';
+DELETE FROM season_teams WHERE season_id = 'srp2024aa-0000-4000-8000-000000000001';
+DELETE FROM seasons      WHERE id        = 'srp2024aa-0000-4000-8000-000000000001';
