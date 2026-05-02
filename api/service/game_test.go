@@ -280,7 +280,7 @@ var _ = Describe("game", func() {
 		})
 	})
 
-	Describe("GetAllByStage", func() {
+	Describe("GetAllGames", func() {
 		It("should retrieve games by stage without errors", func() {
 			mockDB.EXPECT().
 				New(gomock.Any()).
@@ -330,7 +330,7 @@ var _ = Describe("game", func() {
 			Expect(games[1].DeletedAt.Time).To(Equal(validGamesResponse[1].DeletedAt.Time))
 		})
 
-		It("should return error if GetGamesByStageID fails", func() {
+		It("should return error if GetGames fails", func() {
 			mockDB.EXPECT().
 				New(gomock.Any()).
 				Return(mockQueries)
@@ -344,7 +344,7 @@ var _ = Describe("game", func() {
 			games, err := svc.GetAll(context.Background(), validSeasonID, validStageID)
 
 			Expect(games).To(BeNil())
-			Expect(err.Error()).To(Equal("unable to get games by stage: a valid testing error"))
+			Expect(err.Error()).To(Equal("unable to get games: a valid testing error"))
 		})
 	})
 
