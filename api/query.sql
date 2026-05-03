@@ -214,7 +214,32 @@ SELECT
 FROM
 	teams
 WHERE
-	deleted_at IS NULL;	
+	deleted_at IS NULL;
+
+-- name: GetTeamsPaginated :many
+-- Fetch teams with pagination, excluding soft-deleted teams
+SELECT
+	id,
+	name,
+	abbreviation,
+	location,
+	created_at,
+	updated_at,
+	deleted_at
+FROM
+	teams
+WHERE
+	deleted_at IS NULL
+ORDER BY
+	name ASC
+LIMIT @page_limit
+OFFSET @page_offset;
+
+-- name: CountTeams :one
+-- Get total teams (excluding soft-deleted)
+SELECT COUNT(*)
+FROM teams
+WHERE deleted_at IS NULL;
 
 -- name: UpdateTeam :exec
 -- Update an existing team by id
