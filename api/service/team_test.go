@@ -257,6 +257,89 @@ var _ = Describe("team", func() {
 		})
 	})
 
+	Describe("GetTeamsPaginated", func() {
+		It("should retrieve paginated teams with total count", func() {
+			limit := 10
+			offset := 0
+
+			mockDB.EXPECT().
+				New(gomock.Any()).
+				Return(mockQueries)
+
+			mockQueries.EXPECT().
+				CountTeams(gomock.Any()).
+				Return(int64(len(validTeamsFromDB)), nil)
+
+			mockQueries.EXPECT().
+				GetTeamsPaginated(
+					gomock.Any(),
+					db.GetTeamsPaginatedParams{
+						PageOffset: int32(offset),
+						PageLimit:  int32(limit),
+					},
+				).
+				Return(validTeamsFromDB, nil)
+
+			teams, total, err := svc.GetAllPaginated(context.Background(), limit, offset)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(total).To(Equal(int64(len(validTeamsFromDB))))
+
+			Expect(teams[0].ID).To(Equal(validTeamsResponse[0].ID))
+			Expect(teams[0].Name).To(Equal(validTeamsResponse[0].Name))
+			Expect(teams[0].Abbreviation).To(Equal(validTeamsResponse[0].Abbreviation))
+			Expect(teams[0].Location).To(Equal(validTeamsResponse[0].Location))
+			Expect(teams[0].CreatedAt).To(Equal(validTeamsResponse[0].CreatedAt))
+			Expect(teams[0].UpdatedAt).To(Equal(validTeamsResponse[0].UpdatedAt))
+			Expect(teams[0].DeletedAt.Time).To(Equal(validTeamsResponse[0].DeletedAt.Time))
+		})
+
+		It("should return error when count fails", func() {
+			limit := 10
+			offset := 0
+
+			mockDB.EXPECT().
+				New(gomock.Any()).
+				Return(mockQueries)
+
+			mockQueries.EXPECT().
+				CountTeams(gomock.Any()).
+				Return(int64(0), validTestError)
+
+			teams, total, err := svc.GetAllPaginated(context.Background(), limit, offset)
+
+			Expect(teams).To(BeNil())
+			Expect(total).To(Equal(int64(0)))
+			Expect(err.Error()).To(Equal("count teams: a valid testing error"))
+		})
+
+		It("should return error when get paginated fails", func() {
+			limit := 10
+			offset := 0
+
+			mockDB.EXPECT().
+				New(gomock.Any()).
+				Return(mockQueries)
+
+			mockQueries.EXPECT().
+				CountTeams(gomock.Any()).
+				Return(int64(2), nil)
+
+			mockQueries.EXPECT().
+				GetTeamsPaginated(
+					gomock.Any(),
+					gomock.Any(),
+				).
+				Return(nil, validTestError)
+
+			teams, total, err := svc.GetAllPaginated(context.Background(), limit, offset)
+
+			Expect(teams).To(BeNil())
+			Expect(total).To(Equal(int64(0)))
+			Expect(err.Error()).To(Equal("get teams: a valid testing error"))
+		})
+	})
+
 	Describe("GetTeam", func() {
 		It("should retrieve a team without errors", func() {
 			mockDB.EXPECT().New(
