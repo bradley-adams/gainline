@@ -16,6 +16,7 @@ import (
 type TeamService interface {
 	Create(ctx context.Context, req *api.TeamRequest) (db.Team, error)
 	GetAll(ctx context.Context) ([]db.Team, error)
+	GetAllPaginated(ctx context.Context, limit, offset int) ([]db.Team, int64, error)
 	Get(ctx context.Context, teamID uuid.UUID) (db.Team, error)
 	Update(ctx context.Context, req *api.TeamRequest, teamID uuid.UUID) (db.Team, error)
 	Delete(ctx context.Context, teamID uuid.UUID) error
@@ -62,6 +63,41 @@ func (s *teamService) GetAll(ctx context.Context) ([]db.Team, error) {
 	}
 
 	return teams, nil
+}
+
+func (s *teamService) GetAllPaginated(
+	ctx context.Context,
+	limit, offset int,
+) ([]db.Team, int64, error) {
+	var (
+		teams []db.Team
+		total int64
+	)
+
+	err := db_handler.Run(ctx, s.db, func(q db_handler.Queries) error {
+		var err error
+
+		total, err = q.CountTeams(ctx)
+		if err != nil {
+			return errors.Wrap(err, "count teams")
+		}
+
+		teams, err = q.GetTeamsPaginated(ctx, db.GetTeamsPaginatedParams{
+			PageOffset: int32(offset),
+			PageLimit:  int32(limit),
+		})
+		if err != nil {
+			return errors.Wrap(err, "get teams")
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return teams, total, nil
 }
 
 func (s *teamService) Get(ctx context.Context, teamID uuid.UUID) (db.Team, error) {
