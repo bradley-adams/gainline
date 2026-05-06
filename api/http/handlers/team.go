@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"math"
 	"net/http"
 
 	"github.com/bradley-adams/gainline/http/api"
@@ -78,6 +79,66 @@ func handleGetTeams(logger zerolog.Logger, teamService service.TeamService) gin.
 		}
 
 		response.RespondSuccess(ctx, logger, http.StatusOK, teamsResponse)
+	}
+}
+
+// handleGetTeamsPaginated retrieves teams with pagination
+//
+//	@Summary	Retrieve teams with pagination
+//	@ID			get-teams-paginated
+//	@Tags		Teams
+//	@Produce	json
+//	@Param		page		query		int	false	"Page number"		default(1)
+//	@Param		page_size	query		int	false	"Items per page"	default(20)
+//	@Success	200			{object}	api.PaginatedResponse[api.TeamResponse]
+//	@Failure	500			{object}	response.ErrorResponse
+//	@Router		/teamspaginated [get]
+func handleGetTeamsPaginated(
+	logger zerolog.Logger,
+	validate *validator.Validate,
+	teamService service.TeamService,
+) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		q := api.PaginationRequest{}
+
+		if err := ctx.ShouldBindQuery(&q); err != nil {
+			response.RespondError(ctx, logger, err, http.StatusBadRequest, "invalid query params")
+			return
+		}
+
+		if err := validate.Struct(q); err != nil {
+			response.RespondError(ctx, logger, err, http.StatusBadRequest, "invalid pagination params")
+			return
+		}
+
+		q.SetDefaults()
+
+		teams, total, err := teamService.GetAllPaginated(
+			ctx.Request.Context(),
+			q.PageSize,
+			q.Offset(),
+		)
+		if err != nil {
+			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get teams")
+			return
+		}
+
+		data := make([]api.TeamResponse, 0, len(teams))
+		for _, team := range teams {
+			data = append(data, api.ToTeamResponse(team))
+		}
+
+		totalPages := int(math.Ceil(float64(total) / float64(q.PageSize)))
+
+		response.RespondSuccess(ctx, logger, http.StatusOK, api.PaginatedResponse[api.TeamResponse]{
+			Data: data,
+			Pagination: api.PaginationMeta{
+				Page:       q.Page,
+				PageSize:   q.PageSize,
+				Total:      total,
+				TotalPages: totalPages,
+			},
+		})
 	}
 }
 
