@@ -21,11 +21,12 @@ import (
 
 // Manual mock for TeamService
 type mockTeamService struct {
-	CreateFn func(ctx context.Context, req *api.TeamRequest) (db.Team, error)
-	GetAllFn func(ctx context.Context) ([]db.Team, error)
-	GetFn    func(ctx context.Context, teamID uuid.UUID) (db.Team, error)
-	UpdateFn func(ctx context.Context, req *api.TeamRequest, teamID uuid.UUID) (db.Team, error)
-	DeleteFn func(ctx context.Context, teamID uuid.UUID) error
+	CreateFn          func(ctx context.Context, req *api.TeamRequest) (db.Team, error)
+	GetAllFn          func(ctx context.Context) ([]db.Team, error)
+	GetAllPaginatedFn func(ctx context.Context, limit, offset int) ([]db.Team, int64, error)
+	GetFn             func(ctx context.Context, teamID uuid.UUID) (db.Team, error)
+	UpdateFn          func(ctx context.Context, req *api.TeamRequest, teamID uuid.UUID) (db.Team, error)
+	DeleteFn          func(ctx context.Context, teamID uuid.UUID) error
 }
 
 func (m *mockTeamService) Create(ctx context.Context, req *api.TeamRequest) (db.Team, error) {
@@ -40,6 +41,13 @@ func (m *mockTeamService) GetAll(ctx context.Context) ([]db.Team, error) {
 		return m.GetAllFn(ctx)
 	}
 	return nil, nil
+}
+
+func (m *mockTeamService) GetAllPaginated(ctx context.Context, limit, offset int) ([]db.Team, int64, error) {
+	if m.GetAllPaginatedFn != nil {
+		return m.GetAllPaginatedFn(ctx, limit, offset)
+	}
+	return nil, 0, nil
 }
 
 func (m *mockTeamService) Get(ctx context.Context, teamID uuid.UUID) (db.Team, error) {
@@ -83,6 +91,7 @@ var _ = Describe("team handlers", func() {
 
 		router.POST("/teams", handleCreateTeam(logger, validate, mockSvc))
 		router.GET("/teams", handleGetTeams(logger, mockSvc))
+		router.GET("/teamspaginated", handleGetTeamsPaginated(logger, validate, mockSvc))
 		router.GET("/teams/:teamID", handleGetTeam(logger, mockSvc))
 		router.PUT("/teams/:teamID", handleUpdateTeam(logger, validate, mockSvc))
 		router.DELETE("/teams/:teamID", handleDeleteTeam(logger, mockSvc))
@@ -162,6 +171,39 @@ var _ = Describe("team handlers", func() {
 			req := httptest.NewRequest(http.MethodGet, "/teams", nil)
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
+			Expect(w.Code).To(Equal(http.StatusInternalServerError))
+		})
+	})
+
+	Describe("get teams with pagination", func() {
+		It("returns 200 and teams", func() {
+			id := uuid.New()
+
+			mockSvc.GetAllPaginatedFn = func(ctx context.Context, limit, offset int) ([]db.Team, int64, error) {
+				Expect(limit).To(Equal(10))
+				Expect(offset).To(Equal(0))
+
+				return []db.Team{
+					{ID: id, Name: "Hurricanes", Abbreviation: "HUR", Location: "Wellington"},
+				}, int64(1), nil
+			}
+
+			req := httptest.NewRequest(http.MethodGet, "/teamspaginated?page=1&page_size=10", nil)
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+
+			Expect(w.Code).To(Equal(http.StatusOK))
+		})
+
+		It("returns 500 when service fails", func() {
+			mockSvc.GetAllPaginatedFn = func(ctx context.Context, limit, offset int) ([]db.Team, int64, error) {
+				return nil, int64(0), fmt.Errorf("db failure")
+			}
+
+			req := httptest.NewRequest(http.MethodGet, "/teamspaginated?page=1&page_size=10", nil)
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+
 			Expect(w.Code).To(Equal(http.StatusInternalServerError))
 		})
 	})
