@@ -1,9 +1,9 @@
-import { TestBed } from '@angular/core/testing'
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing'
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
-import { TeamsService } from './teams.service'
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing'
+import { TestBed } from '@angular/core/testing'
 import { environment } from '../../../environments/environment'
 import { Team } from '../../types/api'
+import { TeamsService } from './teams.service'
 
 describe('TeamsService', () => {
     let service: TeamsService
@@ -57,6 +57,35 @@ describe('TeamsService', () => {
         const req = httpMock.expectOne(`${baseUrl}/v1/teams`)
         expect(req.request.method).toBe('GET')
         req.flush(mockTeams)
+    })
+
+    it('should get teams paginated', () => {
+        const page = 1
+        const pageSize = 10
+
+        const mockPaginatedResponse = {
+            data: mockTeams,
+            pagination: {
+                page,
+                page_size: pageSize,
+                total: 2,
+                total_pages: 1
+            }
+        }
+
+        service.getTeamsPaginated(page, pageSize).subscribe((response) => {
+            expect(response).toEqual(mockPaginatedResponse)
+        })
+
+        const req = httpMock.expectOne(
+            (request) =>
+                request.url === `${baseUrl}/v1/teamspaginated` &&
+                request.params.get('page') === String(page) &&
+                request.params.get('page_size') === String(pageSize)
+        )
+
+        expect(req.request.method).toBe('GET')
+        req.flush(mockPaginatedResponse)
     })
 
     it('should get a team by id', () => {

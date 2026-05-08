@@ -1,8 +1,8 @@
-import { inject, Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
-import { Team } from '../../types/api'
-import { environment } from '../../../environments/environment'
+import { inject, Injectable } from '@angular/core'
 import { Observable } from 'rxjs'
+import { environment } from '../../../environments/environment'
+import { PaginatedResponse, Team } from '../../types/api'
 
 @Injectable({
     providedIn: 'root'
@@ -13,6 +13,15 @@ export class TeamsService {
 
     getTeams(): Observable<Team[]> {
         return this.http.get<Team[]>(`${this.path}/v1/teams`)
+    }
+
+    getTeamsPaginated(page: number, pageSize: number): Observable<PaginatedResponse<Team>> {
+        return this.http.get<PaginatedResponse<Team>>(`${this.path}/v1/teamspaginated`, {
+            params: {
+                page,
+                page_size: pageSize
+            }
+        })
     }
 
     getTeam(id: string): Observable<Team> {
