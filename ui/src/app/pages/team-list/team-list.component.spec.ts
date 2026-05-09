@@ -5,11 +5,11 @@ import { By } from '@angular/platform-browser'
 import { provideRouter, Router } from '@angular/router'
 import { of, throwError } from 'rxjs'
 
-import { TeamListComponent } from './team-list.component'
-import { TeamDetailComponent } from '../team-detail/team-detail.component'
-import { TeamsService } from '../../services/teams/teams.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
+import { TeamsService } from '../../services/teams/teams.service'
 import { Team } from '../../types/api'
+import { TeamDetailComponent } from '../team-detail/team-detail.component'
+import { TeamListComponent } from './team-list.component'
 
 describe('TeamListComponent', () => {
     let component: TeamListComponent
@@ -54,8 +54,18 @@ describe('TeamListComponent', () => {
     ]
 
     beforeEach(async () => {
-        teamsService = jasmine.createSpyObj('TeamsService', ['getTeams', 'deleteTeam'])
-        teamsService.getTeams.and.returnValue(of(mockTeams))
+        teamsService = jasmine.createSpyObj('TeamsService', ['getTeamsPaginated', 'deleteTeam'])
+        teamsService.getTeamsPaginated.and.callFake((_, page = 1, pageSize = 10) =>
+            of({
+                data: mockTeams,
+                pagination: {
+                    page,
+                    page_size: pageSize,
+                    total: mockTeams.length,
+                    total_pages: 1
+                }
+            })
+        )
         teamsService.deleteTeam.and.returnValue(of(undefined))
 
         notificationService = jasmine.createSpyObj('NotificationService', [
@@ -94,6 +104,22 @@ describe('TeamListComponent', () => {
         expect(component).toBeTruthy()
     })
 
+    it('should call getTeamsPaginated with pagination params', () => {
+        expect(teamsService.getTeamsPaginated).toHaveBeenCalledWith(1, 10)
+    })
+
+    it('should set total from pagination response', () => {
+        expect(component.total).toBe(mockTeams.length)
+    })
+
+    it('should load new page on paginator change', () => {
+        component.onPageChange({ pageIndex: 1, pageSize: 25, length: 4 } as any)
+
+        expect(component.page).toBe(2)
+        expect(component.pageSize).toBe(25)
+        expect(teamsService.getTeamsPaginated).toHaveBeenCalledWith(2, 25)
+    })
+
     it('should load teams into the table', () => {
         const rows = fixture.nativeElement.querySelectorAll('tr')
         expect(rows.length).toBe(mockTeams.length + 1) // header + teams
@@ -122,7 +148,7 @@ describe('TeamListComponent', () => {
 
     it('should show error when loading teams fails', () => {
         const mockError = new Error('Failed')
-        teamsService.getTeams.and.returnValue(throwError(() => mockError))
+        teamsService.getTeamsPaginated.and.returnValue(throwError(() => mockError))
 
         component.ngOnInit()
         expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
