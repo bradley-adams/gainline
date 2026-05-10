@@ -173,10 +173,10 @@ export class SeasonDetailComponent implements OnInit {
     }
 
     private loadTeams(): void {
-        this.teamsService.getTeams().subscribe({
-            next: (teams) => {
-                this.teams = teams
-                this.filteredTeams = [...teams]
+        this.teamsService.getTeamsPaginated(1, 100).subscribe({
+            next: (response) => {
+                this.teams = response.data
+                this.filteredTeams = [...response.data]
             },
             error: (err) => {
                 this.notificationService.showErrorAndLog('Load Error', 'Failed to load teams', err)
