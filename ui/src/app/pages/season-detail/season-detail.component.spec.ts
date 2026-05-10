@@ -129,8 +129,18 @@ describe('SeasonDetailComponent', () => {
         seasonsService.updateSeason.and.returnValue(of(mockSeason2))
         seasonsService.deleteSeason.and.returnValue(of(undefined))
 
-        teamsService = jasmine.createSpyObj('TeamsService', ['getTeams'])
-        teamsService.getTeams.and.returnValue(of(mockTeams))
+        teamsService = jasmine.createSpyObj('TeamsService', ['getTeamsPaginated'])
+        teamsService.getTeamsPaginated.and.callFake((page = 1, pageSize = 100) =>
+            of({
+                data: mockTeams,
+                pagination: {
+                    page,
+                    page_size: pageSize,
+                    total: mockTeams.length,
+                    total_pages: 1
+                }
+            })
+        )
 
         notificationService = jasmine.createSpyObj('NotificationService', [
             'showConfirm',
@@ -395,7 +405,7 @@ describe('SeasonDetailComponent', () => {
 
         it('should show error if loadTeams fails', () => {
             const mockError = new Error('Teams failed')
-            teamsService.getTeams.and.returnValue(throwError(() => mockError))
+            teamsService.getTeamsPaginated.and.returnValue(throwError(() => mockError))
             component['loadTeams']()
             expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
                 'Load Error',
