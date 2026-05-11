@@ -55,33 +55,6 @@ func handleCreateTeam(
 	}
 }
 
-// handleGetTeams retrieves all teams
-//
-//	@Summary	Retrieve all teams
-//	@ID			get-teams
-//	@Tags		Teams
-//	@Produce	json
-//	@Success	200	{array}		api.TeamResponse		"List of teams"
-//	@Failure	500	{object}	response.ErrorResponse	"Internal server error"
-//	@Router		/teams [get]
-func handleGetTeams(logger zerolog.Logger, teamService service.TeamService) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-
-		teams, err := teamService.GetAll(ctx.Request.Context())
-		if err != nil {
-			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to get teams")
-			return
-		}
-
-		teamsResponse := make([]api.TeamResponse, 0, len(teams))
-		for _, team := range teams {
-			teamsResponse = append(teamsResponse, api.ToTeamResponse(team))
-		}
-
-		response.RespondSuccess(ctx, logger, http.StatusOK, teamsResponse)
-	}
-}
-
 // handleGetTeamsPaginated retrieves teams with pagination
 //
 //	@Summary	Retrieve teams with pagination
