@@ -65,7 +65,6 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 		// teams
 		teamService := service.NewTeamService(db)
 		v1public.POST("/teams", handleCreateTeam(logger, validate, teamService))
-		v1public.GET("/teams", handleGetTeams(logger, teamService))
 		v1public.GET("/teamspaginated", handleGetTeamsPaginated(logger, validate, teamService))
 		v1public.GET("/teams/:teamID", handleGetTeam(logger, teamService))
 		v1public.PUT("/teams/:teamID", handleUpdateTeam(logger, validate, teamService))
