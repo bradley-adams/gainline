@@ -800,33 +800,6 @@
             }
         },
         "/teams": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Teams"
-                ],
-                "summary": "Retrieve all teams",
-                "operationId": "get-teams",
-                "responses": {
-                    "200": {
-                        "description": "List of teams",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/api.TeamResponse"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/response.ErrorResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "consumes": [
                     "application/json"
