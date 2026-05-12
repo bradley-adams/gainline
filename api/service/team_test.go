@@ -40,7 +40,6 @@ var _ = Describe("team", func() {
 	}
 
 	var validNilTeam db.Team
-	var validNilTeams []db.Team
 
 	validTeamFromDB := db.Team{
 		ID:           validTeamID,
@@ -210,50 +209,6 @@ var _ = Describe("team", func() {
 
 			Expect(team).To(Equal(validNilTeam))
 			Expect(err.Error()).To(Equal(validTestError.Error()))
-		})
-	})
-
-	Describe("GetTeams", func() {
-		It("should retrieve all teams without errors", func() {
-			mockDB.EXPECT().New(
-				gomock.Any(),
-			).Return(mockQueries)
-			mockQueries.EXPECT().GetTeams(
-				gomock.Any(),
-			).Return(validTeamsFromDB, nil)
-
-			teams, err := svc.GetAll(context.Background())
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(teams[0].ID).To(Equal(validTeamsResponse[0].ID))
-			Expect(teams[0].Name).To(Equal(validTeamsResponse[0].Name))
-			Expect(teams[0].Abbreviation).To(Equal(validTeamsResponse[0].Abbreviation))
-			Expect(teams[0].Location).To(Equal(validTeamsResponse[0].Location))
-			Expect(teams[0].CreatedAt).To(Equal(validTeamsResponse[0].CreatedAt))
-			Expect(teams[0].UpdatedAt).To(Equal(validTeamsResponse[0].UpdatedAt))
-			Expect(teams[0].DeletedAt.Time).To(Equal(validTeamsResponse[0].DeletedAt.Time))
-
-			Expect(teams[1].ID).To(Equal(validTeamsResponse[1].ID))
-			Expect(teams[1].Name).To(Equal(validTeamsResponse[1].Name))
-			Expect(teams[1].Abbreviation).To(Equal(validTeamsResponse[1].Abbreviation))
-			Expect(teams[1].Location).To(Equal(validTeamsResponse[1].Location))
-			Expect(teams[1].CreatedAt).To(Equal(validTeamsResponse[1].CreatedAt))
-			Expect(teams[1].UpdatedAt).To(Equal(validTeamsResponse[1].UpdatedAt))
-			Expect(teams[1].DeletedAt.Time).To(Equal(validTeamsResponse[1].DeletedAt.Time))
-		})
-
-		It("should return formatted error when retrieval fails", func() {
-			mockDB.EXPECT().New(
-				gomock.Any(),
-			).Return(mockQueries)
-			mockQueries.EXPECT().GetTeams(
-				gomock.Any(),
-			).Return(nil, validTestError)
-
-			teams, err := svc.GetAll(context.Background())
-
-			Expect(teams).To(Equal(validNilTeams))
-			Expect(err.Error()).To(Equal("unable to get teams: a valid testing error"))
 		})
 	})
 

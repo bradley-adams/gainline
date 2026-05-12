@@ -804,24 +804,6 @@ paths:
       tags:
       - Games
   /teams:
-    get:
-      operationId: get-teams
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: List of teams
-          schema:
-            items:
-              $ref: '#/definitions/api.TeamResponse'
-            type: array
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/response.ErrorResponse'
-      summary: Retrieve all teams
-      tags:
-      - Teams
     post:
       consumes:
       - application/json

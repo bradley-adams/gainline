@@ -15,7 +15,6 @@ import (
 // TeamService defines the contract for team-related operations.
 type TeamService interface {
 	Create(ctx context.Context, req *api.TeamRequest) (db.Team, error)
-	GetAll(ctx context.Context) ([]db.Team, error)
 	GetAllPaginated(ctx context.Context, limit, offset int) ([]db.Team, int64, error)
 	Get(ctx context.Context, teamID uuid.UUID) (db.Team, error)
 	Update(ctx context.Context, req *api.TeamRequest, teamID uuid.UUID) (db.Team, error)
@@ -45,24 +44,6 @@ func (s *teamService) Create(ctx context.Context, req *api.TeamRequest) (db.Team
 	}
 
 	return team, nil
-}
-
-func (s *teamService) GetAll(ctx context.Context) ([]db.Team, error) {
-	var teams []db.Team
-
-	err := db_handler.Run(ctx, s.db, func(queries db_handler.Queries) error {
-		var err error
-		teams, err = queries.GetTeams(ctx)
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "unable to get teams")
-	}
-
-	return teams, nil
 }
 
 func (s *teamService) GetAllPaginated(
