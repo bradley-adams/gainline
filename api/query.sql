@@ -201,21 +201,6 @@ WHERE
 AND
 	deleted_at IS NULL;	
 
--- name: GetTeams :many
--- Fetch all teams for a competition, excluding soft-deleted teams
-SELECT
-	id,
-	name,
-	abbreviation,
-	location,
-	created_at,
-	updated_at,
-	deleted_at
-FROM
-	teams
-WHERE
-	deleted_at IS NULL;
-
 -- name: GetTeamsPaginated :many
 -- Fetch teams with pagination, excluding soft-deleted teams
 SELECT

@@ -1052,53 +1052,6 @@ func (q *Queries) GetTeam(ctx context.Context, id uuid.UUID) (Team, error) {
 	return i, err
 }
 
-const getTeams = `-- name: GetTeams :many
-SELECT
-	id,
-	name,
-	abbreviation,
-	location,
-	created_at,
-	updated_at,
-	deleted_at
-FROM
-	teams
-WHERE
-	deleted_at IS NULL
-`
-
-// Fetch all teams for a competition, excluding soft-deleted teams
-func (q *Queries) GetTeams(ctx context.Context) ([]Team, error) {
-	rows, err := q.db.QueryContext(ctx, getTeams)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Team
-	for rows.Next() {
-		var i Team
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Abbreviation,
-			&i.Location,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getTeamsPaginated = `-- name: GetTeamsPaginated :many
 SELECT
 	id,
