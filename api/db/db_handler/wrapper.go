@@ -50,7 +50,6 @@ type Queries interface {
 	//Team
 	CreateTeam(ctx context.Context, arg db.CreateTeamParams) error
 	GetTeam(ctx context.Context, id uuid.UUID) (db.Team, error)
-	GetTeams(ctx context.Context) ([]db.Team, error)
 	GetTeamsPaginated(ctx context.Context, arg db.GetTeamsPaginatedParams) ([]db.Team, error)
 	CountTeams(ctx context.Context) (int64, error)
 	UpdateTeam(ctx context.Context, arg db.UpdateTeamParams) error
