@@ -49,16 +49,6 @@ describe('TeamsService', () => {
         expect(service).toBeTruthy()
     })
 
-    it('should get all teams', () => {
-        service.getTeams().subscribe((teams) => {
-            expect(teams).toEqual(mockTeams)
-        })
-
-        const req = httpMock.expectOne(`${baseUrl}/v1/teams`)
-        expect(req.request.method).toBe('GET')
-        req.flush(mockTeams)
-    })
-
     it('should get teams paginated', () => {
         const page = 1
         const pageSize = 10
