@@ -1,6 +1,11 @@
--- Seed deletable test data
+-- Seed deletable test data for use in integration/e2e tests
 
-INSERT INTO competitions (id, name, created_at, updated_at)
+INSERT INTO competitions (
+    id,
+    name,
+    created_at,
+    updated_at
+)
 VALUES (
     'a973dd2c-ecd3-4578-b5c3-9022a3f0ecbd',
     'Deletable Test Competition',
@@ -25,6 +30,7 @@ VALUES (
     now()
 );
 
+-- Insert test teams
 INSERT INTO teams (
     id,
     name,
@@ -51,6 +57,7 @@ VALUES
     now()
 );
 
+-- Connect test teams to season
 INSERT INTO season_teams (
     id,
     season_id,
@@ -77,6 +84,7 @@ VALUES
     NULL
 );
 
+-- Insert test stage
 INSERT INTO stages (
     id,
     season_id,
@@ -96,6 +104,7 @@ VALUES (
     now()
 );
 
+-- Insert test game
 INSERT INTO games (
     id,
     season_id,
