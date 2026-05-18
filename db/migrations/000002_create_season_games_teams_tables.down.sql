@@ -1,6 +1,8 @@
+-- Drop competitions, seasons, teams, season_teams, stages, and games tables
+
 DROP TABLE IF EXISTS games CASCADE;
-DROP TABLE IF EXISTS season_teams CASCADE;
 DROP TABLE IF EXISTS stages CASCADE;
+DROP TABLE IF EXISTS season_teams CASCADE;
 DROP TABLE IF EXISTS seasons CASCADE;
 DROP TABLE IF EXISTS teams CASCADE;
 DROP TABLE IF EXISTS competitions CASCADE;

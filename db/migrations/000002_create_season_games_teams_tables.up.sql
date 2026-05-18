@@ -1,3 +1,5 @@
+-- Create competitions, seasons, teams, season_teams, stages, and games tables
+
 CREATE TABLE competitions (
     id UUID PRIMARY KEY,
     name TEXT NOT NULL,
@@ -6,8 +8,8 @@ CREATE TABLE competitions (
     deleted_at TIMESTAMP WITH TIME ZONE
 );
 
-CREATE UNIQUE INDEX unique_competition_name_ci 
-ON competitions (LOWER(name)) 
+CREATE UNIQUE INDEX unique_competition_name_ci
+ON competitions (LOWER(name))
 WHERE deleted_at IS NULL;
 
 CREATE TABLE seasons (
@@ -46,14 +48,15 @@ CREATE TABLE season_teams (
 CREATE TYPE stage_type AS ENUM ('regular', 'finals');
 
 CREATE TABLE stages (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  season_id UUID NOT NULL REFERENCES seasons(id),
-  name TEXT NOT NULL,
-  stage_type stage_type NOT NULL,
-  order_index INT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  deleted_at TIMESTAMP WITH TIME ZONE
+    id UUID PRIMARY KEY,
+    season_id UUID NOT NULL,
+    name TEXT NOT NULL,
+    stage_type stage_type NOT NULL,
+    order_index INT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    deleted_at TIMESTAMP WITH TIME ZONE,
+    CONSTRAINT fk_stages_seasons FOREIGN KEY (season_id) REFERENCES seasons(id) ON DELETE CASCADE
 );
 
 CREATE TYPE game_status AS ENUM ('scheduled', 'playing', 'finished');
