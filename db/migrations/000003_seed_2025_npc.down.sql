@@ -1,13 +1,15 @@
+-- Remove seeded National Provincial Championship 2025 competition, season, teams, stages, and all round/finals games
+
 -- Remove 2025 games
 DELETE FROM games
 WHERE season_id = '9300778f-cce0-4efe-af6c-e399d8170315';
 
--- Remove 2025 season-team links
-DELETE FROM season_teams
-WHERE season_id = '9300778f-cce0-4efe-af6c-e399d8170315';
-
 -- Remove 2025 stages (regular + finals)
 DELETE FROM stages
+WHERE season_id = '9300778f-cce0-4efe-af6c-e399d8170315';
+
+-- Remove 2025 season-team links
+DELETE FROM season_teams
 WHERE season_id = '9300778f-cce0-4efe-af6c-e399d8170315';
 
 -- Remove 2025 teams
