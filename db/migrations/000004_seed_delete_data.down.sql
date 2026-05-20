@@ -19,8 +19,8 @@ WHERE id = 'fe04fe69-834f-42be-9821-04e53e8de26d';
 -- Remove test teams
 DELETE FROM teams
 WHERE id IN (
-    '2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0001',
-    '2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0002'
+    'a8a3868f-7064-4769-a11c-1f8df795f6cc',
+    'a1dd4e4c-1d72-48ea-850e-a9715f2940e3'
 );
 
 -- Remove test competition
