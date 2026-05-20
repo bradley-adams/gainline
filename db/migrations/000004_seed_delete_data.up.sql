@@ -41,7 +41,7 @@ INSERT INTO teams (
 )
 VALUES
 (
-    '2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0001',
+    'a8a3868f-7064-4769-a11c-1f8df795f6cc',
     'Deletable Test Team A',
     'DTA',
     'Test City A',
@@ -49,7 +49,7 @@ VALUES
     now()
 ),
 (
-    '2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0002',
+    'a1dd4e4c-1d72-48ea-850e-a9715f2940e3',
     'Deletable Test Team B',
     'DTB',
     'Test City B',
@@ -70,7 +70,7 @@ VALUES
 (
     'e38a003f-35b3-4f4a-95ea-1bd047d3c158',
     'fe04fe69-834f-42be-9821-04e53e8de26d',
-    '2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0001',
+    'a8a3868f-7064-4769-a11c-1f8df795f6cc',
     now(),
     now(),
     NULL
@@ -78,7 +78,7 @@ VALUES
 (
     'e7a22e34-27e2-437c-a0c8-a21bacf57b75',
     'fe04fe69-834f-42be-9821-04e53e8de26d',
-    '2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0002',
+    'a1dd4e4c-1d72-48ea-850e-a9715f2940e3',
     now(),
     now(),
     NULL
@@ -123,8 +123,8 @@ VALUES (
     'fe04fe69-834f-42be-9821-04e53e8de26d',
     'b138fab0-39fc-4eb5-9c10-44a918ed3952',
     TIMESTAMPTZ '2025-07-31 21:10+12',
-    '2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0001',
-    '2c6f1e7b-1d3e-4e0a-9c4b-3e5e0b9f0002',
+    'a8a3868f-7064-4769-a11c-1f8df795f6cc',
+    'a1dd4e4c-1d72-48ea-850e-a9715f2940e3',
     10,
     12,
     'finished',
