@@ -15,7 +15,7 @@ import (
 // TeamService defines the contract for team-related operations.
 type TeamService interface {
 	Create(ctx context.Context, req *api.TeamRequest) (db.Team, error)
-	GetAllPaginated(ctx context.Context, limit, offset int) ([]db.Team, int64, error)
+	GetAll(ctx context.Context, limit, offset int) ([]db.Team, int64, error)
 	Get(ctx context.Context, teamID uuid.UUID) (db.Team, error)
 	Update(ctx context.Context, req *api.TeamRequest, teamID uuid.UUID) (db.Team, error)
 	Delete(ctx context.Context, teamID uuid.UUID) error
@@ -46,7 +46,7 @@ func (s *teamService) Create(ctx context.Context, req *api.TeamRequest) (db.Team
 	return team, nil
 }
 
-func (s *teamService) GetAllPaginated(
+func (s *teamService) GetAll(
 	ctx context.Context,
 	limit, offset int,
 ) ([]db.Team, int64, error) {
@@ -63,7 +63,7 @@ func (s *teamService) GetAllPaginated(
 			return errors.Wrap(err, "count teams")
 		}
 
-		teams, err = q.GetTeamsPaginated(ctx, db.GetTeamsPaginatedParams{
+		teams, err = q.GetTeams(ctx, db.GetTeamsParams{
 			PageOffset: int32(offset),
 			PageLimit:  int32(limit),
 		})

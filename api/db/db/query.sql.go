@@ -1052,7 +1052,7 @@ func (q *Queries) GetTeam(ctx context.Context, id uuid.UUID) (Team, error) {
 	return i, err
 }
 
-const getTeamsPaginated = `-- name: GetTeamsPaginated :many
+const getTeams = `-- name: GetTeams :many
 SELECT
 	id,
 	name,
@@ -1071,14 +1071,14 @@ LIMIT $2
 OFFSET $1
 `
 
-type GetTeamsPaginatedParams struct {
+type GetTeamsParams struct {
 	PageOffset int32
 	PageLimit  int32
 }
 
 // Fetch teams with pagination, excluding soft-deleted teams
-func (q *Queries) GetTeamsPaginated(ctx context.Context, arg GetTeamsPaginatedParams) ([]Team, error) {
-	rows, err := q.db.QueryContext(ctx, getTeamsPaginated, arg.PageOffset, arg.PageLimit)
+func (q *Queries) GetTeams(ctx context.Context, arg GetTeamsParams) ([]Team, error) {
+	rows, err := q.db.QueryContext(ctx, getTeams, arg.PageOffset, arg.PageLimit)
 	if err != nil {
 		return nil, err
 	}
