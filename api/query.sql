@@ -201,7 +201,7 @@ WHERE
 AND
 	deleted_at IS NULL;	
 
--- name: GetTeamsPaginated :many
+-- name: GetTeams :many
 -- Fetch teams with pagination, excluding soft-deleted teams
 SELECT
 	id,
