@@ -55,18 +55,18 @@ func handleCreateTeam(
 	}
 }
 
-// handleGetTeamsPaginated retrieves teams with pagination
+// handleGetTeams retrieves teams with pagination
 //
 //	@Summary	Retrieve teams with pagination
-//	@ID			get-teams-paginated
+//	@ID			get-teams
 //	@Tags		Teams
 //	@Produce	json
 //	@Param		page		query		int	false	"Page number"		default(1)
 //	@Param		page_size	query		int	false	"Items per page"	default(20)
 //	@Success	200			{object}	api.PaginatedResponse[api.TeamResponse]
 //	@Failure	500			{object}	response.ErrorResponse
-//	@Router		/teamspaginated [get]
-func handleGetTeamsPaginated(
+//	@Router		/teams [get]
+func handleGetTeams(
 	logger zerolog.Logger,
 	validate *validator.Validate,
 	teamService service.TeamService,
@@ -86,7 +86,7 @@ func handleGetTeamsPaginated(
 
 		q.SetDefaults()
 
-		teams, total, err := teamService.GetAllPaginated(
+		teams, total, err := teamService.GetAll(
 			ctx.Request.Context(),
 			q.PageSize,
 			q.Offset(),
