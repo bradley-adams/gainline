@@ -212,7 +212,7 @@ var _ = Describe("team", func() {
 		})
 	})
 
-	Describe("GetTeamsPaginated", func() {
+	Describe("GetTeams", func() {
 		It("should retrieve paginated teams with total count", func() {
 			limit := 10
 			offset := 0
@@ -226,16 +226,16 @@ var _ = Describe("team", func() {
 				Return(int64(len(validTeamsFromDB)), nil)
 
 			mockQueries.EXPECT().
-				GetTeamsPaginated(
+				GetTeams(
 					gomock.Any(),
-					db.GetTeamsPaginatedParams{
+					db.GetTeamsParams{
 						PageOffset: int32(offset),
 						PageLimit:  int32(limit),
 					},
 				).
 				Return(validTeamsFromDB, nil)
 
-			teams, total, err := svc.GetAllPaginated(context.Background(), limit, offset)
+			teams, total, err := svc.GetAll(context.Background(), limit, offset)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(total).To(Equal(int64(len(validTeamsFromDB))))
@@ -261,7 +261,7 @@ var _ = Describe("team", func() {
 				CountTeams(gomock.Any()).
 				Return(int64(0), validTestError)
 
-			teams, total, err := svc.GetAllPaginated(context.Background(), limit, offset)
+			teams, total, err := svc.GetAll(context.Background(), limit, offset)
 
 			Expect(teams).To(BeNil())
 			Expect(total).To(Equal(int64(0)))
@@ -281,13 +281,13 @@ var _ = Describe("team", func() {
 				Return(int64(2), nil)
 
 			mockQueries.EXPECT().
-				GetTeamsPaginated(
+				GetTeams(
 					gomock.Any(),
 					gomock.Any(),
 				).
 				Return(nil, validTestError)
 
-			teams, total, err := svc.GetAllPaginated(context.Background(), limit, offset)
+			teams, total, err := svc.GetAll(context.Background(), limit, offset)
 
 			Expect(teams).To(BeNil())
 			Expect(total).To(Equal(int64(0)))
