@@ -63,13 +63,13 @@ describe('TeamsService', () => {
             }
         }
 
-        service.getTeamsPaginated(page, pageSize).subscribe((response) => {
+        service.getTeams(page, pageSize).subscribe((response) => {
             expect(response).toEqual(mockPaginatedResponse)
         })
 
         const req = httpMock.expectOne(
             (request) =>
-                request.url === `${baseUrl}/v1/teamspaginated` &&
+                request.url === `${baseUrl}/v1/teams` &&
                 request.params.get('page') === String(page) &&
                 request.params.get('page_size') === String(pageSize)
         )
