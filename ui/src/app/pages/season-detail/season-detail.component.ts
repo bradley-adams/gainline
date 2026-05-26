@@ -173,7 +173,7 @@ export class SeasonDetailComponent implements OnInit {
     }
 
     private loadTeams(): void {
-        this.teamsService.getTeamsPaginated(1, 100).subscribe({
+        this.teamsService.getTeams(1, 100).subscribe({
             next: (response) => {
                 this.teams = response.data
                 this.filteredTeams = [...response.data]
