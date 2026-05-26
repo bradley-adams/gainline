@@ -11,8 +11,8 @@ export class TeamsService {
     private readonly path = environment.apiUrl
     private readonly http = inject(HttpClient)
 
-    getTeamsPaginated(page: number, pageSize: number): Observable<PaginatedResponse<Team>> {
-        return this.http.get<PaginatedResponse<Team>>(`${this.path}/v1/teamspaginated`, {
+    getTeams(page: number, pageSize: number): Observable<PaginatedResponse<Team>> {
+        return this.http.get<PaginatedResponse<Team>>(`${this.path}/v1/teams`, {
             params: {
                 page,
                 page_size: pageSize

@@ -54,8 +54,8 @@ describe('TeamListComponent', () => {
     ]
 
     beforeEach(async () => {
-        teamsService = jasmine.createSpyObj('TeamsService', ['getTeamsPaginated', 'deleteTeam'])
-        teamsService.getTeamsPaginated.and.callFake((_, page = 1, pageSize = 10) =>
+        teamsService = jasmine.createSpyObj('TeamsService', ['getTeams', 'deleteTeam'])
+        teamsService.getTeams.and.callFake((_, page = 1, pageSize = 10) =>
             of({
                 data: mockTeams,
                 pagination: {
@@ -104,8 +104,8 @@ describe('TeamListComponent', () => {
         expect(component).toBeTruthy()
     })
 
-    it('should call getTeamsPaginated with pagination params', () => {
-        expect(teamsService.getTeamsPaginated).toHaveBeenCalledWith(1, 10)
+    it('should call getTeams with pagination params', () => {
+        expect(teamsService.getTeams).toHaveBeenCalledWith(1, 10)
     })
 
     it('should set total from pagination response', () => {
@@ -117,7 +117,7 @@ describe('TeamListComponent', () => {
 
         expect(component.page).toBe(2)
         expect(component.pageSize).toBe(25)
-        expect(teamsService.getTeamsPaginated).toHaveBeenCalledWith(2, 25)
+        expect(teamsService.getTeams).toHaveBeenCalledWith(2, 25)
     })
 
     it('should load teams into the table', () => {
@@ -148,7 +148,7 @@ describe('TeamListComponent', () => {
 
     it('should show error when loading teams fails', () => {
         const mockError = new Error('Failed')
-        teamsService.getTeamsPaginated.and.returnValue(throwError(() => mockError))
+        teamsService.getTeams.and.returnValue(throwError(() => mockError))
 
         component.ngOnInit()
         expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(

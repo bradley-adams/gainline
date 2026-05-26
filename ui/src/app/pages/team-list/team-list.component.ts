@@ -36,7 +36,7 @@ export class TeamListComponent {
     }
 
     private loadTeams(): void {
-        this.teamsService.getTeamsPaginated(this.page, this.pageSize).subscribe({
+        this.teamsService.getTeams(this.page, this.pageSize).subscribe({
             next: (response) => {
                 this.dataSource.data = response.data
                 this.total = response.pagination.total
