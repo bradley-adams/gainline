@@ -26,6 +26,19 @@ services:
       interval: 5s
       retries: 10
 
+  gainline-redis:
+    image: redis:7-alpine
+    container_name: gainline-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+
   gainline-migrate:
     image: migrate/migrate
     volumes:
