@@ -1,5 +1,6 @@
 .PHONY: help build up rebuild down clean restart logs \
-        db-up db-stop migrate db-reset
+        db-up db-stop migrate db-reset \
+        redis-up redis-stop redis-cli
 
 # Default target
 help:
@@ -19,6 +20,11 @@ help:
 	@echo "make db-stop      Stop DB only"
 	@echo "make migrate      Run migrations"
 	@echo "make db-reset     Remove DB volume"
+	@echo ""
+	@echo "Redis"
+	@echo "make redis-up     Start Redis only"
+	@echo "make redis-stop   Stop Redis only"
+	@echo "make redis-cli    Open a redis-cli session"
 	@echo ""
 
 # Build containers
@@ -67,3 +73,14 @@ db-reset:
 	docker compose up -d gainline-db
 	docker compose run --rm gainline-migrate
 
+# Start Redis only
+redis-up:
+	docker compose up -d gainline-redis
+
+# Stop Redis container
+redis-stop:
+	docker compose stop gainline-redis
+
+# Open a redis-cli session against the running container
+redis-cli:
+	docker compose exec gainline-redis redis-cli
