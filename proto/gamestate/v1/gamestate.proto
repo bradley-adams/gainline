@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package gamestate.v1;
+
+option go_package = "github.com/bradley-adams/gainline/proto/gen/gamestate/v1;gamestatev1";
+
+message GameState {
+  string game_id = 1;
+  int32 home_score = 2;
+  int32 away_score = 3;
+  string status = 4;
+  int32 minute = 5;
+}
+
+service GameStateService {
+  rpc UpdateGameState(UpdateGameStateRequest) returns (UpdateGameStateResponse);
+  rpc WatchGameState(WatchGameStateRequest) returns (stream GameState);
+}
+
+message UpdateGameStateRequest {
+  GameState state = 1;
+}
+
+message UpdateGameStateResponse {}
+
+message WatchGameStateRequest {
+  string game_id = 1;
+}
