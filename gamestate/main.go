@@ -67,5 +67,12 @@ func setupRedisClient(logger zerolog.Logger) *redis.Client {
 
 	addr := viper.GetString("REDIS_HOST") + ":" + viper.GetString("REDIS_PORT")
 
-	return redis.New(addr)
+	client, err := redis.New(addr)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("failed to connect to redis")
+	}
+
+	logger.Info().Msg("redis connection established")
+
+	return client
 }
