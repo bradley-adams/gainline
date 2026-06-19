@@ -14,12 +14,16 @@ type Client struct {
 	rdb *redis.Client
 }
 
-func New(addr string) *Client {
-	return &Client{
-		rdb: redis.NewClient(&redis.Options{
-			Addr: addr,
-		}),
+func New(addr string) (*Client, error) {
+	rdb := redis.NewClient(&redis.Options{
+		Addr: addr,
+	})
+
+	if err := rdb.Ping(context.Background()).Err(); err != nil {
+		return nil, fmt.Errorf("redis ping failed: %w", err)
 	}
+
+	return &Client{rdb: rdb}, nil
 }
 
 func gameKey(gameID string) string {
