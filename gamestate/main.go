@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
 	"github.com/bradley-adams/gainline/gamestate/redis"
 	"github.com/bradley-adams/gainline/gamestate/server"
@@ -44,6 +45,7 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 	gamestatev1.RegisterGameStateServiceServer(grpcServer, gameStateServer)
+	reflection.Register(grpcServer)
 
 	logger.Info().Msg(serviceName + " started")
 	logger.Fatal().Err(grpcServer.Serve(lis)).Msg("failed to start server")
