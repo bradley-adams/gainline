@@ -761,6 +761,41 @@ paths:
       summary: Update a game
       tags:
       - Games
+  /competitions/{competitionID}/seasons/{seasonID}/games/{gameID}/live:
+    get:
+      operationId: watch-game
+      parameters:
+      - description: Competition ID
+        in: path
+        name: competitionID
+        required: true
+        type: string
+      - description: Season ID
+        in: path
+        name: seasonID
+        required: true
+        type: string
+      - description: Game ID
+        in: path
+        name: gameID
+        required: true
+        type: string
+      produces:
+      - text/event-stream
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Invalid game ID
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Unable to watch game
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Watch live game state
+      tags:
+      - Games
   /competitions/{competitionID}/seasons/{seasonID}/stages/{stageID}/games:
     get:
       operationId: get-games
@@ -805,7 +840,7 @@ paths:
       - Games
   /teams:
     get:
-      operationId: get-teams-paginated
+      operationId: get-teams
       parameters:
       - default: 1
         description: Page number

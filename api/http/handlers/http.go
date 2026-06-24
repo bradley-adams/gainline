@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/bradley-adams/gainline/client/gamestate"
 	"github.com/bradley-adams/gainline/db/db_handler"
 	"github.com/bradley-adams/gainline/docs"
 	"github.com/bradley-adams/gainline/http/middleware"
@@ -20,7 +21,7 @@ import (
 //	@title			Gainline Api
 //	@description	A set of endpoints for managing gainline tasks
 //	@version		1.0
-func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Validate) *gin.Engine {
+func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Validate, gameStateClient *gamestate.Client) *gin.Engine {
 	logger.Debug().Msg("setting up http router...")
 
 	gin.SetMode(gin.ReleaseMode)
@@ -38,6 +39,7 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 		// middleware
 		seasonService := service.NewSeasonService(db)
 		gameService := service.NewGameService(db)
+		gameStateService := service.NewGameStateService(gameStateClient)
 		v1public.Use(middleware.CompetitionStructureValidator(logger, seasonService, gameService))
 
 		// competitions
@@ -61,6 +63,7 @@ func SetupRouter(db db_handler.DB, logger zerolog.Logger, validate *validator.Va
 		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleGetGame(logger, gameService))
 		v1public.PUT("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleUpdateGame(logger, gameService, validate))
 		v1public.DELETE("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleDeleteGame(logger, gameService))
+		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games/:gameID/live", handleWatchGame(logger, gameStateService))
 
 		// teams
 		teamService := service.NewTeamService(db)

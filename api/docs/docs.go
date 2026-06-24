@@ -746,6 +746,58 @@ const docTemplate = `{
                 }
             }
         },
+        "/competitions/{competitionID}/seasons/{seasonID}/games/{gameID}/live": {
+            "get": {
+                "produces": [
+                    "text/event-stream"
+                ],
+                "tags": [
+                    "Games"
+                ],
+                "summary": "Watch live game state",
+                "operationId": "watch-game",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Competition ID",
+                        "name": "competitionID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Season ID",
+                        "name": "seasonID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Game ID",
+                        "name": "gameID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Invalid game ID",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Unable to watch game",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/competitions/{competitionID}/seasons/{seasonID}/stages/{stageID}/games": {
             "get": {
                 "produces": [
@@ -816,7 +868,7 @@ const docTemplate = `{
                     "Teams"
                 ],
                 "summary": "Retrieve teams with pagination",
-                "operationId": "get-teams-paginated",
+                "operationId": "get-teams",
                 "parameters": [
                     {
                         "type": "integer",
