@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/bradley-adams/gainline/client/gamestate"
 	"github.com/bradley-adams/gainline/db"
 	_ "github.com/bradley-adams/gainline/docs"
 	"github.com/go-playground/validator/v10"
@@ -44,8 +45,10 @@ func main() {
 		panic(err)
 	}
 
+	gameStateClient := setupGameStateClient(logger)
+
 	logger.Debug().Msg("setting up router...")
-	r := handlers.SetupRouter(dbWrapper, logger, validate)
+	r := handlers.SetupRouter(dbWrapper, logger, validate, gameStateClient)
 
 	logger.Info().Msg(serviceName + " started")
 	logger.Fatal().Err(r.Run(":8080")).Msg("failed to start server")
@@ -93,6 +96,21 @@ func setupWrapperDB(logger zerolog.Logger) *db_handler.DBWrapper {
 	return &db_handler.DBWrapper{
 		DB: sqlDB,
 	}
+}
+
+func setupGameStateClient(logger zerolog.Logger) *gamestate.Client {
+	logger.Info().Msg("setting up gamestate client...")
+
+	addr := viper.GetString("GAMESTATE_HOST") + ":" + viper.GetString("GAMESTATE_PORT")
+
+	client, err := gamestate.New(addr)
+	if err != nil {
+		logger.Fatal().Err(err).Msg("failed to connect to gamestate service")
+	}
+
+	logger.Info().Msg("gamestate client connected")
+
+	return client
 }
 
 func setUpValidator(logger zerolog.Logger) (*validator.Validate, error) {
