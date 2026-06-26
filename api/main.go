@@ -48,7 +48,12 @@ func main() {
 	gameStateClient := setupGameStateClient(logger)
 
 	logger.Debug().Msg("setting up router...")
-	r := handlers.SetupRouter(dbWrapper, logger, validate, gameStateClient)
+	r := handlers.SetupRouter(handlers.RouterConfig{
+		DB:              dbWrapper,
+		Logger:          logger,
+		Validate:        validate,
+		GameStateClient: gameStateClient,
+	})
 
 	logger.Info().Msg(serviceName + " started")
 	logger.Fatal().Err(r.Run(":8080")).Msg("failed to start server")

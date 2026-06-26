@@ -1,6 +1,6 @@
 # gainline
 
-A rugby season scheduler.
+A rugby season scheduler and live game tracker.
 
 ## Using Make Commands
 
