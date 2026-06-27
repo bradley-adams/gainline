@@ -148,6 +148,7 @@ func handleUpdateGame(
 	logger zerolog.Logger,
 	gameService service.GameService,
 	validate *validator.Validate,
+	gameStateService service.GameStateService,
 ) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		season := ctx.MustGet("season").(service.SeasonAggregate)
@@ -177,7 +178,22 @@ func handleUpdateGame(
 			return
 		}
 
+		broadcastGameState(ctx, logger, gameStateService, gameID, req)
+
 		response.RespondSuccess(ctx, logger, http.StatusOK, api.ToGameResponse(game))
+	}
+}
+
+func broadcastGameState(ctx *gin.Context, logger zerolog.Logger, gameStateService service.GameStateService, gameID uuid.UUID, req *api.GameRequest) {
+	var homeScore, awayScore int32
+	if req.HomeScore != nil {
+		homeScore = *req.HomeScore
+	}
+	if req.AwayScore != nil {
+		awayScore = *req.AwayScore
+	}
+	if err := gameStateService.UpdateGameState(ctx.Request.Context(), gameID, homeScore, awayScore, string(req.Status)); err != nil {
+		logger.Error().Err(err).Str("game_id", gameID.String()).Msg("failed to broadcast game state update")
 	}
 }
 
