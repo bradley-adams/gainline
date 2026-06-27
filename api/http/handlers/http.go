@@ -68,7 +68,7 @@ func SetupRouter(cfg RouterConfig) *gin.Engine {
 		v1public.POST("/competitions/:competitionID/seasons/:seasonID/games", handleCreateGame(cfg.Logger, cfg.Validate, gameService))
 		v1public.GET("/competitions/:competitionID/seasons/:seasonID/stages/:stageID/games", handleGetGames(cfg.Logger, gameService))
 		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleGetGame(cfg.Logger, gameService))
-		v1public.PUT("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleUpdateGame(cfg.Logger, gameService, cfg.Validate))
+		v1public.PUT("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleUpdateGame(cfg.Logger, gameService, cfg.Validate, gameStateService))
 		v1public.DELETE("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleDeleteGame(cfg.Logger, gameService))
 		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games/:gameID/live", handleWatchGame(cfg.Logger, gameStateService))
 

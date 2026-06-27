@@ -11,6 +11,7 @@ import (
 	"github.com/bradley-adams/gainline/db/db"
 	"github.com/bradley-adams/gainline/http/api"
 	"github.com/bradley-adams/gainline/http/validation"
+	gamestatev1 "github.com/bradley-adams/gainline/proto/gen/gamestate/v1"
 	"github.com/bradley-adams/gainline/service"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -61,13 +62,34 @@ func (m *mockGameService) Delete(ctx context.Context, gameID uuid.UUID) error {
 	return nil
 }
 
+// Manual mock for GameStateService
+type mockGameStateService struct {
+	UpdateGameStateFn func(ctx context.Context, gameID uuid.UUID, homeScore, awayScore int32, status string) error
+	WatchGameStateFn  func(ctx context.Context, gameID uuid.UUID) (<-chan *gamestatev1.GameState, error)
+}
+
+func (m *mockGameStateService) UpdateGameState(ctx context.Context, gameID uuid.UUID, homeScore, awayScore int32, status string) error {
+	if m.UpdateGameStateFn != nil {
+		return m.UpdateGameStateFn(ctx, gameID, homeScore, awayScore, status)
+	}
+	return nil
+}
+
+func (m *mockGameStateService) WatchGameState(ctx context.Context, gameID uuid.UUID) (<-chan *gamestatev1.GameState, error) {
+	if m.WatchGameStateFn != nil {
+		return m.WatchGameStateFn(ctx, gameID)
+	}
+	return nil, nil
+}
+
 var _ = Describe("game handlers", func() {
 	var (
-		router   *gin.Engine
-		validate *validator.Validate
-		logger   zerolog.Logger
-		mockSvc  *mockGameService
-		season   service.SeasonAggregate
+		router           *gin.Engine
+		validate         *validator.Validate
+		logger           zerolog.Logger
+		mockSvc          *mockGameService
+		mockGameStateSvc *mockGameStateService
+		season           service.SeasonAggregate
 	)
 
 	BeforeEach(func() {
@@ -80,6 +102,7 @@ var _ = Describe("game handlers", func() {
 		logger = zerolog.Nop()
 
 		mockSvc = &mockGameService{}
+		mockGameStateSvc = &mockGameStateService{}
 		router = gin.New()
 
 		season = service.SeasonAggregate{
@@ -104,7 +127,7 @@ var _ = Describe("game handlers", func() {
 		router.GET("/seasons/:seasonID/games/:gameID", handleGetGame(logger, mockSvc))
 		router.PUT("/seasons/:seasonID/games/:gameID", func(c *gin.Context) {
 			c.Set("season", season)
-			handleUpdateGame(logger, mockSvc, validate)(c)
+			handleUpdateGame(logger, mockSvc, validate, mockGameStateSvc)(c)
 		})
 		router.DELETE("/seasons/:seasonID/games/:gameID", handleDeleteGame(logger, mockSvc))
 	})
@@ -269,6 +292,25 @@ var _ = Describe("game handlers", func() {
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
 			Expect(w.Code).To(Equal(http.StatusInternalServerError))
+		})
+
+		It("returns 200 even when game state broadcast fails", func() {
+			gameID := uuid.New()
+			mockSvc.UpdateFn = func(ctx context.Context, req *api.GameRequest, gID uuid.UUID, s service.SeasonAggregate) (db.Game, error) {
+				return db.Game{ID: gID, StageID: req.StageID, SeasonID: s.ID}, nil
+			}
+			mockGameStateSvc.UpdateGameStateFn = func(ctx context.Context, gID uuid.UUID, homeScore, awayScore int32, status string) error {
+				return fmt.Errorf("gamestate unreachable")
+			}
+
+			reqBody := fmt.Sprintf(`{"stage_id":"%s","date":"%s","home_team_id":"%s","away_team_id":"%s"}`,
+				uuid.New(), time.Now().Format(time.RFC3339), season.Teams[0].ID, season.Teams[1].ID)
+
+			req := httptest.NewRequest(http.MethodPut, "/seasons/"+season.ID.String()+"/games/"+gameID.String(), bytes.NewBufferString(reqBody))
+			req.Header.Set("Content-Type", "application/json")
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+			Expect(w.Code).To(Equal(http.StatusOK))
 		})
 	})
 
