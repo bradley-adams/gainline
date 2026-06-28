@@ -75,3 +75,11 @@ export interface Game {
     updated_at: Date
     deleted_at?: Date
 }
+
+export interface GameState {
+    gameId: string
+    homeScore: number
+    awayScore: number
+    status: string
+    minute: number
+}
