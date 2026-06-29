@@ -1,0 +1,14 @@
+<div *ngIf="game">
+    <h1>{{ game.date | date: 'dd/MM/yyyy HH:mm' }}</h1>
+
+    <mat-card>
+        <mat-card-content>
+            <div class="scoreboard">
+                <span class="team">{{ game.home_team_id }}</span>
+                <span class="score">{{ homeScore }} - {{ awayScore }}</span>
+                <span class="team">{{ game.away_team_id }}</span>
+            </div>
+            <div class="status">{{ status }}</div>
+        </mat-card-content>
+    </mat-card>
+</div>
