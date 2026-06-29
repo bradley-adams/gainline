@@ -1,0 +1,17 @@
+.scoreboard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 2rem;
+}
+
+.score {
+    font-weight: bold;
+}
+
+.status {
+    text-align: center;
+    margin-top: 8px;
+    text-transform: capitalize;
+}
