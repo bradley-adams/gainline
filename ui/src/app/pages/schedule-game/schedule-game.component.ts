@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, inject } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { Component, OnDestroy, OnInit, inject } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
+import { Subscription } from 'rxjs'
 import { GamesService } from '../../services/games/games.service'
 import { LiveGameService } from '../../services/live-game/live-game.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
@@ -15,7 +15,7 @@ import { Game, GameState, GameStatus } from '../../types/api'
     templateUrl: './schedule-game.component.html',
     styleUrls: ['./schedule-game.component.scss']
 })
-export class ScheduleGameComponent implements OnInit {
+export class ScheduleGameComponent implements OnInit, OnDestroy {
     private readonly route = inject(ActivatedRoute)
     private readonly gamesService = inject(GamesService)
     private readonly liveGameService = inject(LiveGameService)
@@ -27,6 +27,8 @@ export class ScheduleGameComponent implements OnInit {
     public seasonId: string | null = null
     public gameId: string | null = null
 
+    private liveSubscription: Subscription | null = null
+
     ngOnInit(): void {
         this.competitionId = this.route.snapshot.paramMap.get('competition-id')
         this.seasonId = this.route.snapshot.paramMap.get('season-id')
@@ -35,6 +37,10 @@ export class ScheduleGameComponent implements OnInit {
         if (this.competitionId && this.seasonId && this.gameId) {
             this.loadGame(this.competitionId, this.seasonId, this.gameId)
         }
+    }
+
+    ngOnDestroy(): void {
+        this.liveSubscription?.unsubscribe()
     }
 
     public get homeScore(): number {
@@ -64,16 +70,13 @@ export class ScheduleGameComponent implements OnInit {
     }
 
     private watchLiveState(competitionId: string, seasonId: string, gameId: string): void {
-        this.liveGameService
-            .watchGame(competitionId, seasonId, gameId)
-            .pipe(takeUntilDestroyed())
-            .subscribe({
-                next: (state) => {
-                    this.liveState = state
-                },
-                error: (err) => {
-                    this.notificationService.showErrorAndLog('Live Error', 'Lost live connection', err)
-                }
-            })
+        this.liveSubscription = this.liveGameService.watchGame(competitionId, seasonId, gameId).subscribe({
+            next: (state) => {
+                this.liveState = state
+            },
+            error: (err) => {
+                this.notificationService.showErrorAndLog('Live Error', 'Lost live connection', err)
+            }
+        })
     }
 }
