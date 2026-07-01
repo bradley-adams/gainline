@@ -63,18 +63,44 @@
         <td mat-cell *matCellDef="let game">{{ game.status }}</td>
     </ng-container>
 
+    <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let game">
+            <button
+                mat-icon-button
+                [routerLink]="[
+                    '/schedule/competitions',
+                    scheduleForm.get('competition')?.value,
+                    'seasons',
+                    scheduleForm.get('season')?.value,
+                    'games',
+                    game.id
+                ]">
+                <mat-icon>visibility</mat-icon>
+            </button>
+        </td>
+    </ng-container>
+
     <tr
         mat-header-row
-        *matHeaderRowDef="['date', 'homeTeamId', 'homeScore', 'awayScore', 'awayTeamId', 'status']"></tr>
+        *matHeaderRowDef="[
+            'date',
+            'homeTeamId',
+            'homeScore',
+            'awayScore',
+            'awayTeamId',
+            'status',
+            'actions'
+        ]"></tr>
 
     <tr
         mat-row
         *matRowDef="
             let row;
-            columns: ['date', 'homeTeamId', 'homeScore', 'awayScore', 'awayTeamId', 'status']
+            columns: ['date', 'homeTeamId', 'homeScore', 'awayScore', 'awayTeamId', 'status', 'actions']
         "></tr>
 
     <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell text-center" colspan="6">No games found</td>
+        <td class="mat-cell text-center" colspan="7">No games found</td>
     </tr>
 </table>
