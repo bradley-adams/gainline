@@ -44,11 +44,11 @@ export class ScheduleGameComponent implements OnInit, OnDestroy {
     }
 
     public get homeScore(): number {
-        return this.liveState?.homeScore ?? this.game?.home_score ?? 0
+        return this.liveState?.home_score ?? this.game?.home_score ?? 0
     }
 
     public get awayScore(): number {
-        return this.liveState?.awayScore ?? this.game?.away_score ?? 0
+        return this.liveState?.away_score ?? this.game?.away_score ?? 0
     }
 
     public get status(): string {
