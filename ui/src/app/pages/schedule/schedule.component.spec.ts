@@ -2,6 +2,7 @@ import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, TestBed } from '@angular/core/testing'
 import { NoopAnimationsModule } from '@angular/platform-browser/animations'
+import { provideRouter } from '@angular/router'
 import { of, throwError } from 'rxjs'
 
 import { CompetitionsService } from '../../services/competitions/competitions.service'
@@ -184,6 +185,7 @@ describe('ScheduleComponent', () => {
             providers: [
                 provideHttpClient(),
                 provideHttpClientTesting(),
+                provideRouter([]),
                 { provide: CompetitionsService, useValue: competitionsService },
                 { provide: SeasonsService, useValue: seasonsService },
                 { provide: GamesService, useValue: gamesService },

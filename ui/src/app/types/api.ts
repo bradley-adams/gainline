@@ -77,9 +77,9 @@ export interface Game {
 }
 
 export interface GameState {
-    gameId: string
-    homeScore: number
-    awayScore: number
+    game_id: string
+    home_score: number
+    away_score: number
     status: string
     minute: number
 }

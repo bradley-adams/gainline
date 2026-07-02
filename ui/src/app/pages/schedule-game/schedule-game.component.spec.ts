@@ -41,9 +41,9 @@ describe('ScheduleGameComponent', () => {
     }
 
     const mockGameState: GameState = {
-        gameId: 'game1',
-        homeScore: 2,
-        awayScore: 1,
+        game_id: 'game1',
+        home_score: 2,
+        away_score: 1,
         status: 'playing',
         minute: 55
     }
@@ -142,8 +142,8 @@ describe('ScheduleGameComponent', () => {
         liveSubject.next(mockGameState)
         fixture.detectChanges()
 
-        expect(component.homeScore).toBe(mockGameState.homeScore)
-        expect(component.awayScore).toBe(mockGameState.awayScore)
+        expect(component.homeScore).toBe(mockGameState.home_score)
+        expect(component.awayScore).toBe(mockGameState.away_score)
     }))
 
     it('should fall back to db scores when no live state', () => {

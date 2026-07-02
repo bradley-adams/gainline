@@ -8,9 +8,9 @@ const mockSeasonID = 'season1'
 const mockGameID = 'game1'
 
 const mockGameState: GameState = {
-    gameId: mockGameID,
-    homeScore: 2,
-    awayScore: 1,
+    game_id: mockGameID,
+    home_score: 2,
+    away_score: 1,
     status: 'playing',
     minute: 35
 }
