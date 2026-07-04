@@ -1,14 +1,16 @@
-<div *ngIf="game">
-    <h1>{{ game.date | date: 'dd/MM/yyyy HH:mm' }}</h1>
+<div class="container" *ngIf="game">
+    <div class="game-date">{{ game.date | date: 'dd/MM/yyyy HH:mm' }}</div>
 
-    <mat-card>
+    <mat-card class="game-card">
         <mat-card-content>
             <div class="scoreboard">
                 <span class="team">{{ homeTeamName }}</span>
-                <span class="score">{{ homeScore }} - {{ awayScore }}</span>
-                <span class="team">{{ awayTeamName }}</span>
+                <div class="score-block">
+                    <span class="score">{{ homeScore }} - {{ awayScore }}</span>
+                    <span class="status" [class.live]="status === 'playing'">{{ status }}</span>
+                </div>
+                <span class="team away">{{ awayTeamName }}</span>
             </div>
-            <div class="status">{{ status }}</div>
         </mat-card-content>
     </mat-card>
 </div>

@@ -1,17 +1,59 @@
+.container {
+    max-width: 700px;
+    margin: 32px auto;
+    padding: 0 16px;
+}
+
+.game-date {
+    text-align: center;
+    font-size: 0.95rem;
+    opacity: 0.6;
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+}
+
+.game-card {
+    width: 100%;
+}
+
 .scoreboard {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    font-size: 2rem;
+    gap: 24px;
+    padding: 8px 0;
+}
+
+.team {
+    flex: 1;
+    font-size: 1.1rem;
+
+    &.away {
+        text-align: right;
+    }
+}
+
+.score-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
 }
 
 .score {
+    font-size: 2.5rem;
     font-weight: bold;
+    letter-spacing: 0.05em;
 }
 
 .status {
-    text-align: center;
-    margin-top: 8px;
+    font-size: 0.8rem;
     text-transform: capitalize;
+    opacity: 0.6;
+
+    &.live {
+        color: #e53935;
+        opacity: 1;
+        font-weight: 500;
+    }
 }
