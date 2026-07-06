@@ -8,7 +8,12 @@ import { GamesService } from '../../services/games/games.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
 import { SeasonsService } from '../../services/seasons/seasons.service'
 import { MaterialModule } from '../../shared/material/material.module'
-import { Competition, Game, Season, Stage } from '../../types/api'
+import { Competition, Game, Season, Stage, Team } from '../../types/api'
+
+interface GameWithTeamNames extends Game {
+    home_team_name: string
+    away_team_name: string
+}
 
 @Component({
     selector: 'app-schedule',
@@ -24,8 +29,8 @@ export class ScheduleComponent implements OnInit {
     private readonly formBuilder = inject(FormBuilder)
     private readonly notificationService = inject(NotificationService)
 
-    public dataSource = new MatTableDataSource<Game>([])
-    public games: Game[] = []
+    public dataSource = new MatTableDataSource<GameWithTeamNames>([])
+    public games: GameWithTeamNames[] = []
     public stages: Stage[] = []
     public seasons: Season[] = []
     public competitions: Competition[] = []
@@ -43,6 +48,12 @@ export class ScheduleComponent implements OnInit {
         this.loadCompetitions()
     }
 
+    private get currentSeasonTeams(): Team[] {
+        const seasonId = this.scheduleForm.get('season')!.value
+        const season = this.seasons.find((s) => s.id === seasonId)
+        return (season?.teams ?? []).map((t) => (typeof t === 'string' ? ({ id: t, name: t } as Team) : t))
+    }
+
     private initFormListeners(): void {
         this.scheduleForm.get('competition')!.valueChanges.subscribe(this.onCompetitionChange.bind(this))
         this.scheduleForm.get('season')!.valueChanges.subscribe(this.onSeasonChange.bind(this))
@@ -57,7 +68,6 @@ export class ScheduleComponent implements OnInit {
     }
 
     private onSeasonChange(seasonId: string): void {
-        const compId = this.scheduleForm.get('competition')!.value
         const season = this.seasons.find((s) => s.id === seasonId)
 
         if (!season) return
@@ -144,8 +154,14 @@ export class ScheduleComponent implements OnInit {
     private loadGames(competitionId: string, seasonId: string, stageId: string): void {
         this.gamesService.getGames(competitionId, seasonId, stageId).subscribe({
             next: (games) => {
-                this.games = games
-                this.dataSource.data = games
+                const teams = this.currentSeasonTeams
+                const mapped: GameWithTeamNames[] = games.map((g) => ({
+                    ...g,
+                    home_team_name: teams.find((t) => t.id === g.home_team_id)?.name ?? g.home_team_id,
+                    away_team_name: teams.find((t) => t.id === g.away_team_id)?.name ?? g.away_team_id
+                }))
+                this.games = mapped
+                this.dataSource.data = mapped
             },
             error: (err) => {
                 this.notificationService.showErrorAndLog('Load Error', 'Failed to load games', err)

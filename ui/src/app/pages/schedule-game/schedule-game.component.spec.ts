@@ -8,7 +8,8 @@ import { of, Subject, throwError } from 'rxjs'
 import { GamesService } from '../../services/games/games.service'
 import { LiveGameService } from '../../services/live-game/live-game.service'
 import { NotificationService } from '../../services/notifications/notifications.service'
-import { Game, GameState, GameStatus } from '../../types/api'
+import { SeasonsService } from '../../services/seasons/seasons.service'
+import { Game, GameState, GameStatus, Season, StageType, Team } from '../../types/api'
 import { ScheduleGameComponent } from './schedule-game.component'
 
 describe('ScheduleGameComponent', () => {
@@ -16,8 +17,48 @@ describe('ScheduleGameComponent', () => {
     let fixture: ComponentFixture<ScheduleGameComponent>
 
     let gamesService: jasmine.SpyObj<GamesService>
+    let seasonsService: jasmine.SpyObj<SeasonsService>
     let liveGameService: jasmine.SpyObj<LiveGameService>
     let notificationService: jasmine.SpyObj<NotificationService>
+
+    const mockTeams: Team[] = [
+        {
+            id: 'team1',
+            name: 'Home Team',
+            abbreviation: 'HT',
+            location: 'City A',
+            created_at: new Date('2024-01-01T00:00:00Z'),
+            updated_at: new Date('2024-01-01T00:00:00Z')
+        },
+        {
+            id: 'team2',
+            name: 'Away Team',
+            abbreviation: 'AT',
+            location: 'City B',
+            created_at: new Date('2024-01-01T00:00:00Z'),
+            updated_at: new Date('2024-01-01T00:00:00Z')
+        }
+    ]
+
+    const mockSeason: Season = {
+        id: 'season1',
+        competition_id: 'comp1',
+        start_date: new Date('2025-01-01T00:00:00Z'),
+        end_date: new Date('2025-12-31T23:59:59Z'),
+        stages: [
+            {
+                id: 'stage1',
+                name: 'Round 1',
+                stage_type: StageType.StageTypeRegular,
+                order_index: 1,
+                created_at: new Date('2025-01-01T00:00:00Z'),
+                updated_at: new Date('2025-01-01T00:00:00Z')
+            }
+        ],
+        teams: mockTeams,
+        created_at: new Date('2024-12-01T00:00:00Z'),
+        updated_at: new Date('2024-12-01T00:00:00Z')
+    }
 
     const mockGame: Game = {
         id: 'game1',
@@ -65,10 +106,12 @@ describe('ScheduleGameComponent', () => {
 
     beforeEach(async () => {
         gamesService = jasmine.createSpyObj('GamesService', ['getGame'])
+        seasonsService = jasmine.createSpyObj('SeasonsService', ['getSeason'])
         liveGameService = jasmine.createSpyObj('LiveGameService', ['watchGame'])
         notificationService = jasmine.createSpyObj('NotificationService', ['showErrorAndLog'])
 
         gamesService.getGame.and.returnValue(of(mockGame))
+        seasonsService.getSeason.and.returnValue(of(mockSeason))
 
         await TestBed.configureTestingModule({
             imports: [ScheduleGameComponent, NoopAnimationsModule],
@@ -77,6 +120,7 @@ describe('ScheduleGameComponent', () => {
                 provideHttpClientTesting(),
                 { provide: ActivatedRoute, useValue: mockRoute },
                 { provide: GamesService, useValue: gamesService },
+                { provide: SeasonsService, useValue: seasonsService },
                 { provide: LiveGameService, useValue: liveGameService },
                 { provide: NotificationService, useValue: notificationService }
             ]
@@ -94,6 +138,15 @@ describe('ScheduleGameComponent', () => {
     it('should load game on init', () => {
         expect(gamesService.getGame).toHaveBeenCalledWith('comp1', 'season1', 'game1')
         expect(component.game).toEqual(mockGame)
+    })
+
+    it('should load season on init', () => {
+        expect(seasonsService.getSeason).toHaveBeenCalledWith('comp1', 'season1')
+    })
+
+    it('should resolve team names from season', () => {
+        expect(component.homeTeamName).toBe('Home Team')
+        expect(component.awayTeamName).toBe('Away Team')
     })
 
     it('should not open live connection for a finished game', () => {
@@ -160,6 +213,19 @@ describe('ScheduleGameComponent', () => {
         expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
             'Load Error',
             'Failed to load game',
+            mockError
+        )
+    })
+
+    it('should show error notification if season loading fails', () => {
+        const mockError = new Error('Failed')
+        seasonsService.getSeason.and.returnValue(throwError(() => mockError))
+
+        component.ngOnInit()
+
+        expect(notificationService.showErrorAndLog).toHaveBeenCalledWith(
+            'Load Error',
+            'Failed to load season',
             mockError
         )
     })
