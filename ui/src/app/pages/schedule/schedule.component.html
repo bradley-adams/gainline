@@ -40,7 +40,7 @@
 
     <ng-container matColumnDef="homeTeamId">
         <th mat-header-cell *matHeaderCellDef>Home Team</th>
-        <td mat-cell *matCellDef="let game">{{ game.home_team_id }}</td>
+        <td mat-cell *matCellDef="let game">{{ game.home_team_name }}</td>
     </ng-container>
 
     <ng-container matColumnDef="homeScore">
@@ -55,7 +55,7 @@
 
     <ng-container matColumnDef="awayTeamId">
         <th mat-header-cell *matHeaderCellDef>Away Team</th>
-        <td mat-cell *matCellDef="let game">{{ game.away_team_id }}</td>
+        <td mat-cell *matCellDef="let game">{{ game.away_team_name }}</td>
     </ng-container>
 
     <ng-container matColumnDef="status">
