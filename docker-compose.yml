@@ -56,6 +56,24 @@ services:
     networks:
       - backend
 
+  gainline-gamestate:
+    container_name: gainline-gamestate
+    build:
+      context: .
+      dockerfile: gamestate/Dockerfile
+    depends_on:
+      gainline-redis:
+        condition: service_healthy
+    ports:
+      - "50051:50051"
+    environment:
+      PORT: 50051
+      REDIS_HOST: gainline-redis
+      REDIS_PORT: 6379
+    networks:
+      - backend
+    restart: unless-stopped
+
   gainline-api:
     container_name: gainline-api
     build:
@@ -63,6 +81,8 @@ services:
     depends_on:
       gainline-db:
         condition: service_healthy
+      gainline-gamestate:
+        condition: service_started
     ports:
       - "8080:8080"
     environment:
@@ -73,6 +93,8 @@ services:
       DB_DATABASE: gainline
       DB_SSL_MODE: disable
       PORT: 8080
+      GAMESTATE_HOST: gainline-gamestate
+      GAMESTATE_PORT: 50051
     networks:
       - backend
     restart: unless-stopped
