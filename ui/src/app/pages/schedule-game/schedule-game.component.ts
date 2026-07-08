@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common'
+import { CommonModule, Location } from '@angular/common'
 import { Component, OnDestroy, OnInit, inject } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { Subscription } from 'rxjs'
@@ -18,6 +18,7 @@ import { Game, GameState, GameStatus, Team } from '../../types/api'
 })
 export class ScheduleGameComponent implements OnInit, OnDestroy {
     private readonly route = inject(ActivatedRoute)
+    private readonly location = inject(Location)
     private readonly gamesService = inject(GamesService)
     private readonly seasonsService = inject(SeasonsService)
     private readonly liveGameService = inject(LiveGameService)
@@ -48,6 +49,10 @@ export class ScheduleGameComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.liveSubscription?.unsubscribe()
+    }
+
+    public goBack(): void {
+        this.location.back()
     }
 
     public get homeScore(): number {

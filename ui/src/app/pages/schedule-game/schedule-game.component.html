@@ -1,4 +1,8 @@
 <div class="container" *ngIf="game">
+    <button mat-icon-button (click)="goBack()" class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+    </button>
+
     <div class="game-date">{{ game.date | date: 'dd/MM/yyyy HH:mm' }}</div>
 
     <mat-card class="game-card">
