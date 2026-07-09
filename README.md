@@ -77,6 +77,26 @@ and runs migrations.
 make db-reset
 ```
 
+## Redis Commands
+
+### Start Redis only
+
+```bash
+make redis-up
+```
+
+### Stop Redis only
+
+```bash
+make redis-stop
+```
+
+### Open a redis-cli session
+
+```bash
+make redis-cli
+```
+
 ## Cleaning Everything
 
 Remove all containers, volumes, and orphans:
@@ -84,6 +104,16 @@ Remove all containers, volumes, and orphans:
 ```bash
 make clean
 ```
+
+## Services
+
+| Service            | Port  | Description                       |
+| ------------------ | ----- | --------------------------------- |
+| gainline-ui        | 4200  | Angular frontend                  |
+| gainline-api       | 8080  | REST API                          |
+| gainline-gamestate | 50051 | gRPC live game state service      |
+| gainline-db        | 5432  | PostgreSQL                        |
+| gainline-redis     | 6379  | Redis pub/sub for live game state |
 
 ## Todo
 
