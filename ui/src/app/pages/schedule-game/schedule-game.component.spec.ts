@@ -1,3 +1,4 @@
+import { Location } from '@angular/common'
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing'
@@ -263,4 +264,11 @@ describe('ScheduleGameComponent', () => {
 
         expect(component.liveState).toBeNull()
     }))
+
+    it('should navigate back when goBack is called', () => {
+        const location = TestBed.inject(Location)
+        spyOn(location, 'back')
+        component.goBack()
+        expect(location.back).toHaveBeenCalled()
+    })
 })
