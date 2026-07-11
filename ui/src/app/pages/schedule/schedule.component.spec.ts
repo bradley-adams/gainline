@@ -229,6 +229,25 @@ describe('ScheduleComponent', () => {
         expect(component.dataSource.data).toEqual([])
     })
 
+    it('should resolve team names from season when loading games', () => {
+        expect(component.dataSource.data[0].home_team_name).toBe('Team One')
+        expect(component.dataSource.data[0].away_team_name).toBe('Team Two')
+    })
+
+    it('should fall back to team ID if team not found in season', () => {
+        const unknownTeamGame = {
+            ...mockGames[0],
+            home_team_id: 'unknown-team',
+            away_team_id: 'also-unknown'
+        }
+        gamesService.getGames.and.returnValue(of([unknownTeamGame]))
+
+        component.scheduleForm.get('stage')!.setValue('stage-round-1')
+
+        expect(component.dataSource.data[0].home_team_name).toBe('unknown-team')
+        expect(component.dataSource.data[0].away_team_name).toBe('also-unknown')
+    })
+
     it('should show error notification if loading competitions fails', () => {
         const mockError = new Error('Failed')
         competitionsService.getCompetitions.and.returnValue(throwError(() => mockError))
