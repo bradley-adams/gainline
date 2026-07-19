@@ -1,0 +1,5 @@
+image:
+  repository: australia-southeast1-docker.pkg.dev/your-project-id/gainline-prod/gamestate
+
+config:
+  redisHost: ""

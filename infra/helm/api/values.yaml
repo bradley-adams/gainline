@@ -1,0 +1,23 @@
+replicaCount: 1
+
+image:
+  repository: ""
+  tag: "latest"
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 8080
+
+config:
+  dbHost: ""
+  dbPort: "5432"
+  dbUser: "gainline"
+  dbDatabase: "gainline"
+  dbSslMode: "disable"
+  port: "8080"
+  gamestateHost: ""
+  gamestatePort: "50051"
+
+secret:
+  dbPassword: ""
