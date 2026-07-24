@@ -52,3 +52,11 @@ module "redis" {
   memory_size_gb = 1
   environment    = "prod"
 }
+
+module "workload_identity" {
+  source      = "../../modules/workload-identity"
+  project_id  = var.project_id
+  github_org  = "bradley-adams"
+  github_repo = "gainline"
+  environment = "prod"
+}
