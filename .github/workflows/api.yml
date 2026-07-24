@@ -1,0 +1,76 @@
+name: API
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "api/**"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy to"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - prod
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set environment
+        id: env
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
+          else
+            echo "environment=dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker australia-southeast1-docker.pkg.dev
+
+      - name: Set image tag
+        id: tag
+        run: echo "tag=${{ github.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Build and push image
+        run: |
+          docker build -t australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/api:${{ steps.tag.outputs.tag }} ./api
+          docker push australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/api:${{ steps.tag.outputs.tag }}
+
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: gainline-${{ steps.env.outputs.environment }}
+          location: australia-southeast1-a
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install api infra/helm/api \
+            -f infra/helm/api/values-${{ steps.env.outputs.environment }}.yaml \
+            --set image.tag=${{ steps.tag.outputs.tag }} \
+            --set image.repository=australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/api \
+            --namespace gainline-${{ steps.env.outputs.environment }} \
+            --create-namespace
