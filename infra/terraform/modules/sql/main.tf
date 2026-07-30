@@ -4,6 +4,8 @@ resource "google_sql_database_instance" "postgres" {
   database_version = var.database_version
   region           = var.region
 
+  depends_on = [var.private_vpc_connection]
+
   settings {
     tier = var.tier
 
@@ -12,9 +14,9 @@ resource "google_sql_database_instance" "postgres" {
     }
 
     ip_configuration {
-      ipv4_enabled = true
+      ipv4_enabled    = false
+      private_network = "projects/${var.project_id}/global/networks/default"
     }
-
   }
 
   deletion_protection = false

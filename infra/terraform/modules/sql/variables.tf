@@ -47,3 +47,8 @@ variable "environment" {
   description = "Environment name (dev or prod)"
   type        = string
 }
+
+variable "private_vpc_connection" {
+  description = "VPC peering connection — ensures networking is set up before Cloud SQL"
+  type        = string
+}
