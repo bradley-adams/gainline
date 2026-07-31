@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "api/**"
+      - "proto/**"
   workflow_dispatch:
     inputs:
       environment:
@@ -57,7 +58,10 @@ jobs:
 
       - name: Build and push image
         run: |
-          docker build -t australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/api:${{ steps.tag.outputs.tag }} ./api
+          docker build \
+            -t australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/api:${{ steps.tag.outputs.tag }} \
+            -f api/Dockerfile \
+            .
           docker push australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/api:${{ steps.tag.outputs.tag }}
 
       - name: Get GKE credentials
