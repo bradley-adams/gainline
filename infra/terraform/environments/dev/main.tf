@@ -34,16 +34,6 @@ module "gke" {
   environment    = "dev"
 }
 
-module "sql" {
-  source            = "../../modules/sql"
-  project_id        = var.project_id
-  region            = var.region
-  instance_name     = "gainline-dev"
-  tier              = "db-f1-micro"
-  database_password = var.database_password
-  environment       = "dev"
-}
-
 module "redis" {
   source         = "../../modules/redis"
   project_id     = var.project_id
@@ -59,4 +49,20 @@ module "workload_identity" {
   github_org  = "bradley-adams"
   github_repo = "gainline"
   environment = "dev"
+}
+
+module "networking" {
+  source     = "../../modules/networking"
+  project_id = var.project_id
+}
+
+module "sql" {
+  source                 = "../../modules/sql"
+  project_id             = var.project_id
+  region                 = var.region
+  instance_name          = "gainline-dev"
+  tier                   = "db-f1-micro"
+  database_password      = var.database_password
+  environment            = "dev"
+  private_vpc_connection = module.networking.private_vpc_connection
 }
