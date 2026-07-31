@@ -2,5 +2,5 @@ image:
   repository: australia-southeast1-docker.pkg.dev/gainline-503521/gainline-dev/api
 
 config:
-  dbHost: "34.87.255.177"
+  dbHost: "172.26.0.3"
   gamestateHost: gainline-gamestate
