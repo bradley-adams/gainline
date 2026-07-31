@@ -87,18 +87,17 @@ func SetupRouter(cfg RouterConfig) *gin.Engine {
 func healthCheck(db db_handler.DB, logger zerolog.Logger) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if err := db.HealthCheck(); err != nil {
-			logger.Error().
-				Err(err).
-				Msg("database health check failed")
-
+			logger.Error().Err(err).Msg("database health check failed")
 			ctx.JSON(http.StatusServiceUnavailable, gin.H{
-				"status": "unhealthy",
+				"status":   "unhealthy",
+				"database": "unavailable",
 			})
 			return
 		}
 
-		ctx.JSON(200, gin.H{
-			"message": "OK",
+		ctx.JSON(http.StatusOK, gin.H{
+			"status":   "OK",
+			"database": "available",
 		})
 	}
 }
