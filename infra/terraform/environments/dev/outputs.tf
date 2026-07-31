@@ -19,9 +19,9 @@ output "sql_connection_name" {
   value       = module.sql.connection_name
 }
 
-output "sql_public_ip" {
-  description = "Cloud SQL public IP"
-  value       = module.sql.public_ip
+output "sql_private_ip" {
+  description = "Cloud SQL private IP"
+  value       = module.sql.private_ip
 }
 
 output "redis_host" {

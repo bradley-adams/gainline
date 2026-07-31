@@ -4,13 +4,13 @@ output "instance_name" {
 }
 
 output "connection_name" {
-  description = "Cloud SQL connection name used by Cloud SQL proxy"
+  description = "Cloud SQL connection name"
   value       = google_sql_database_instance.postgres.connection_name
 }
 
-output "public_ip" {
-  description = "Cloud SQL public IP address"
-  value       = google_sql_database_instance.postgres.public_ip_address
+output "private_ip" {
+  description = "Cloud SQL private IP address"
+  value       = google_sql_database_instance.postgres.private_ip_address
 }
 
 output "database_name" {
