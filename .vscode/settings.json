@@ -19,5 +19,8 @@
   },
   "[go]": {
     "editor.defaultFormatter": "golang.go"
+  },
+  "[helm]": {
+    "editor.formatOnSave": false
   }
 }
