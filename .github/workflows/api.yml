@@ -7,6 +7,7 @@ on:
     paths:
       - "api/**"
       - "proto/**"
+      - "db/**"
   workflow_dispatch:
     inputs:
       environment:
@@ -56,13 +57,21 @@ jobs:
         id: tag
         run: echo "tag=${{ github.sha }}" >> $GITHUB_OUTPUT
 
-      - name: Build and push image
+      - name: Build and push api image
         run: |
           docker build \
             -t australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/api:${{ steps.tag.outputs.tag }} \
             -f api/Dockerfile \
             .
           docker push australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/api:${{ steps.tag.outputs.tag }}
+
+      - name: Build and push migration image
+        run: |
+          docker build \
+            -t australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/migrate:${{ steps.tag.outputs.tag }} \
+            -f db/Dockerfile.migrate \
+            .
+          docker push australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/migrate:${{ steps.tag.outputs.tag }}
 
       - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v2
@@ -77,5 +86,6 @@ jobs:
             -f infra/helm/api/values-${{ steps.env.outputs.environment }}.yaml \
             --set image.tag=${{ steps.tag.outputs.tag }} \
             --set image.repository=australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/api \
+            --set migrate.image.tag=${{ steps.tag.outputs.tag }} \
             --namespace gainline-${{ steps.env.outputs.environment }} \
             --create-namespace
