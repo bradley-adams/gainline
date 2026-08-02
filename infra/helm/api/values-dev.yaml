@@ -1,6 +1,10 @@
 image:
   repository: australia-southeast1-docker.pkg.dev/gainline-503521/gainline-dev/api
 
+migrate:
+  image:
+    repository: australia-southeast1-docker.pkg.dev/gainline-503521/gainline-dev/migrate
+
 config:
   dbHost: "172.26.0.3"
   gamestateHost: gainline-gamestate

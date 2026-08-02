@@ -21,3 +21,8 @@ config:
 
 secret:
   dbPassword: ""
+
+migrate:
+  image:
+    repository: ""
+    tag: "latest"
