@@ -14,7 +14,8 @@ spec:
         - name: migrate
           image: {{ .Values.migrate.image.repository }}:{{ .Values.migrate.image.tag }}
           args:
-            - "postgres://{{ .Values.config.dbUser }}:$(DB_PASSWORD)@{{ .Values.config.dbHost }}:{{ .Values.config.dbPort }}/{{ .Values.config.dbDatabase }}?sslmode={{ .Values.config.dbSslMode }}"
+            - "-path=/migrations"
+            - "-database=postgres://{{ .Values.config.dbUser }}:$(DB_PASSWORD)@{{ .Values.config.dbHost }}:{{ .Values.config.dbPort }}/{{ .Values.config.dbDatabase }}?sslmode={{ .Values.config.dbSslMode }}"
             - "up"
           env:
             - name: DB_PASSWORD
