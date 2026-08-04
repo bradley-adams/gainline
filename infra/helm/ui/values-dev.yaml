@@ -2,4 +2,4 @@ image:
   repository: australia-southeast1-docker.pkg.dev/gainline-503521/gainline-dev/ui
 
 ingress:
-  host: "35.189.24.64"
+  host: "35.189.24.64.nip.io"
