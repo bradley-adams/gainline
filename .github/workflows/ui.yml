@@ -33,7 +33,7 @@ jobs:
       - name: Set environment
         id: env
         run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" sze then
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             echo "environment=${{ github.event.inputs.environment }}" >> $GITHUB_OUTPUT
           else
             echo "environment=dev" >> $GITHUB_OUTPUT
