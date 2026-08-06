@@ -39,6 +39,15 @@ jobs:
             echo "environment=dev" >> $GITHUB_OUTPUT
           fi
 
+      - name: Set API URL
+        id: api_url
+        run: |
+          if [ "${{ steps.env.outputs.environment }}" == "prod" ]; then
+            echo "url=http://prod-url-tbd.nip.io" >> $GITHUB_OUTPUT
+          else
+            echo "url=http://35.189.24.64.nip.io" >> $GITHUB_OUTPUT
+          fi
+
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v2
         with:
@@ -57,7 +66,10 @@ jobs:
 
       - name: Build and push image
         run: |
-          docker build -t australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/ui:${{ steps.tag.outputs.tag }} ./ui
+          docker build \
+            --build-arg API_URL=${{ steps.api_url.outputs.url }} \
+            -t australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/ui:${{ steps.tag.outputs.tag }} \
+            ./ui
           docker push australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/ui:${{ steps.tag.outputs.tag }}
 
       - name: Get GKE credentials
