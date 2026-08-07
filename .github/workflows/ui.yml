@@ -45,7 +45,7 @@ jobs:
           if [ "${{ steps.env.outputs.environment }}" == "prod" ]; then
             echo "url=http://prod-url-tbd.nip.io" >> $GITHUB_OUTPUT
           else
-            echo "url=http://35.189.24.64.nip.io" >> $GITHUB_OUTPUT
+            echo "url=http://dev.35.189.24.64.nip.io" >> $GITHUB_OUTPUT
           fi
 
       - name: Authenticate to GCP
