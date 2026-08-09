@@ -21,6 +21,8 @@ type RouterConfig struct {
 	Logger          zerolog.Logger
 	Validate        *validator.Validate
 	GameStateClient *gamestate.Client
+	Auth0Domain     string
+	Auth0Audience   string
 }
 
 // SetupRouter initializes and configures the HTTP router for handling incoming requests
@@ -39,46 +41,51 @@ func SetupRouter(cfg RouterConfig) *gin.Engine {
 	docs.SwaggerInfo.BasePath = "/v1"
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	v1public := router.Group("/v1").Use(cors.Default())
+	corsMiddleware := cors.Default()
+
+	v1public := router.Group("/v1").Use(corsMiddleware)
+	v1protected := router.Group("/v1").Use(corsMiddleware).Use(middleware.Auth(cfg.Logger, cfg.Auth0Domain, cfg.Auth0Audience))
 	{
 		v1public.OPTIONS("/*path")
 
-		// middleware
+		// services
 		seasonService := service.NewSeasonService(cfg.DB)
 		gameService := service.NewGameService(cfg.DB)
 		gameStateService := service.NewGameStateService(cfg.GameStateClient)
-		v1public.Use(middleware.CompetitionStructureValidator(cfg.Logger, seasonService, gameService))
+		competitionService := service.NewCompetitionService(cfg.DB)
+		teamService := service.NewTeamService(cfg.DB)
+
+		// middleware
+		v1protected.Use(middleware.CompetitionStructureValidator(cfg.Logger, seasonService, gameService))
 
 		// competitions
-		competitionService := service.NewCompetitionService(cfg.DB)
-		v1public.POST("/competitions", handleCreateCompetition(cfg.Logger, cfg.Validate, competitionService))
-		v1public.GET("/competitions", handleGetCompetitions(cfg.Logger, cfg.Validate, competitionService))
-		v1public.GET("/competitions/:competitionID", handleGetCompetition(cfg.Logger, competitionService))
-		v1public.PUT("/competitions/:competitionID", handleUpdateCompetition(cfg.Logger, cfg.Validate, competitionService))
-		v1public.DELETE("/competitions/:competitionID", handleDeleteCompetition(cfg.Logger, competitionService))
+		v1protected.POST("/competitions", handleCreateCompetition(cfg.Logger, cfg.Validate, competitionService))
+		v1protected.GET("/competitions", handleGetCompetitions(cfg.Logger, cfg.Validate, competitionService))
+		v1protected.GET("/competitions/:competitionID", handleGetCompetition(cfg.Logger, competitionService))
+		v1protected.PUT("/competitions/:competitionID", handleUpdateCompetition(cfg.Logger, cfg.Validate, competitionService))
+		v1protected.DELETE("/competitions/:competitionID", handleDeleteCompetition(cfg.Logger, competitionService))
 
 		// seasons
-		v1public.POST("/competitions/:competitionID/seasons", handleCreateSeason(cfg.Logger, cfg.Validate, seasonService))
-		v1public.GET("/competitions/:competitionID/seasons", handleGetSeasons(cfg.Logger, cfg.Validate, seasonService))
-		v1public.GET("/competitions/:competitionID/seasons/:seasonID", handleGetSeason(cfg.Logger))
-		v1public.PUT("/competitions/:competitionID/seasons/:seasonID", handleUpdateSeason(cfg.Logger, cfg.Validate, seasonService))
-		v1public.DELETE("/competitions/:competitionID/seasons/:seasonID", handleDeleteSeason(cfg.Logger, seasonService))
+		v1protected.POST("/competitions/:competitionID/seasons", handleCreateSeason(cfg.Logger, cfg.Validate, seasonService))
+		v1protected.GET("/competitions/:competitionID/seasons", handleGetSeasons(cfg.Logger, cfg.Validate, seasonService))
+		v1protected.GET("/competitions/:competitionID/seasons/:seasonID", handleGetSeason(cfg.Logger))
+		v1protected.PUT("/competitions/:competitionID/seasons/:seasonID", handleUpdateSeason(cfg.Logger, cfg.Validate, seasonService))
+		v1protected.DELETE("/competitions/:competitionID/seasons/:seasonID", handleDeleteSeason(cfg.Logger, seasonService))
 
 		// games
-		v1public.POST("/competitions/:competitionID/seasons/:seasonID/games", handleCreateGame(cfg.Logger, cfg.Validate, gameService))
-		v1public.GET("/competitions/:competitionID/seasons/:seasonID/stages/:stageID/games", handleGetGames(cfg.Logger, gameService))
-		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleGetGame(cfg.Logger, gameService))
-		v1public.PUT("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleUpdateGame(cfg.Logger, gameService, cfg.Validate, gameStateService))
-		v1public.DELETE("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleDeleteGame(cfg.Logger, gameService))
-		v1public.GET("/competitions/:competitionID/seasons/:seasonID/games/:gameID/live", handleWatchGame(cfg.Logger, gameStateService))
+		v1protected.POST("/competitions/:competitionID/seasons/:seasonID/games", handleCreateGame(cfg.Logger, cfg.Validate, gameService))
+		v1protected.GET("/competitions/:competitionID/seasons/:seasonID/stages/:stageID/games", handleGetGames(cfg.Logger, gameService))
+		v1protected.GET("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleGetGame(cfg.Logger, gameService))
+		v1protected.PUT("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleUpdateGame(cfg.Logger, gameService, cfg.Validate, gameStateService))
+		v1protected.DELETE("/competitions/:competitionID/seasons/:seasonID/games/:gameID", handleDeleteGame(cfg.Logger, gameService))
+		v1protected.GET("/competitions/:competitionID/seasons/:seasonID/games/:gameID/live", handleWatchGame(cfg.Logger, gameStateService))
 
 		// teams
-		teamService := service.NewTeamService(cfg.DB)
-		v1public.POST("/teams", handleCreateTeam(cfg.Logger, cfg.Validate, teamService))
-		v1public.GET("/teams", handleGetTeams(cfg.Logger, cfg.Validate, teamService))
-		v1public.GET("/teams/:teamID", handleGetTeam(cfg.Logger, teamService))
-		v1public.PUT("/teams/:teamID", handleUpdateTeam(cfg.Logger, cfg.Validate, teamService))
-		v1public.DELETE("/teams/:teamID", handleDeleteTeam(cfg.Logger, teamService))
+		v1protected.POST("/teams", handleCreateTeam(cfg.Logger, cfg.Validate, teamService))
+		v1protected.GET("/teams", handleGetTeams(cfg.Logger, cfg.Validate, teamService))
+		v1protected.GET("/teams/:teamID", handleGetTeam(cfg.Logger, teamService))
+		v1protected.PUT("/teams/:teamID", handleUpdateTeam(cfg.Logger, cfg.Validate, teamService))
+		v1protected.DELETE("/teams/:teamID", handleDeleteTeam(cfg.Logger, teamService))
 	}
 
 	return router
