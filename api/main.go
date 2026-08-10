@@ -53,6 +53,8 @@ func main() {
 		Logger:          logger,
 		Validate:        validate,
 		GameStateClient: gameStateClient,
+		Auth0Domain:     viper.GetString("AUTH0_DOMAIN"),
+		Auth0Audience:   viper.GetString("AUTH0_AUDIENCE"),
 	})
 
 	logger.Info().Msg(serviceName + " started")
