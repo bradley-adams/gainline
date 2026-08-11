@@ -11,3 +11,5 @@ data:
   PORT: {{ .Values.config.port | quote }}
   GAMESTATE_HOST: {{ .Values.config.gamestateHost | quote }}
   GAMESTATE_PORT: {{ .Values.config.gamestatePort | quote }}
+  AUTH0_DOMAIN: {{ .Values.config.auth0Domain | quote }}
+  AUTH0_AUDIENCE: {{ .Values.config.auth0Audience | quote }}
