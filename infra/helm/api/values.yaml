@@ -18,6 +18,9 @@ config:
   port: "8080"
   gamestateHost: ""
   gamestatePort: "50051"
+  sqlConnectionName: ""
+  auth0Domain: ""
+  auth0Audience: ""
 
 secret:
   dbPassword: ""
