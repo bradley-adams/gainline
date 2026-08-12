@@ -39,13 +39,19 @@ jobs:
             echo "environment=dev" >> $GITHUB_OUTPUT
           fi
 
-      - name: Set API URL
-        id: api_url
+      - name: Set environment config
+        id: config
         run: |
           if [ "${{ steps.env.outputs.environment }}" == "prod" ]; then
-            echo "url=http://prod-url-tbd.nip.io" >> $GITHUB_OUTPUT
+            echo "api_url=http://prod-url-tbd.nip.io" >> $GITHUB_OUTPUT
+            echo "auth0_domain=prod-tenant.au.auth0.com" >> $GITHUB_OUTPUT
+            echo "auth0_client_id=prod-client-id" >> $GITHUB_OUTPUT
+            echo "auth0_audience=https://api.prod.gainline.io" >> $GITHUB_OUTPUT
           else
-            echo "url=http://dev.35.189.24.64.nip.io" >> $GITHUB_OUTPUT
+            echo "api_url=http://dev.35.189.24.64.nip.io" >> $GITHUB_OUTPUT
+            echo "auth0_domain=dev-dq1p4t4guh2d2oj3.au.auth0.com" >> $GITHUB_OUTPUT
+            echo "auth0_client_id=CkHz9nnnyx4ZMrag1ZCBejluZNiMeniz" >> $GITHUB_OUTPUT
+            echo "auth0_audience=https://api.dev.gainline.io" >> $GITHUB_OUTPUT
           fi
 
       - name: Authenticate to GCP
@@ -67,9 +73,13 @@ jobs:
       - name: Build and push image
         run: |
           docker build \
-            --build-arg API_URL=${{ steps.api_url.outputs.url }} \
+            --build-arg API_URL="${{ steps.config.outputs.api_url }}" \
+            --build-arg AUTH0_DOMAIN="${{ steps.config.outputs.auth0_domain }}" \
+            --build-arg AUTH0_CLIENT_ID="${{ steps.config.outputs.auth0_client_id }}" \
+            --build-arg AUTH0_AUDIENCE="${{ steps.config.outputs.auth0_audience }}" \
             -t australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/ui:${{ steps.tag.outputs.tag }} \
             ./ui
+
           docker push australia-southeast1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gainline-${{ steps.env.outputs.environment }}/ui:${{ steps.tag.outputs.tag }}
 
       - name: Get GKE credentials
