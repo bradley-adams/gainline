@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/bradley-adams/gainline/client/gamestate"
 	"github.com/bradley-adams/gainline/db/db_handler"
@@ -41,13 +42,34 @@ func SetupRouter(cfg RouterConfig) *gin.Engine {
 	docs.SwaggerInfo.BasePath = "/v1"
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	corsMiddleware := cors.Default()
+	corsMiddleware := cors.New(cors.Config{
+		AllowOrigins: []string{
+			"http://localhost:4200",
+		},
+		AllowMethods: []string{
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodPatch,
+			http.MethodDelete,
+			http.MethodHead,
+			http.MethodOptions,
+		},
+		AllowHeaders: []string{
+			"Origin",
+			"Content-Length",
+			"Content-Type",
+			"Authorization",
+		},
+		MaxAge: 12 * time.Hour,
+	})
 
-	v1public := router.Group("/v1").Use(corsMiddleware)
-	v1protected := router.Group("/v1").Use(corsMiddleware).Use(middleware.Auth(cfg.Logger, cfg.Auth0Domain, cfg.Auth0Audience))
+	router.Use(corsMiddleware)
+
+	v1protected := router.Group("/v1").Use(
+		middleware.Auth(cfg.Logger, cfg.Auth0Domain, cfg.Auth0Audience),
+	)
 	{
-		v1public.OPTIONS("/*path")
-
 		// services
 		seasonService := service.NewSeasonService(cfg.DB)
 		gameService := service.NewGameService(cfg.DB)
