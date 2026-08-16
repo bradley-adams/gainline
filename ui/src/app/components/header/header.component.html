@@ -1,7 +1,17 @@
 <mat-toolbar>
     <a routerLink="/schedule" class="app-title">Gainline</a>
     <span class="spacer"></span>
-    <button type="button" mat-icon-button>
-        <mat-icon routerLink="/admin">admin_panel_settings</mat-icon>
-    </button>
+    <ng-container *ngIf="auth.isAuthenticated$ | async; else loggedOut">
+        <button type="button" mat-icon-button>
+            <mat-icon routerLink="/admin">admin_panel_settings</mat-icon>
+        </button>
+        <button type="button" mat-icon-button (click)="logout()">
+            <mat-icon>logout</mat-icon>
+        </button>
+    </ng-container>
+    <ng-template #loggedOut>
+        <button type="button" mat-icon-button (click)="login()">
+            <mat-icon>login</mat-icon>
+        </button>
+    </ng-template>
 </mat-toolbar>
