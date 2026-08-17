@@ -6,8 +6,14 @@ metadata:
   labels:
     app: {{ .Release.Name }}
   annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-dev"
     kubernetes.io/ingress.class: nginx
 spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host | quote }}
+      secretName: {{ .Release.Name }}-tls
   rules:
     - host: {{ .Values.ingress.host | quote }}
       http:
