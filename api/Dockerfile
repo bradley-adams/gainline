@@ -15,6 +15,11 @@ RUN go build -o app
 # Stage 2: Create a lightweight image to run the app
 FROM debian:bookworm-slim
 
+# Install CA certificates so Go can make outbound HTTPS calls to Auth0
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 COPY --from=builder /app/api/app .
 COPY api/.env .
