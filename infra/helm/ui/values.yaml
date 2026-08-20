@@ -13,3 +13,4 @@ ingress:
   enabled: true
   className: "nginx"
   host: ""
+  clusterIssuer: "letsencrypt"

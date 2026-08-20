@@ -6,7 +6,7 @@ metadata:
   labels:
     app: {{ .Release.Name }}
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-dev"
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer | quote }}
     kubernetes.io/ingress.class: nginx
 spec:
   ingressClassName: nginx
