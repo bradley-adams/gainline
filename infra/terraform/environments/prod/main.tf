@@ -34,14 +34,20 @@ module "gke" {
   environment    = "prod"
 }
 
+module "networking" {
+  source     = "../../modules/networking"
+  project_id = var.project_id
+}
+
 module "sql" {
-  source            = "../../modules/sql"
-  project_id        = var.project_id
-  region            = var.region
-  instance_name     = "gainline-prod"
-  tier              = "db-f1-micro"
-  database_password = var.database_password
-  environment       = "prod"
+  source                 = "../../modules/sql"
+  project_id             = var.project_id
+  region                 = var.region
+  instance_name          = "gainline-prod"
+  tier                   = "db-f1-micro"
+  database_password      = var.database_password
+  environment            = "prod"
+  private_vpc_connection = module.networking.private_vpc_connection
 }
 
 module "redis" {

@@ -1,13 +1,13 @@
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-dev
+  name: letsencrypt
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
     email: bradley.wayne.adams@gmail.com
     privateKeySecretRef:
-      name: letsencrypt-dev-account-key
+      name: letsencrypt-account-key
     solvers:
       - http01:
           ingress:
