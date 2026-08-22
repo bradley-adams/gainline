@@ -20,12 +20,23 @@ module "registry" {
   environment   = "prod"
 }
 
+module "networking" {
+  source               = "../../modules/networking"
+  project_id           = var.project_id
+  region               = var.region
+  environment          = "prod"
+  use_default_network  = false
+  subnet_cidr          = "10.20.0.0/20"
+}
+
 module "gke" {
   source         = "../../modules/gke"
   project_id     = var.project_id
   region         = var.region
   zone           = var.zone
   cluster_name   = "gainline-prod"
+  network        = module.networking.network_name
+  subnetwork     = module.networking.subnetwork_name
   machine_type   = "e2-small"
   node_count     = 1
   min_node_count = 1
@@ -34,9 +45,14 @@ module "gke" {
   environment    = "prod"
 }
 
-module "networking" {
-  source     = "../../modules/networking"
-  project_id = var.project_id
+module "redis" {
+  source              = "../../modules/redis"
+  project_id          = var.project_id
+  region              = var.region
+  instance_name       = "gainline-prod"
+  memory_size_gb      = 1
+  environment         = "prod"
+  authorized_network  = module.networking.network_self_link
 }
 
 module "sql" {
@@ -48,15 +64,7 @@ module "sql" {
   database_password      = var.database_password
   environment            = "prod"
   private_vpc_connection = module.networking.private_vpc_connection
-}
-
-module "redis" {
-  source         = "../../modules/redis"
-  project_id     = var.project_id
-  region         = var.region
-  instance_name  = "gainline-prod"
-  memory_size_gb = 1
-  environment    = "prod"
+  network_self_link      = module.networking.network_self_link
 }
 
 module "workload_identity" {

@@ -15,7 +15,7 @@ resource "google_sql_database_instance" "postgres" {
 
     ip_configuration {
       ipv4_enabled    = false
-      private_network = "projects/${var.project_id}/global/networks/default"
+      private_network = coalesce(var.network_self_link, "projects/${var.project_id}/global/networks/default")
     }
   }
 
