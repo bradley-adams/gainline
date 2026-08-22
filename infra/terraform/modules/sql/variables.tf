@@ -52,3 +52,9 @@ variable "private_vpc_connection" {
   description = "VPC peering connection — ensures networking is set up before Cloud SQL"
   type        = string
 }
+
+variable "network_self_link" {
+  description = "Self link of the VPC network to attach Cloud SQL's private IP to. Defaults to the shared 'default' network for backward compatibility."
+  type        = string
+  default     = null
+}

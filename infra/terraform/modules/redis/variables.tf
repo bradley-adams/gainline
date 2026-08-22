@@ -23,3 +23,9 @@ variable "environment" {
   description = "Environment name (dev or prod)"
   type        = string
 }
+
+variable "authorized_network" {
+  description = "Self link of the VPC network Redis should be reachable from. Defaults to the shared 'default' network for backward compatibility."
+  type        = string
+  default     = null
+}
