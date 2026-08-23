@@ -1,5 +1,5 @@
 image:
-  repository: australia-southeast1-docker.pkg.dev/your-project-id/gainline-prod/ui
+  repository: australia-southeast1-docker.pkg.dev/gainline-503521/gainline-prod/ui
 
 ingress:
-  host: ""
+  host: "prod.34.40.161.175.nip.io"
