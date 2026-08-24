@@ -8,3 +8,5 @@ migrate:
 config:
   dbHost: "10.144.0.3"
   gamestateHost: gainline-gamestate
+  auth0Domain: "dev-dq1p4t4guh2d2oj3.au.auth0.com"
+  auth0Audience: "https://api.prod.gainline.io"
