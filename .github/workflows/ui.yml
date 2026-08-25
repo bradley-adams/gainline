@@ -45,7 +45,7 @@ jobs:
           if [ "${{ steps.env.outputs.environment }}" == "prod" ]; then
             echo "api_url=https://prod.34.40.161.175.nip.io" >> $GITHUB_OUTPUT
             echo "auth0_domain=dev-dq1p4t4guh2d2oj3.au.auth0.com" >> $GITHUB_OUTPUT
-            echo "auth0_client_id=z6qBVsN678zmVCf5db2Zybqbc0G6srv5" >> $GITHUB_OUTPUT
+            echo "auth0_client_id=z6qBVsN678zmVCf5db2ZybqbcOG6srv5" >> $GITHUB_OUTPUT
             echo "auth0_audience=https://api.prod.gainline.io" >> $GITHUB_OUTPUT
           else
             echo "api_url=https://dev.35.189.24.64.nip.io" >> $GITHUB_OUTPUT
