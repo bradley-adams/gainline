@@ -8,6 +8,14 @@ Terraform + Helm for the Gainline platform (GKE, Cloud SQL, Memorystore, Artifac
 
 Need `terraform` and `gcloud` authenticated against the target GCP project.
 
+State lives in GCS (`gs://gainline-tfstate`, one prefix per environment) instead of
+local state files. If that bucket doesn't exist yet:
+
+```bash
+gsutil mb -p gainline-503521 -l australia-southeast1 gs://gainline-tfstate
+gsutil versioning set on gs://gainline-tfstate
+```
+
 ```bash
 cd terraform/environments/dev
 terraform init
@@ -50,5 +58,4 @@ It's just the shared ClusterIssuer the UI ingress uses to get its Let's Encrypt 
 
 - Set up a secret manager for database passwords instead of terraform.tfvars
 - dev networking still rides on the shared default network, prod got its own VPC, bring dev in line.
-- Terraform state is local, should move to a GCS backend at some point.
 - No CI running terraform plan on PRs yet.
