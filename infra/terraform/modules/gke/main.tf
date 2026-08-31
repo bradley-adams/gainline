@@ -11,6 +11,14 @@ resource "google_container_cluster" "cluster" {
   subnetwork = var.subnetwork
 
   deletion_protection = false
+
+  workload_identity_config {
+    workload_pool = "${var.project_id}.svc.id.goog"
+  }
+
+  secret_manager_config {
+    enabled = true
+  }
 }
 
 resource "google_container_node_pool" "nodes" {
