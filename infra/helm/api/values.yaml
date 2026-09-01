@@ -22,8 +22,14 @@ config:
   auth0Domain: ""
   auth0Audience: ""
 
-secret:
-  dbPassword: ""
+serviceAccount:
+  name: api
+  gcpServiceAccountEmail: ""
+
+gcpProjectId: ""
+
+secretManager:
+  dbSecretId: ""
 
 migrate:
   image:
