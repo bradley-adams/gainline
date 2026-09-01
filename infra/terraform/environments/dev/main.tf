@@ -56,13 +56,20 @@ module "networking" {
   project_id = var.project_id
 }
 
+module "db_secret" {
+  source      = "../../modules/db-secret"
+  project_id  = var.project_id
+  environment = "dev"
+  k8s_namespace = "gainline-dev"
+}
+
 module "sql" {
   source                 = "../../modules/sql"
   project_id             = var.project_id
   region                 = var.region
   instance_name          = "gainline-dev"
   tier                   = "db-f1-micro"
-  database_password      = var.database_password
+  database_password      = module.db_secret.password
   environment            = "dev"
   private_vpc_connection = module.networking.private_vpc_connection
 }

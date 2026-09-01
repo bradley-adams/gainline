@@ -55,13 +55,20 @@ module "redis" {
   authorized_network  = module.networking.network_self_link
 }
 
+module "db_secret" {
+  source      = "../../modules/db-secret"
+  project_id  = var.project_id
+  environment = "prod"
+  k8s_namespace = "gainline-prod"
+}
+
 module "sql" {
   source                 = "../../modules/sql"
   project_id             = var.project_id
   region                 = var.region
   instance_name          = "gainline-prod"
   tier                   = "db-f1-micro"
-  database_password      = var.database_password
+  database_password      = module.db_secret.password
   environment            = "prod"
   private_vpc_connection = module.networking.private_vpc_connection
   network_self_link      = module.networking.network_self_link

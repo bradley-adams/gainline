@@ -43,3 +43,13 @@ output "service_account_email" {
   description = "Service account email for GitHub Actions"
   value       = module.workload_identity.service_account_email
 }
+
+output "db_secret_id" {
+  description = "Secret Manager secret ID holding the db password, for the api chart's SecretProviderClass"
+  value       = module.db_secret.secret_id
+}
+
+output "api_service_account_email" {
+  description = "GCP service account the api chart's ServiceAccount should be annotated with for Workload Identity"
+  value       = module.db_secret.api_service_account_email
+}

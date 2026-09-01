@@ -11,7 +11,6 @@ variable "environment" {
 variable "k8s_namespace" {
   description = "Kubernetes namespace the api pod runs in"
   type        = string
-  default     = "default"
 }
 
 variable "k8s_service_account" {
