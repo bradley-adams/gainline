@@ -10,6 +10,7 @@ spec:
   template:
     spec:
       restartPolicy: Never
+      serviceAccountName: {{ .Values.serviceAccount.name }}
       containers:
         - name: migrate
           image: {{ .Values.migrate.image.repository }}:{{ .Values.migrate.image.tag }}
@@ -23,3 +24,14 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-secret
                   key: db-password
+          volumeMounts:
+            - name: db-password
+              mountPath: "/mnt/secrets"
+              readOnly: true
+      volumes:
+        - name: db-password
+          csi:
+            driver: secrets-store-gke.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Release.Name }}-db-password
