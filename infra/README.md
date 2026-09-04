@@ -56,6 +56,5 @@ It's just the shared ClusterIssuer the UI ingress uses to get its Let's Encrypt 
 
 ## Todo:
 
-- Set up a secret manager for database passwords instead of terraform.tfvars
 - dev networking still rides on the shared default network, prod got its own VPC, bring dev in line.
 - No CI running terraform plan on PRs yet.
