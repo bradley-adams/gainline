@@ -40,7 +40,7 @@ module "gke" {
   machine_type   = "e2-small"
   node_count     = 1
   min_node_count = 1
-  max_node_count = 3
+  max_node_count = 4
   disk_size_gb   = 20
   environment    = "prod"
 }
