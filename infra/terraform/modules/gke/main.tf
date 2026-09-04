@@ -17,7 +17,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   secret_manager_config {
-    enabled = true
+    enabled = false
   }
 }
 
