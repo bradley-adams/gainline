@@ -6,7 +6,7 @@ migrate:
     repository: australia-southeast1-docker.pkg.dev/gainline-503521/gainline-dev/migrate
 
 config:
-  dbHost: "172.26.0.3"
+  dbHost: "10.78.0.3"
   gamestateHost: gainline-gamestate
   auth0Domain: "dev-dq1p4t4guh2d2oj3.au.auth0.com"
   auth0Audience: "https://api.dev.gainline.io"

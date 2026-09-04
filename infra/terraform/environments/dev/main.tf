@@ -20,12 +20,23 @@ module "registry" {
   environment   = "dev"
 }
 
+module "networking" {
+  source              = "../../modules/networking"
+  project_id          = var.project_id
+  region              = var.region
+  environment         = "dev"
+  use_default_network = false
+  subnet_cidr         = "10.10.0.0/20"
+}
+
 module "gke" {
   source         = "../../modules/gke"
   project_id     = var.project_id
   region         = var.region
   zone           = var.zone
   cluster_name   = "gainline-dev"
+  network        = module.networking.network_name
+  subnetwork     = module.networking.subnetwork_name
   machine_type   = "e2-small"
   node_count     = 1
   min_node_count = 1
@@ -35,12 +46,13 @@ module "gke" {
 }
 
 module "redis" {
-  source         = "../../modules/redis"
-  project_id     = var.project_id
-  region         = var.region
-  instance_name  = "gainline-dev"
-  memory_size_gb = 1
-  environment    = "dev"
+  source             = "../../modules/redis"
+  project_id         = var.project_id
+  region             = var.region
+  instance_name      = "gainline-dev"
+  memory_size_gb     = 1
+  environment        = "dev"
+  authorized_network = module.networking.network_self_link
 }
 
 module "workload_identity" {
@@ -51,15 +63,10 @@ module "workload_identity" {
   environment = "dev"
 }
 
-module "networking" {
-  source     = "../../modules/networking"
-  project_id = var.project_id
-}
-
 module "db_secret" {
-  source      = "../../modules/db-secret"
-  project_id  = var.project_id
-  environment = "dev"
+  source        = "../../modules/db-secret"
+  project_id    = var.project_id
+  environment   = "dev"
   k8s_namespace = "gainline-dev"
 }
 
@@ -72,4 +79,5 @@ module "sql" {
   database_password      = module.db_secret.password
   environment            = "dev"
   private_vpc_connection = module.networking.private_vpc_connection
+  network_self_link      = module.networking.network_self_link
 }
