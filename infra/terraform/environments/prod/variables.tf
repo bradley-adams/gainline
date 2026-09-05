@@ -14,9 +14,3 @@ variable "zone" {
   type        = string
   default     = "australia-southeast1-a"
 }
-
-variable "database_password" {
-  description = "Cloud SQL database password"
-  type        = string
-  sensitive   = true
-}
