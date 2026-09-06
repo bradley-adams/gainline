@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: ""
-  tag: "latest"
+  tag: ""
   pullPolicy: Always
 
 service:
@@ -34,4 +34,4 @@ secretManager:
 migrate:
   image:
     repository: ""
-    tag: "latest"
+    tag: ""
