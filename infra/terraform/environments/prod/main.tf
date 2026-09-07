@@ -21,12 +21,12 @@ module "registry" {
 }
 
 module "networking" {
-  source               = "../../modules/networking"
-  project_id           = var.project_id
-  region               = var.region
-  environment          = "prod"
-  use_default_network  = false
-  subnet_cidr          = "10.20.0.0/20"
+  source              = "../../modules/networking"
+  project_id          = var.project_id
+  region              = var.region
+  environment         = "prod"
+  use_default_network = false
+  subnet_cidr         = "10.20.0.0/20"
 }
 
 module "gke" {
@@ -46,19 +46,19 @@ module "gke" {
 }
 
 module "redis" {
-  source              = "../../modules/redis"
-  project_id          = var.project_id
-  region              = var.region
-  instance_name       = "gainline-prod"
-  memory_size_gb      = 1
-  environment         = "prod"
-  authorized_network  = module.networking.network_self_link
+  source             = "../../modules/redis"
+  project_id         = var.project_id
+  region             = var.region
+  instance_name      = "gainline-prod"
+  memory_size_gb     = 1
+  environment        = "prod"
+  authorized_network = module.networking.network_self_link
 }
 
 module "db_secret" {
-  source      = "../../modules/db-secret"
-  project_id  = var.project_id
-  environment = "prod"
+  source        = "../../modules/db-secret"
+  project_id    = var.project_id
+  environment   = "prod"
   k8s_namespace = "gainline-prod"
 }
 
