@@ -21,12 +21,12 @@ module "registry" {
 }
 
 module "networking" {
-  source               = "../../modules/networking"
-  project_id           = var.project_id
-  region               = var.region
-  environment          = "prod"
-  use_default_network  = false
-  subnet_cidr          = "10.20.0.0/20"
+  source              = "../../modules/networking"
+  project_id          = var.project_id
+  region              = var.region
+  environment         = "prod"
+  use_default_network = false
+  subnet_cidr         = "10.20.0.0/20"
 }
 
 module "gke" {
@@ -46,19 +46,27 @@ module "gke" {
 }
 
 module "redis" {
-  source              = "../../modules/redis"
-  project_id          = var.project_id
-  region              = var.region
-  instance_name       = "gainline-prod"
-  memory_size_gb      = 1
-  environment         = "prod"
-  authorized_network  = module.networking.network_self_link
+  source             = "../../modules/redis"
+  project_id         = var.project_id
+  region             = var.region
+  instance_name      = "gainline-prod"
+  memory_size_gb     = 1
+  environment        = "prod"
+  authorized_network = module.networking.network_self_link
+}
+
+module "workload_identity" {
+  source      = "../../modules/workload-identity"
+  project_id  = var.project_id
+  github_org  = "bradley-adams"
+  github_repo = "gainline"
+  environment = "prod"
 }
 
 module "db_secret" {
-  source      = "../../modules/db-secret"
-  project_id  = var.project_id
-  environment = "prod"
+  source        = "../../modules/db-secret"
+  project_id    = var.project_id
+  environment   = "prod"
   k8s_namespace = "gainline-prod"
 }
 
@@ -72,12 +80,4 @@ module "sql" {
   environment            = "prod"
   private_vpc_connection = module.networking.private_vpc_connection
   network_self_link      = module.networking.network_self_link
-}
-
-module "workload_identity" {
-  source      = "../../modules/workload-identity"
-  project_id  = var.project_id
-  github_org  = "bradley-adams"
-  github_repo = "gainline"
-  environment = "prod"
 }
