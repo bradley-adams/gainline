@@ -55,6 +55,14 @@ module "redis" {
   authorized_network = module.networking.network_self_link
 }
 
+module "workload_identity" {
+  source      = "../../modules/workload-identity"
+  project_id  = var.project_id
+  github_org  = "bradley-adams"
+  github_repo = "gainline"
+  environment = "prod"
+}
+
 module "db_secret" {
   source        = "../../modules/db-secret"
   project_id    = var.project_id
@@ -72,12 +80,4 @@ module "sql" {
   environment            = "prod"
   private_vpc_connection = module.networking.private_vpc_connection
   network_self_link      = module.networking.network_self_link
-}
-
-module "workload_identity" {
-  source      = "../../modules/workload-identity"
-  project_id  = var.project_id
-  github_org  = "bradley-adams"
-  github_repo = "gainline"
-  environment = "prod"
 }
