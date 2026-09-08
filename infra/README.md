@@ -56,5 +56,4 @@ It's just the shared ClusterIssuer the UI ingress uses to get its Let's Encrypt 
 
 ## Todo:
 
-- dev networking still rides on the shared default network, prod got its own VPC, bring dev in line.
 - No CI running terraform plan on PRs yet.
