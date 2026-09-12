@@ -115,8 +115,19 @@ make clean
 | gainline-db        | 5432  | PostgreSQL                        |
 | gainline-redis     | 6379  | Redis pub/sub for live game state |
 
+## Environments & Deployment
+
+Runs on GKE, one dev and one prod environment, each with its own VPC, Cloud SQL, and Memorystore Redis instance. Infra is Terraform, apps deploy via Helm.
+
+- Dev: https://dev.34.87.247.234.nip.io
+- Prod: https://prod.34.40.161.175.nip.io
+
+Deploys happen through GitHub Actions (.github/workflows/), one workflow per service (api, gamestate, ui), triggered on push to main (deploys to dev) or manually via workflow_dispatch (choose dev or prod).
+
+Auth is handled by Auth0 in both environments, with separate Auth0 applications per environment.
+
+For infra setup, cluster rebuild steps, and everything Terraform/Helm related, see the infra repo's README.
+
 ## Todo
 
 - Implement search across core entities (teams, games, seasons, competitions).
-- Authentication via Auth0 with basic roles (admin/user) and enforcement
-- Deploy.
