@@ -14,6 +14,21 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// MigrateUp applies all migrations to dbURL. Safe to call on a db that's already up to date.
+func MigrateUp(dbURL string) error {
+	m, _, closeFn, err := newMigrator(dbURL)
+	if err != nil {
+		return err
+	}
+	defer closeFn()
+
+	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		return fmt.Errorf("migrate up: %w", err)
+	}
+
+	return nil
+}
+
 func VerifySchemaUpToDate(dbURL string) error {
 	m, src, closeFn, err := newMigrator(dbURL)
 	if err != nil {
