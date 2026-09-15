@@ -9,6 +9,7 @@ import (
 
 	"github.com/bradley-adams/gainline/db/db"
 	"github.com/bradley-adams/gainline/http/api"
+	"github.com/bradley-adams/gainline/service"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
@@ -131,6 +132,20 @@ var _ = Describe("competition handlers", func() {
 			Expect(w.Code).To(Equal(http.StatusBadRequest))
 		})
 
+		It("returns 409 when competition name already exists", func() {
+			mockSvc.CreateFn = func(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error) {
+				return db.Competition{}, service.ErrCompetitionNameTaken
+			}
+
+			reqBody := `{"name":"Super Rugby"}`
+			req := httptest.NewRequest(http.MethodPost, "/competitions", bytes.NewBufferString(reqBody))
+			req.Header.Set("Content-Type", "application/json")
+
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+			Expect(w.Code).To(Equal(http.StatusConflict))
+		})
+
 		It("returns 500 when service fails", func() {
 			mockSvc.CreateFn = func(ctx context.Context, req *api.CompetitionRequest) (db.Competition, error) {
 				return db.Competition{}, fmt.Errorf("db failure")
@@ -246,6 +261,20 @@ var _ = Describe("competition handlers", func() {
 			w := httptest.NewRecorder()
 			router.ServeHTTP(w, req)
 			Expect(w.Code).To(Equal(http.StatusBadRequest))
+		})
+
+		It("returns 409 when competition name already exists", func() {
+			compID := uuid.New()
+			mockSvc.UpdateFn = func(ctx context.Context, id uuid.UUID, req *api.CompetitionRequest) (db.Competition, error) {
+				return db.Competition{}, service.ErrCompetitionNameTaken
+			}
+
+			reqBody := `{"name":"Super Rugby"}`
+			req := httptest.NewRequest(http.MethodPut, "/competitions/"+compID.String(), bytes.NewBufferString(reqBody))
+			req.Header.Set("Content-Type", "application/json")
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+			Expect(w.Code).To(Equal(http.StatusConflict))
 		})
 
 		It("returns 500 when service fails", func() {
