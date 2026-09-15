@@ -2,6 +2,7 @@ definitions:
   api.CompetitionRequest:
     properties:
       name:
+        example: Super Rugby
         maxLength: 100
         minLength: 3
         type: string
@@ -318,6 +319,10 @@ paths:
           description: Not found
           schema:
             $ref: '#/definitions/response.ErrorResponse'
+        "409":
+          description: Competition name already exists
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
         "500":
           description: Internal server error
           schema:
@@ -406,6 +411,10 @@ paths:
             $ref: '#/definitions/api.CompetitionResponse'
         "400":
           description: Invalid request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "409":
+          description: Competition name already exists
           schema:
             $ref: '#/definitions/response.ErrorResponse'
         "500":

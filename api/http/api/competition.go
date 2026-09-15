@@ -9,7 +9,7 @@ import (
 )
 
 type CompetitionRequest struct {
-	Name string `json:"name" validate:"required,min=3,max=100,entity_name"`
+	Name string `json:"name" validate:"required,min=3,max=100,entity_name" example:"Super Rugby"`
 }
 
 type CompetitionResponse struct {

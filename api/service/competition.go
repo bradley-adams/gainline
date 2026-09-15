@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"strings"
 	"time"
 
@@ -10,7 +11,8 @@ import (
 	"github.com/bradley-adams/gainline/db/db_handler"
 	"github.com/bradley-adams/gainline/http/api"
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
+	"github.com/lib/pq"
+	pkgerrors "github.com/pkg/errors"
 )
 
 // CompetitionService defines the contract for competition-related operations.
@@ -61,7 +63,7 @@ func (s *competitionService) GetAll(
 
 		total, err = q.CountCompetitions(ctx)
 		if err != nil {
-			return errors.Wrap(err, "count competitions")
+			return pkgerrors.Wrap(err, "count competitions")
 		}
 
 		competitions, err = q.GetCompetitions(ctx, db.GetCompetitionsParams{
@@ -69,7 +71,7 @@ func (s *competitionService) GetAll(
 			PageLimit:  int32(limit),
 		})
 		if err != nil {
-			return errors.Wrap(err, "get competitions")
+			return pkgerrors.Wrap(err, "get competitions")
 		}
 
 		return nil
@@ -89,7 +91,7 @@ func (s *competitionService) Get(ctx context.Context, competitionID uuid.UUID) (
 		var err error
 		competition, err = queries.GetCompetition(ctx, competitionID)
 		if err != nil {
-			return errors.Wrap(err, "unable to get competition")
+			return pkgerrors.Wrap(err, "unable to get competition")
 		}
 		return nil
 	})
@@ -122,6 +124,18 @@ func (s *competitionService) Delete(ctx context.Context, competitionID uuid.UUID
 	})
 }
 
+// ErrCompetitionNameTaken means the name is already in use.
+var ErrCompetitionNameTaken = errors.New("a competition with this name already exists")
+
+// postgresUniqueViolationCode is Postgres's SQLSTATE for a unique violation.
+const postgresUniqueViolationCode = "23505"
+
+// isUniqueViolation checks if err is a Postgres unique constraint violation.
+func isUniqueViolation(err error) bool {
+	var pqErr *pq.Error
+	return errors.As(err, &pqErr) && pqErr.Code == postgresUniqueViolationCode
+}
+
 func createCompetition(ctx context.Context, queries db_handler.Queries, req *api.CompetitionRequest) (db.Competition, error) {
 	now := time.Now()
 	createCompetitionParams := db.CreateCompetitionParams{
@@ -134,12 +148,15 @@ func createCompetition(ctx context.Context, queries db_handler.Queries, req *api
 
 	err := queries.CreateCompetition(ctx, createCompetitionParams)
 	if err != nil {
-		return db.Competition{}, errors.Wrap(err, "unable to create new competition")
+		if isUniqueViolation(err) {
+			return db.Competition{}, ErrCompetitionNameTaken
+		}
+		return db.Competition{}, pkgerrors.Wrap(err, "unable to create new competition")
 	}
 
 	competition, err := queries.GetCompetition(ctx, createCompetitionParams.ID)
 	if err != nil {
-		return db.Competition{}, errors.Wrap(err, "unable to get new competition")
+		return db.Competition{}, pkgerrors.Wrap(err, "unable to get new competition")
 	}
 
 	return competition, nil
@@ -153,12 +170,15 @@ func updateCompetition(ctx context.Context, queries db_handler.Queries, competit
 
 	err := queries.UpdateCompetition(ctx, updateCompetitionParams)
 	if err != nil {
-		return db.Competition{}, errors.Wrap(err, "unable to update competition")
+		if isUniqueViolation(err) {
+			return db.Competition{}, ErrCompetitionNameTaken
+		}
+		return db.Competition{}, pkgerrors.Wrap(err, "unable to update competition")
 	}
 
 	competition, err := queries.GetCompetition(ctx, competitionID)
 	if err != nil {
-		return db.Competition{}, errors.Wrap(err, "unable to get updated competition")
+		return db.Competition{}, pkgerrors.Wrap(err, "unable to get updated competition")
 	}
 
 	return competition, nil
@@ -185,7 +205,7 @@ func deleteCompetition(ctx context.Context, queries db_handler.Queries, competit
 		ID:        competitionID,
 	}
 	if err := queries.DeleteCompetition(ctx, deleteCompetitionParams); err != nil {
-		return errors.Wrap(err, "unable to delete competition")
+		return pkgerrors.Wrap(err, "unable to delete competition")
 	}
 
 	return nil
@@ -203,7 +223,7 @@ func deleteCompetitionGames(
 	}
 
 	if err := q.DeleteGamesByCompetitionID(ctx, params); err != nil {
-		return errors.Wrap(err, "unable to delete games for competition")
+		return pkgerrors.Wrap(err, "unable to delete games for competition")
 	}
 
 	return nil
@@ -221,7 +241,7 @@ func deleteCompetitionStages(
 	}
 
 	if err := q.DeleteStagesByCompetitionID(ctx, params); err != nil {
-		return errors.Wrap(err, "unable to delete stages for competition")
+		return pkgerrors.Wrap(err, "unable to delete stages for competition")
 	}
 
 	return nil
@@ -239,14 +259,14 @@ func deleteCompetitionSeasons(
 		DeletedAt:     deletedAt,
 		CompetitionID: competitionID,
 	}); err != nil {
-		return errors.Wrap(err, "unable to delete season teams for competition")
+		return pkgerrors.Wrap(err, "unable to delete season teams for competition")
 	}
 
 	if err := q.DeleteSeasonsByCompetitionID(ctx, db.DeleteSeasonsByCompetitionIDParams{
 		DeletedAt:     deletedAt,
 		CompetitionID: competitionID,
 	}); err != nil {
-		return errors.Wrap(err, "unable to delete seasons for competition")
+		return pkgerrors.Wrap(err, "unable to delete seasons for competition")
 	}
 
 	return nil

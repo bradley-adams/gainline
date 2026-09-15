@@ -38,7 +38,15 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 `npm test`
 
-## ToDos:
+## Environment config
+
+`API_URL`, `AUTH0_DOMAIN`, `AUTH0_CLIENT_ID`, and `AUTH0_AUDIENCE` are baked into the
+build at build time (Docker build args, one set per environment), not read at runtime.
+Changing any of these means rebuilding and redeploying the image — editing a Helm
+values file alone won't do anything. Deployed values live in the `infra` repo's
+`ui.yml` workflow.
+
+## Todo
 
 - Update schedule competitions to have load more option.
 - Smaller screen friendly adjustments.

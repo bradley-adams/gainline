@@ -3,15 +3,16 @@ package service
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/bradley-adams/gainline/db/db"
 	mock_db "github.com/bradley-adams/gainline/db/db_handler/mock"
 	"github.com/bradley-adams/gainline/http/api"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/pkg/errors"
 	"go.uber.org/mock/gomock"
 )
 
@@ -63,6 +64,11 @@ var _ = Describe("competition", func() {
 	validCompetitionResponse := api.ToCompetitionResponse(validCompetitionFromDB)
 
 	validTestError := errors.New("a valid testing error")
+
+	validUniqueViolationError := &pq.Error{
+		Code:    "23505",
+		Message: `duplicate key value violates unique constraint "unique_competition_name_ci"`,
+	}
 
 	Describe("CreateCompetition", func() {
 		It("should create a new competition without errors", func() {
@@ -155,6 +161,28 @@ var _ = Describe("competition", func() {
 
 			Expect(competition).To(Equal(validNilCompetition))
 			Expect(err.Error()).To(Equal("unable to create new competition: a valid testing error"))
+		})
+
+		It("should return ErrCompetitionNameTaken when the name already exists", func() {
+			mockDB.EXPECT().BeginTx(
+				gomock.Any(),
+				gomock.Any(),
+			)
+			mockDB.EXPECT().New(
+				gomock.Any(),
+			).Return(mockQueries)
+			mockQueries.EXPECT().CreateCompetition(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validUniqueViolationError)
+			mockDB.EXPECT().Rollback(
+				gomock.Any(),
+			).AnyTimes()
+
+			competition, err := svc.Create(context.Background(), validCompetitionRequest)
+
+			Expect(competition).To(Equal(validNilCompetition))
+			Expect(errors.Is(err, ErrCompetitionNameTaken)).To(BeTrue())
 		})
 
 		It("should rollback and return formatted error on get failure", func() {
@@ -398,6 +426,28 @@ var _ = Describe("competition", func() {
 
 			Expect(competition).To(Equal(validNilCompetition))
 			Expect(err.Error()).To(Equal("unable to update competition: a valid testing error"))
+		})
+
+		It("should return ErrCompetitionNameTaken when the name already exists", func() {
+			mockDB.EXPECT().BeginTx(
+				gomock.Any(),
+				gomock.Any(),
+			)
+			mockDB.EXPECT().New(
+				gomock.Any(),
+			).Return(mockQueries)
+			mockQueries.EXPECT().UpdateCompetition(
+				gomock.Any(),
+				gomock.Any(),
+			).Return(validUniqueViolationError)
+			mockDB.EXPECT().Rollback(
+				gomock.Any(),
+			).AnyTimes()
+
+			competition, err := svc.Update(context.Background(), validCompetitionID, validCompetitionRequest)
+
+			Expect(competition).To(Equal(validNilCompetition))
+			Expect(errors.Is(err, ErrCompetitionNameTaken)).To(BeTrue())
 		})
 
 		It("should rollback and return formatted error on get updated competition failure", func() {

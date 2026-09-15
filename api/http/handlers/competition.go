@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"math"
 	"net/http"
 
@@ -24,6 +25,7 @@ import (
 //	@Success	201			{object}	api.CompetitionResponse	"Successful operation"
 //	@Failure	400			{object}	response.ErrorResponse	"Bad request"
 //	@Failure	404			{object}	response.ErrorResponse	"Not found"
+//	@Failure	409			{object}	response.ErrorResponse	"Competition name already exists"
 //	@Failure	500			{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions [post]
 func handleCreateCompetition(
@@ -45,6 +47,10 @@ func handleCreateCompetition(
 
 		competition, err := competitionService.Create(ctx.Request.Context(), req)
 		if err != nil {
+			if errors.Is(err, service.ErrCompetitionNameTaken) {
+				response.RespondError(ctx, logger, err, http.StatusConflict, "a competition with this name already exists")
+				return
+			}
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to add competition")
 			return
 		}
@@ -152,6 +158,7 @@ func handleGetCompetition(logger zerolog.Logger, competitionService service.Comp
 //	@Param		competition		body		api.CompetitionRequest	true	"Competition details to update"
 //	@Success	200				{object}	api.CompetitionResponse	"Competition updated"
 //	@Failure	400				{object}	response.ErrorResponse	"Invalid request"
+//	@Failure	409				{object}	response.ErrorResponse	"Competition name already exists"
 //	@Failure	500				{object}	response.ErrorResponse	"Internal server error"
 //	@Router		/competitions/{competitionID} [put]
 func handleUpdateCompetition(
@@ -182,6 +189,10 @@ func handleUpdateCompetition(
 
 		competition, err := competitionService.Update(ctx.Request.Context(), competitionID, req)
 		if err != nil {
+			if errors.Is(err, service.ErrCompetitionNameTaken) {
+				response.RespondError(ctx, logger, err, http.StatusConflict, "a competition with this name already exists")
+				return
+			}
 			response.RespondError(ctx, logger, err, http.StatusInternalServerError, "Unable to update competition")
 			return
 		}
