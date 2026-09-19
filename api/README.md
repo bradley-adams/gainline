@@ -83,6 +83,15 @@ mockgen \
   github.com/bradley-adams/gainline/db/db_handler DB,Queries
 ```
 
+### Integration Tests
+
+Requires Docker running locally (spins up a disposable Postgres
+container via testcontainers).
+
+```bash
+go test -tags=integration ./...
+```
+
 ## Todo:
 
 - Create/Update competition swagger default violates unique constraint.
