@@ -22,5 +22,8 @@
   },
   "[helm]": {
     "editor.formatOnSave": false
+  },
+  "gopls": {
+    "buildFlags": ["-tags=integration"]
   }
 }
