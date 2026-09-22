@@ -2,6 +2,10 @@
 
 A rugby season scheduler and live game tracker.
 
+> **Note:** GCP infra has been mothballed to save cost. Deploy
+> workflows are disabled and the dev/prod URLs below are dead.
+> Local dev via `make` still works fine.
+
 ## Using Make Commands
 
 All common Docker and database operations are wrapped in the Makefile.
@@ -116,6 +120,8 @@ make clean
 | gainline-redis     | 6379  | Redis pub/sub for live game state |
 
 ## Environments & Deployment
+
+⚠️ Mothballed — infra has been torn down, workflows disabled, URLs below are dead.
 
 Runs on GKE, one dev and one prod environment, each with its own VPC, Cloud SQL, and Memorystore Redis instance. Infra is Terraform, apps deploy via Helm.
 
